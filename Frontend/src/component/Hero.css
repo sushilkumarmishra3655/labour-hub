@@ -1,0 +1,162 @@
+.hero {
+  height: 95vh;
+  /* background: linear-gradient(
+      rgba(0, 0, 0, 0.55),
+      rgba(0, 0, 0, 0.55)
+    ),
+    url("https://images.unsplash.com/photo-1600880292203-757bb62b4baf"); */
+  background-image: url("../assets/Worker.jpeg");
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 700px;
+  padding: 20px;
+}
+
+.hero-content h1 {
+  font-size: 42px;
+  margin-bottom: 15px;
+}
+
+.hero-content p {
+  font-size: 18px;
+  margin-bottom: 25px;
+  opacity: 0.9;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 12px 25px;
+  font-size: 16px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #1E656D;
+  color: white;
+}
+.btn.primary:hover{
+  background-color: white;
+  color: #1E656D;
+}
+
+.btn.secondary {
+  background: white;
+  color: #1E656D;
+}
+
+.btn.secondary:hover{
+  background-color: #1E656D;
+  color: white;
+}
+
+.how-it-works {
+  padding: 60px 40px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.how-it-works h2 {
+  font-size: 32px;
+  margin-bottom: 40px;
+}
+
+.steps {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.step-card {
+  background: #f5f5f5;
+  padding: 24px;
+  width: 280px;
+  border-radius: 16px;
+}
+
+.step-card h3 {
+  margin-bottom: 10px;
+  color: #1E656D;
+}
+
+.step-card p {
+  font-size: 15px;
+  color: #444;
+}
+
+.categories {
+  padding: 60px 40px;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.categories h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.category-subtitle {
+  color: #555;
+  margin-bottom: 40px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.category-card {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 16px;
+  text-decoration: none;
+  color: #000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card h3 {
+  color: #1E656D;
+  margin-bottom: 6px;
+}
+
+.category-card p {
+  font-size: 14px;
+  color: #444;
+}
+
+.category-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+}

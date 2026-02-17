@@ -1,0 +1,21 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #F5F5F5;
+}
+
+*{
+  box-sizing: border-box;
+}
+
+/* Footer layout */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;        /* 🔥 THIS pushes footer down */
+}
+

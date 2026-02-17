@@ -1,0 +1,151 @@
+:root {
+  --brand: #1E656D;
+  --bg: linear-gradient(135deg, #e6f4f3, #f7fbfb);
+  --card: #ffffff;
+}
+
+.contact-wrapper {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 20px;
+}
+
+/* Main Card */
+.contact-card-modern {
+  background: var(--card);
+  max-width: 1100px;
+  width: 100%;
+  border-radius: 22px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  overflow: hidden;
+}
+
+/* LEFT */
+.contact-left {
+  background: linear-gradient(160deg, #1E656D, #2aa6a3);
+  color: #ffffff;
+  padding: 45px;
+}
+
+.contact-left h2 {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.contact-subtitle {
+  font-size: 15px;
+  opacity: 0.9;
+  margin-bottom: 35px;
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.detail-box {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.detail-box span {
+  font-size: 26px;
+}
+
+.detail-box h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.detail-box p {
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+.detail-box small {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* RIGHT */
+.contact-right {
+  padding: 45px;
+}
+
+.contact-right h3 {
+  margin-bottom: 18px;
+  font-size: 22px;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  transition: border 0.3s;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--brand);
+}
+
+.contact-form textarea {
+  min-height: 130px;
+  resize: none;
+}
+
+.contact-form button {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 999px;
+  border: none;
+  background: var(--brand);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.contact-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(30,101,109,0.4);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .contact-card-modern {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-left,
+  .contact-right {
+    padding: 30px;
+  }
+
+  .contact-left h2 {
+    font-size: 26px;
+  }
+}

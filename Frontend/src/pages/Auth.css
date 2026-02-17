@@ -1,0 +1,118 @@
+.auth-page {
+  min-height: 100vh;
+  /* background: linear-gradient(
+      rgba(0, 0, 0, 0.6),
+      rgba(0, 0, 0, 0.6)
+    ),
+    url("../assets/Worker.jpeg"); */
+    background-image: url("../assets/Worker.jpeg");;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+  padding: 36px;
+}
+
+.auth-card.large {
+  width: 420px;
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 28px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+.form-group small {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: #1e656d;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.auth-btn:hover {
+  background: #155157;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.auth-switch a {
+  color: #1e656d;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* 🔘 ROLE RADIO GROUP */
+.role-radio-clean {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 8px;
+}
+
+.radio-clean {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #007bff;
+}
+
+.radio-clean input[type="radio"] {
+  margin: 0;
+  accent-color: #007bff;
+  transform: scale(1.1);
+}
+
+
+

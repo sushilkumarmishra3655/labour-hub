@@ -1,0 +1,81 @@
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #1E656D, #134447);
+  color: white;
+  padding: 20px;
+}
+
+.sidebar-header {
+  font-size: 20px;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-menu li {
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.sidebar-menu li:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 30px;
+  background: #f5f7fa;
+}
+
+.logout-btn {
+  margin-top: 30px;
+  background: #ff4d4d;
+}
+
+.logout-btn:hover {
+  background: #e60000;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.users-table th,
+.users-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.users-table th {
+  background: #1E656D;
+  color: white;
+}
+
+.delete-btn {
+  background: #ff4d4d;
+  border: none;
+  padding: 6px 10px;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #e60000;
+}
+

@@ -1,0 +1,71 @@
+.post-wrapper {
+  min-height: 100vh;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.post-card {
+  background: #fff;
+  width: 400px;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.post-card h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1e656d;
+}
+
+.post-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-card label {
+  margin-top: 12px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.post-card input,
+.post-card select {
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.post-card button {
+  margin-top: 20px;
+  padding: 12px;
+  background: #1e656d;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.post-card button:hover {
+  background: #155157;
+}
+
+.view-jobs-btn {
+  margin-top: 12px;
+  padding: 10px;
+  background: transparent;
+  color: #1e656d;
+  border: 2px solid #1e656d;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.view-jobs-btn:hover {
+  background: #1e656d;
+  color: white;
+}
