@@ -1,12 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../assets/logo.jpeg";
-import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);   // 👈 logout add
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -31,8 +30,15 @@ const Navbar = () => {
 
   // Navigate + Close dropdown
   const handleNavigate = (path) => {
-    setOpen(false);     // 👈 close dropdown
-    navigate(path);     // 👈 navigate
+    setOpen(false);
+    navigate(path);
+  };
+
+  // 🚪 Logout handler
+  const handleLogout = () => {
+    logout();
+    setOpen(false);
+    navigate("/");
   };
 
   return (
@@ -62,6 +68,7 @@ const Navbar = () => {
           {open && (
             <div className="account-dropdown">
 
+              {/* ❌ NOT LOGGED IN */}
               {!user.isLoggedIn && (
                 <>
                   <div onClick={() => handleNavigate("/login")}>Login</div>
@@ -69,35 +76,48 @@ const Navbar = () => {
                 </>
               )}
 
+              {/* 👷 WORKER */}
               {(user.role === "worker" || user.role === "admin") && (
                 <div onClick={() => handleNavigate("/worker-dashboard")}>
                   Worker Dashboard
                 </div>
               )}
 
+              {/* 🏢 EMPLOYER */}
               {(user.role === "employer" || user.role === "admin") && (
                 <div onClick={() => handleNavigate("/employer-dashboard")}>
                   Employer Dashboard
                 </div>
               )}
 
+              {/* 👑 ADMIN */}
               {user.role === "admin" && (
                 <div onClick={() => handleNavigate("/admin-dashboard")}>
                   Admin Dashboard
                 </div>
               )}
 
+              {/* 🚪 LOGOUT */}
+              {user.isLoggedIn && (
+                <div className="logout-option" onClick={handleLogout}>
+                  Logout
+                </div>
+              )}
+
             </div>
           )}
-
         </li>
 
-        <li>
-          <Link to="/login" className="login-btn">
-            <span className="a">JOIN US</span>
-            <span>Click To Sign Up</span>
-          </Link>
-        </li>
+        {/* JOIN US BUTTON (only when NOT logged in) */}
+        {!user.isLoggedIn && (
+          <li>
+            <Link to="/login" className="login-btn">
+              <span className="top-text">JOIN US</span>
+              <span className="bottom-text">Click to Sign Up</span>
+            </Link>
+          </li>
+        )}
+
       </ul>
     </nav>
   );

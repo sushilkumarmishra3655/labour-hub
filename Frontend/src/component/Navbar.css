@@ -62,48 +62,33 @@ body {
 
 /* Login / Join Us Button */
 .login-btn {
-  display: inline-flex;          /* IMPORTANT */
-  flex-direction: column;        /* text upar-niche */
+  display: flex !important;
+  flex-direction: column !important;   /* 👈 ye line important hai */
   align-items: center;
   justify-content: center;
 
-  min-width: 140px;              /* FIX: width deni zaroori */
-  padding: 10px 20px;
-
-  background-color: white;
-  color: #1E656D;
+  padding: 12px 22px;
   border-radius: 40px;
+
+  background: linear-gradient(45deg, #3b82f6, #22c55e);
+  color: white;
   text-decoration: none;
 
   line-height: 1.2;
-  transition: transform 0.3s ease;
 }
 
-.login-btn .a{
-  color: #1E656D;
-  font-size: 25px;
-  font-weight: 1000;
+/* UPPER TEXT */
+.login-btn .top-text {
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.login-btn .a:hover{
-  text-decoration: underline;
+/* LOWER TEXT */
+.login-btn .bottom-text {
+  font-size: 11px;
+  opacity: 0.85;
 }
 
-.login-btn span:hover{
-  text-decoration: underline;
-}
-
-.login-btn span {
-  display: block;                /* VERY IMPORTANT */
-  font-size: 12px;
-  margin-top: 2px;
-  opacity: 0.8;
-  color: #1E656D;
-}
-
-.login-btn:hover {
-  transform: translateY(-4px);
-}
 
 /* Account Button */
 .account-wrapper {
@@ -116,7 +101,6 @@ body {
   color: #ffffff;
   font-size: 20px;
   font-weight: 500;
-  font-family: 'Times New Roman', Times, serif;
   cursor: pointer;
   padding: 0;
   display: inline-flex;

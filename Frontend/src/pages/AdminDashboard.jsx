@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import { ApplicationContext } from "../context/ApplicationContext";
 import { JobContext } from "../context/JobContext";
-import DashboardLayout from "../Layout/Dashboardlayout";
 import "../layout/DashboardLayout.css";
 
 const AdminDashboard = () => {
@@ -10,7 +9,6 @@ const AdminDashboard = () => {
 
   const [search, setSearch] = useState("");
 
-  // ===== Stats =====
   const totalApplications = applications.length;
   const totalJobs = jobs.length;
 
@@ -18,7 +16,6 @@ const AdminDashboard = () => {
   const rejected = applications.filter(app => app.status === "Rejected").length;
   const pending = applications.filter(app => app.status === "Pending").length;
 
-  // ===== Search Filter =====
   const filteredApplications = applications.filter((app) =>
     app.workerName?.toLowerCase().includes(search.toLowerCase())
   );
@@ -28,11 +25,10 @@ const AdminDashboard = () => {
     .slice(0, 5);
 
   return (
-    <DashboardLayout>   
-
+    <div className="dashboard-page">
       <h1 className="dashboard-title">Admin Dashboard</h1>
 
-      {/* ===== Stats Section ===== */}
+      {/* Stats */}
       <div className="dashboard-stats">
         <div className="stat-card">
           <h3>{totalJobs}</h3>
@@ -60,7 +56,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* ===== Search Section ===== */}
+      {/* Search */}
       <div style={{ marginTop: "30px", marginBottom: "15px" }}>
         <input
           type="text"
@@ -71,7 +67,7 @@ const AdminDashboard = () => {
         />
       </div>
 
-      {/* ===== Recent Applications ===== */}
+      {/* Applications */}
       <h2>Recent Applications</h2>
 
       <div className="dashboard-list">
@@ -100,7 +96,7 @@ const AdminDashboard = () => {
         )}
       </div>
 
-      {/* ===== All Jobs Section ===== */}
+      {/* Jobs */}
       <h2 style={{ marginTop: "40px" }}>All Jobs</h2>
 
       <div className="dashboard-list">
@@ -123,10 +119,10 @@ const AdminDashboard = () => {
           ))
         )}
       </div>
-
-    </DashboardLayout>   
+    </div>
   );
 };
 
 export default AdminDashboard;
+
 

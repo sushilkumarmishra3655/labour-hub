@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "./component/Navbar";
 import Footer from "./component/Footer";
 import { Routes, Route } from "react-router-dom";
+
 import Home from "./pages/Home";
 import About from "./pages/About";
 import FindWork from "./pages/FindWork";
@@ -10,71 +11,145 @@ import Contact from "./pages/Contact";
 import Login from "./pages/login";
 import Register from "./pages/Register";
 import AdminUsers from "./pages/AdminUsers";
-import ProtectedRoute from "./routes/ProtectedRoute";
 
-//Dashboards
+import ProtectedRoute from "./routes/ProtectedRoute";
+import DashboardLayout from "./Layout/DashboardLayout";
+
+// Dashboards
 import WorkerDashboard from "./pages/WorkerDashboard";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 
-
 const App = () => {
   return (
-
     <div className="app-layout">
+
       <Navbar />
 
       <main className="main-content">
         <Routes>
+
+          {/* ================= PUBLIC ROUTES ================= */}
           <Route path="/" element={<Home />} />
-
           <Route path="/about" element={<About />} />
-
           <Route path="/FindWork" element={<FindWork />} />
-
           <Route path="/PostJob" element={<PostJob />} />
-
           <Route path="/Contact" element={<Contact />} />
-
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* dashboarsds  */}
-
+          {/* ================= WORKER ================= */}
           <Route
-            path="/worker-dashboard" element={
+            path="/worker-dashboard"
+            element={
               <ProtectedRoute role="worker">
-                <WorkerDashboard />
+                <DashboardLayout>
+                  <WorkerDashboard />
+                </DashboardLayout>
               </ProtectedRoute>
             }
           />
 
           <Route
-            path="/employer-dashboard" element={
+            path="/worker-applications"
+            element={
+              <ProtectedRoute role="worker">
+                <DashboardLayout>
+                  <WorkerDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ================= EMPLOYER ================= */}
+          <Route
+            path="/employer-dashboard"
+            element={
               <ProtectedRoute role="employer">
-                <EmployerDashboard />
+                <DashboardLayout>
+                  <EmployerDashboard />
+                </DashboardLayout>
               </ProtectedRoute>
             }
           />
 
           <Route
-            path="/admin-dashboard" element={
-              <ProtectedRoute role="admin">
-                <AdminDashboard />
+            path="/employer-jobs"
+            element={
+              <ProtectedRoute role="employer">
+                <DashboardLayout>
+                  <EmployerDashboard />
+                </DashboardLayout>
               </ProtectedRoute>
             }
           />
 
-          <Route path="/admin-users" element={<AdminUsers />} />
+          <Route
+            path="/employer-applications"
+            element={
+              <ProtectedRoute role="employer">
+                <DashboardLayout>
+                  <EmployerDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ================= ADMIN ================= */}
+          <Route
+            path="/admin-dashboard"
+            element={
+              <ProtectedRoute role="admin">
+                <DashboardLayout>
+                  <AdminDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin-users"
+            element={
+              <ProtectedRoute role="admin">
+                <DashboardLayout>
+                  <AdminUsers />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin-jobs"
+            element={
+              <ProtectedRoute role="admin">
+                <DashboardLayout>
+                  <AdminDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin-applications"
+            element={
+              <ProtectedRoute role="admin">
+                <DashboardLayout>
+                  <AdminDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
 
         </Routes>
       </main>
 
       <Footer />
-    </div>
 
+    </div>
   );
 };
 
 export default App;
+
+
 

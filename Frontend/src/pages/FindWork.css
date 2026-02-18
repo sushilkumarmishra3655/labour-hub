@@ -69,7 +69,7 @@
 .apply-btn {
   width: 100%;
   padding: 10px 0;
-  background-color: #1E656D;   /* Navbar color */
+  background-color: #1E656D;
   color: #ffffff;
   border-radius: 999px;
   font-weight: 600;
@@ -81,7 +81,10 @@
   background-color: #155157;
 }
 
-/* Responsive */
+/* =========================
+   RESPONSIVE (All together)
+   ========================= */
+
 @media (max-width: 1200px) {
   .job-list {
     grid-template-columns: repeat(3, 1fr);

@@ -8,9 +8,15 @@ const EmployerDashboard = () => {
   const { applications, updateStatus } = useContext(ApplicationContext);
   const user = JSON.parse(localStorage.getItem("user"));
 
-  const receivedApplications = applications.filter(
-    (app) => app.employerId === (user?.id || "employer-demo")
-  );
+  let receivedApplications = [];
+
+  if (user?.role === "admin") {
+    receivedApplications = applications;
+  } else {
+    receivedApplications = applications.filter(
+      (app) => app.employerId === user?.id
+    );
+  }
 
   const [filter, setFilter] = useState("All");
 

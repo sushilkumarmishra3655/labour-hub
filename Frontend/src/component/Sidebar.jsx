@@ -20,43 +20,36 @@ const Sidebar = () => {
 
       <ul className="sidebar-menu">
 
-        {/* 👑 ADMIN DASHBOARD */}
-        {user.role === "admin" && (
-          <li onClick={() => navigate("/admin-dashboard")}>
-            📊 Admin Dashboard
-          </li>
-        )}
-
-        {/* 🧾 EMPLOYER DASHBOARD */}
-        {(user.role === "employer" || user.role === "admin") && (
-          <li onClick={() => navigate("/employer-dashboard")}>
-            🧾 Employer Dashboard
-          </li>
-        )}
-
-        {/* 👷 WORKER DASHBOARD */}
-        {(user.role === "worker" || user.role === "admin") && (
-          <li onClick={() => navigate("/worker-dashboard")}>
-            👷 Worker Dashboard
-          </li>
-        )}
-
-        {/* 🔧 ADMIN EXTRA OPTIONS */}
+        {/* ================= ADMIN ================= */}
         {user.role === "admin" && (
           <>
-            <li onClick={() => navigate("/admin-jobs")}>
-              🗂 Manage Jobs
-            </li>
-            <li onClick={() => navigate("/admin-applications")}>
-              📥 Applications
-            </li>
-            <li onClick={() => navigate("/admin-users")}>
-              👥 Users
-            </li>
+            <li onClick={() => navigate("/admin-dashboard")}>📊 Dashboard</li>
+            <li onClick={() => navigate("/admin-users")}>👥 Users</li>
+            <li onClick={() => navigate("/admin-jobs")}>🧾 Manage Jobs</li>
+            <li onClick={() => navigate("/admin-applications")}>👷 Applications</li>
           </>
         )}
 
-        {/* 🚪 LOGOUT */}
+        {/* ================= EMPLOYER ================= */}
+        {user.role === "employer" && (
+          <>
+            <li onClick={() => navigate("/employer-dashboard")}>📊 Dashboard</li>
+            <li onClick={() => navigate("/postjob")}>➕ Post Job</li>
+            <li onClick={() => navigate("/employer-jobs")}>📄 My Jobs</li>
+            <li onClick={() => navigate("/employer-applications")}>👷 Applications</li>
+          </>
+        )}
+
+        {/* ================= WORKER ================= */}
+        {user.role === "worker" && (
+          <>
+            <li onClick={() => navigate("/worker-dashboard")}>📊 Dashboard</li>
+            <li onClick={() => navigate("/findwork")}>🔎 Find Work</li>
+            <li onClick={() => navigate("/worker-applications")}>📄 My Applications</li>
+          </>
+        )}
+
+        {/* ===== LOGOUT (sabke liye common) ===== */}
         <li className="logout-btn" onClick={handleLogout}>
           🚪 Logout
         </li>
@@ -67,4 +60,5 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
 
