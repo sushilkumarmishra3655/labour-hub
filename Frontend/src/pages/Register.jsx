@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Auth.css";
-import { useNavigate } from "react-router-dom";
+import { User, Phone, Lock, Key } from "lucide-react";
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -9,41 +9,22 @@ const Register = () => {
     phone: "",
     role: "",
     password: "",
-    adminKey: ""   // 🔐 NEW
+    adminKey: "",
   });
 
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-
-  // 🔐 SECRET ADMIN KEY
   const ADMIN_SECRET = "ADMIN@123";
 
   const validate = () => {
     const e = {};
+    if (!form.name) e.name = "Name required";
+    if (!/^[0-9]{10}$/.test(form.phone)) e.phone = "Valid phone required";
+    if (!form.role) e.role = "Select role";
+    if (form.password.length < 6) e.password = "Min 6 char password";
 
-    if (!form.name) e.name = "Name is required";
-
-    if (!form.phone) {
-      e.phone = "Phone number is required";
-    } else if (!/^[0-9]{10}$/.test(form.phone)) {
-      e.phone = "Enter valid 10 digit phone number";
-    }
-
-    if (!form.role) e.role = "Please select a role";
-
-    if (!form.password) {
-      e.password = "Password is required";
-    } else if (form.password.length < 6) {
-      e.password = "Minimum 6 characters required";
-    }
-
-    // 🔥 ADMIN KEY VALIDATION
     if (form.role === "admin") {
-      if (!form.adminKey) {
-        e.adminKey = "Admin key is required";
-      } else if (form.adminKey !== ADMIN_SECRET) {
-        e.adminKey = "Invalid admin key";
-      }
+      if (form.adminKey !== ADMIN_SECRET) e.adminKey = "Invalid admin key";
     }
 
     setErrors(e);
@@ -54,20 +35,15 @@ const Register = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    // 🔐 extra safety
-    if (form.role === "admin" && form.adminKey !== ADMIN_SECRET) {
-      alert("Invalid admin key");
-      return;
-    }
-
-    const userData = {
-      id: Date.now(),
-      name: form.name,
-      phone: form.phone,
-      role: form.role,
-    };
-
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: Date.now(),
+        name: form.name,
+        phone: form.phone,
+        role: form.role,
+      })
+    );
 
     alert("Registration successful");
     navigate("/login");
@@ -77,32 +53,38 @@ const Register = () => {
     <div className="auth-page">
       <div className="auth-card large">
         <h2>Create Account</h2>
-        <p className="auth-subtitle">
-          Join Labour Hub and get started
-        </p>
+        <p className="auth-subtitle">Join Labour Hub</p>
 
         <form onSubmit={handleSubmit}>
           {/* NAME */}
           <div className="form-group">
-            <label>Full Name</label>
-            <input
-              type="text"
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
-            />
+            <label>Name</label>
+            <div className="input-box">
+              <User className="input-icon" size={18} />
+              <input
+                type="text"
+                placeholder="Enter full name"
+                onChange={(e) =>
+                  setForm({ ...form, name: e.target.value })
+                }
+              />
+            </div>
             {errors.name && <small>{errors.name}</small>}
           </div>
 
           {/* PHONE */}
           <div className="form-group">
-            <label>Phone Number</label>
-            <input
-              type="text"
-              onChange={(e) =>
-                setForm({ ...form, phone: e.target.value })
-              }
-            />
+            <label>Phone</label>
+            <div className="input-box">
+              <Phone className="input-icon" size={18} />
+              <input
+                type="text"
+                placeholder="Enter phone number"
+                onChange={(e) =>
+                  setForm({ ...form, phone: e.target.value })
+                }
+              />
+            </div>
             {errors.phone && <small>{errors.phone}</small>}
           </div>
 
@@ -117,22 +99,25 @@ const Register = () => {
               <option value="">Choose role</option>
               <option value="worker">Worker</option>
               <option value="employer">Employer</option>
-              <option value="admin">Admin</option> {/* 🔥 added */}
+              <option value="admin">Admin</option>
             </select>
             {errors.role && <small>{errors.role}</small>}
           </div>
 
-          {/* 🔐 ADMIN KEY FIELD */}
+          {/* ADMIN KEY */}
           {form.role === "admin" && (
             <div className="form-group">
-              <label>Admin Secret Key</label>
-              <input
-                type="password"
-                placeholder="Enter admin key"
-                onChange={(e) =>
-                  setForm({ ...form, adminKey: e.target.value })
-                }
-              />
+              <label>Admin Key</label>
+              <div className="input-box">
+                <Key className="input-icon" size={18} />
+                <input
+                  type="password"
+                  placeholder="Enter admin key"
+                  onChange={(e) =>
+                    setForm({ ...form, adminKey: e.target.value })
+                  }
+                />
+              </div>
               {errors.adminKey && <small>{errors.adminKey}</small>}
             </div>
           )}
@@ -140,23 +125,24 @@ const Register = () => {
           {/* PASSWORD */}
           <div className="form-group">
             <label>Password</label>
-            <input
-              type="password"
-              onChange={(e) =>
-                setForm({ ...form, password: e.target.value })
-              }
-            />
+            <div className="input-box">
+              <Lock className="input-icon" size={18} />
+              <input
+                type="password"
+                placeholder="Enter password"
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+              />
+            </div>
             {errors.password && <small>{errors.password}</small>}
           </div>
 
-          <button type="submit" className="auth-btn">
-            Create Account
-          </button>
+          <button className="auth-btn">Create Account</button>
         </form>
 
         <p className="auth-switch">
-          Already have an account?{" "}
-          <Link to="/login">Login</Link>
+          Already have an account? <Link to="/login">Login</Link>
         </p>
       </div>
     </div>

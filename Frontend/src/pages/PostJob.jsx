@@ -1,122 +1,195 @@
 import React, { useState, useContext } from "react";
 import { JobContext } from "../context/JobContext";
+import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import {
+  Briefcase,
+  MapPin,
+  IndianRupee,
+  Building2,
+  Mail,
+  FileText
+} from "lucide-react";
 import "./PostJob.css";
 
 const PostJob = () => {
-    const { addJob } = useContext(JobContext);
-    const navigate = useNavigate();
-    const user = JSON.parse(localStorage.getItem("user"));
+  const { addJob } = useContext(JobContext);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-    const [form, setForm] = useState({
-        title: "",
-        location: "",
-        wage: "",
-        jobType: "Daily",
-    });
+  const [form, setForm] = useState({
+    title: "",
+    company: "",
+    email: "",
+    location: "",
+    wage: "",
+    jobType: "Daily",
+    description: "",
+  });
 
-    // ✅ SUCCESS MESSAGE STATE
-    const [success, setSuccess] = useState("");
+  const [success, setSuccess] = useState("");
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+  // 🔥 handle change common
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-        if (!form.title || !form.location || !form.wage) {
-            alert("Please fill all fields");
-            return;
-        }
+  // 🔥 submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-        addJob({
-            id: Date.now(),
-            employerId: user?.id,   // 👈 important
-            ...form,
-        });
-        // ✅ Success message
-        setSuccess("🎉 Job posted successfully!");
+    if (!user || !user.isLoggedIn) {
+      alert("Please login as employer first");
+      navigate("/login", { state: { from: window.location.pathname } });
+      return;
+    }
 
-        // ✅ Form reset
-        setForm({
-            title: "",
-            location: "",
-            wage: "",
-            jobType: "Daily",
-        });
+    if (user.role !== "employer") {
+      alert("Only employers can post jobs");
+      navigate("/FindWork");
+      return;
+    }
 
-        // ✅ Message thodi der baad hide ho jaye (optional)
-        setTimeout(() => {
-            setSuccess("");
-        }, 3000);
+    if (!form.title || !form.location || !form.wage || !form.company || !form.email) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    const newJob = {
+      id: Date.now(),
+      ...form,
+
+      // 🔥 CRITICAL DATA
+      employerId: user.id,                      // for dashboard filtering
+      employerName: user.name || "Employer",   // safe fallback
+      contact: user.phone || form.email,       // safe fallback
+
+      createdAt: Date.now(),
     };
 
+    addJob(newJob);
 
-    return (
-        <div className="post-wrapper">
-            <div className="post-card">
-                <h2>Post a Job</h2>
+    setSuccess("🎉 Job posted successfully!");
 
-                {/* ✅ SUCCESS MESSAGE YAHAN DIKHEGA */}
-                {success && (
-                    <p
-                        style={{
-                            background: "#d4edda",
-                            color: "#155724",
-                            padding: "10px",
-                            borderRadius: "8px",
-                            textAlign: "center",
-                            marginBottom: "15px",
-                        }}
-                    >
-                        {success}
-                    </p>
-                )}
+    setForm({
+      title: "",
+      company: "",
+      email: "",
+      location: "",
+      wage: "",
+      jobType: "Daily",
+      description: "",
+    });
 
-                <form onSubmit={handleSubmit}>
-                    <label>Job Title</label>
-                    <input
-                        type="text"
-                        onChange={(e) =>
-                            setForm({ ...form, title: e.target.value })
-                        }
-                    />
+    setTimeout(() => setSuccess(""), 3000);
 
-                    <label>Location</label>
-                    <input
-                        type="text"
-                        onChange={(e) =>
-                            setForm({ ...form, location: e.target.value })
-                        }
-                    />
+    // optional redirect
+    setTimeout(() => navigate("/employer-dashboard"), 800);
+  };
 
-                    <label>Daily Wage (₹)</label>
-                    <input
-                        type="number"
-                        onChange={(e) =>
-                            setForm({ ...form, wage: e.target.value })
-                        }
-                    />
+  return (
+    <div className="post-wrapper">
+      <div className="post-card">
+        <h2>Post a Job</h2>
 
-                    <label>Job Type</label>
-                    <select
-                        onChange={(e) =>
-                            setForm({ ...form, jobType: e.target.value })
-                        }
-                    >
-                        <option>Daily</option>
-                        <option>Contract</option>
-                    </select>
+        {/* SUCCESS MESSAGE */}
+        {success && <div className="success-box">{success}</div>}
 
-                    <button type="submit">Post Job</button>
-                    <button
-                        type="button"
-                        className="view-jobs-btn"
-                        onClick={() => navigate("/FindWork")}
-                    >
-                        View Jobs
-                    </button>
-                </form>
-            </div>
-        </div>
-    );
+        <form onSubmit={handleSubmit}>
+
+          <div className="input-group">
+            <Briefcase size={18} />
+            <input
+              type="text"
+              name="title"
+              placeholder="Job Title (e.g. Mason, Electrician)"
+              value={form.title}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="input-group">
+            <Building2 size={18} />
+            <input
+              type="text"
+              name="company"
+              placeholder="Company Name"
+              value={form.company}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="input-group">
+            <Mail size={18} />
+            <input
+              type="email"
+              name="email"
+              placeholder="Company Email"
+              value={form.email}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="input-group">
+            <MapPin size={18} />
+            <input
+              type="text"
+              name="location"
+              placeholder="Location (City or Area)"
+              value={form.location}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="input-group">
+            <IndianRupee size={18} />
+            <input
+              type="number"
+              name="wage"
+              placeholder="Daily Wage (₹)"
+              value={form.wage}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="input-group">
+            <FileText size={18} />
+            <textarea
+              name="description"
+              placeholder="Job Description (optional)"
+              value={form.description}
+              onChange={handleChange}
+            />
+          </div>
+
+          <select
+            className="select-box"
+            name="jobType"
+            value={form.jobType}
+            onChange={handleChange}
+          >
+            <option value="Daily">Daily</option>
+            <option value="Contract">Contract</option>
+          </select>
+
+          <div className="btnn">
+            <button type="submit" className="primary-btn">
+              Post Job
+            </button>
+
+            <button
+              type="button"
+              className="secondary-btn"
+              onClick={() => navigate("/FindWork")}
+            >
+              View Jobs
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default PostJob;

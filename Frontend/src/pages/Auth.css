@@ -1,40 +1,56 @@
+/* ===============================
+   AUTH PAGE BACKGROUND
+================================ */
 .auth-page {
   min-height: 100vh;
-  /* background: linear-gradient(
-      rgba(0, 0, 0, 0.6),
-      rgba(0, 0, 0, 0.6)
-    ),
-    url("../assets/Worker.jpeg"); */
-    background-image: url("../assets/Worker.jpeg");;
+  background-image: url("../assets/Worker.jpeg");
   background-size: cover;
   background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: "Poppins", sans-serif;
 }
 
+/* ===============================
+   CARD (WHITE CLEAN)
+================================ */
 .auth-card {
-  background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+  width: 420px;
   padding: 36px;
+  border-radius: 18px;
+
+  background: #ffffff;
+  color: #1e293b;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e2e8f0;
 }
 
 .auth-card.large {
-  width: 420px;
+  width: 440px;
 }
 
+/* ===============================
+   HEADINGS
+================================ */
 .auth-card h2 {
   text-align: center;
   margin-bottom: 6px;
+  font-size: 26px;
+  color: #0f172a;
 }
 
 .auth-subtitle {
   text-align: center;
-  color: #666;
+  color: #64748b;
   margin-bottom: 28px;
+  font-size: 14px;
 }
 
+/* ===============================
+   FORM
+================================ */
 .form-group {
   margin-bottom: 18px;
 }
@@ -42,74 +58,150 @@
 .form-group label {
   display: block;
   margin-bottom: 6px;
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 500;
+  color: #334155;
+  font-size: 14px;
 }
 
+/* inputs */
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 12px;
+  padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 15px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  background: #f8fafc;
+  color: #0f172a;
+  outline: none;
+  transition: 0.25s ease;
 }
 
+/* placeholder */
+.form-group input::placeholder {
+  color: #94a3b8;
+}
+
+/* focus glow */
+.form-group input:focus,
+.form-group select:focus {
+  border: 1px #d2d7dd;
+  box-shadow: 0 0 0 1px #1E656D;;
+}
+
+/* error text */
 .form-group small {
-  color: red;
-  font-size: 12px;
+  color: #ef4444;
+  font-size: 11px;
   margin-top: 4px;
   display: block;
 }
 
+/* ===============================
+   BUTTON
+================================ */
 .auth-btn {
   width: 100%;
-  padding: 12px;
-  background: #1e656d;
-  color: white;
-  border: none;
-  border-radius: 30px;
+  padding: 13px;
+  border-radius: 12px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
+  border: none;
   cursor: pointer;
-  margin-top: 10px;
+
+  background: linear-gradient(45deg, #22c55e, #3b82f6);
+  color: white;
+
+  /* 👇 softer premium shadow */
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+
+  transition: 0.3s ease;
 }
 
 .auth-btn:hover {
-  background: #155157;
+  transform: translateY(-3px) scale(1.02);
 }
 
+/* ===============================
+   SWITCH TEXT
+================================ */
 .auth-switch {
   text-align: center;
   margin-top: 20px;
-  font-size: 14px;
+  font-size: 13px;
+  color: #475569;
 }
 
 .auth-switch a {
-  color: #1e656d;
+  color: #22c55e;
   font-weight: 600;
   text-decoration: none;
 }
 
-/* 🔘 ROLE RADIO GROUP */
+/* ===============================
+   ROLE RADIO (MODERN)
+================================ */
 .role-radio-clean {
   display: flex;
-  justify-content: center;
-  gap: 30px;
+  justify-content: space-between;
+  gap: 10px;
   margin-top: 8px;
 }
 
 .radio-clean {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px;
-  font-size: 18px;
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
   cursor: pointer;
-  color: #007bff;
+
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 14px;
+
+  transition: 0.25s ease;
 }
 
-.radio-clean input[type="radio"] {
-  margin: 0;
-  accent-color: #007bff;
-  transform: scale(1.1);
+.radio-clean input {
+  display: none;
+}
+
+.radio-clean:hover {
+  background: #e2e8f0;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0 12px;
+}
+
+.input-icon {
+  color: #64748b;
+  margin-right: 8px;
+}
+
+.input-box input {
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 500px) {
+  .auth-card {
+    width: 90%;
+    padding: 28px;
+  }
+
+  .auth-card h2 {
+    font-size: 22px;
+  }
 }

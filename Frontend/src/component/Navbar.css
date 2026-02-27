@@ -19,16 +19,6 @@ body {
   z-index: 1000;
 }
 
-/* Logo */
-.logos img {
-  margin-top: 3px;
-  margin-left: 30px;
-  height: 70px;
-  width: 250px;
-  border-radius: 20px; 
-  box-shadow: 0 0 20px black;
-}
-
 /* Links list */
 .nav-links {
   list-style: none;

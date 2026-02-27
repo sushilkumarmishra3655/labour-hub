@@ -1,47 +1,83 @@
 .about-page {
-  background: #f5f7fa;
+  background: linear-gradient(to right, #eef2f3, #f9fbfc);
   padding: 80px 20px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .about-container {
-  max-width: 1100px;
+  max-width: 1150px;
   margin: auto;
 }
 
-.about-header {
+/* Header */
+.about-hero {
   text-align: center;
   margin-bottom: 60px;
 }
 
-.about-header h1 {
-  font-size: 42px;
-  color: #0f4c5c;
+.hero-badge {
+  display: inline-block;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 15px;
 }
 
-.about-header p {
-  color: #666;
-  margin-top: 10px;
-  font-size: 17px;
+.about-hero h1 {
+  font-size: clamp(32px, 5vw, 48px);
+  color: var(--dark);
+  font-weight: 800;
+  margin-bottom: 15px;
 }
 
-/* Cards */
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Grid Cards */
 .about-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: 30px;
   margin-bottom: 70px;
 }
 
 .about-card {
-  background: white;
   padding: 30px;
-  border-radius: 14px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  transition: 0.3s ease;
+  text-align: center;
 }
 
-.about-card h3 {
-  color: #e91e63;
-  margin-bottom: 12px;
+.glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.about-card:hover {
+  transform: translateY(-8px);
+}
+
+.about-icon {
+  color: #00a896;
+  margin-bottom: 15px;
+  transition: 0.3s ease;
+}
+
+.about-card:hover .about-icon {
+  transform: scale(1.15);
+  color: #0f4c5c;
+}
+.about-card .about-h3 {
+  margin-bottom: 10px;
+  color: #0f4c5c;
 }
 
 .about-card p {
@@ -54,27 +90,142 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
+  margin-bottom: 70px;
 }
 
 .mission-card {
-  background: #0f4c5c;
+  padding: 40px;
+  border-radius: 18px;
   color: white;
-  padding: 35px;
-  border-radius: 16px;
 }
 
-.mission-card h3 {
-  margin-bottom: 10px;
+.gradient {
+  background: linear-gradient(135deg, #0f4c5c, #00a896);
+}
+
+/* Stats */
+.about-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 80px;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 200px;
+  text-align: center;
+  padding: 25px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.stat-box h2 {
+  color: #00a896;
+  font-size: 32px;
+}
+
+.stat-box p {
+  color: #555;
+}
+
+/* CTA */
+.about-cta {
+  text-align: center;
+  padding: 50px;
+  border-radius: 20px;
+  background: linear-gradient(to right, #0f4c5c, #00a896);
+  color: white;
+}
+
+.about-cta h2 {
+  font-size: 32px;
+}
+
+.about-cta p {
+  margin: 10px 0 25px;
+}
+
+/* Buttons */
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+/* Base Button */
+.btn {
+  padding: 16px 32px;
+  border-radius: 14px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: hidden;
+  min-width: 180px;
+}
+
+/* Main Text */
+.btn-main {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* Sub Text */
+.btn-sub {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 3px;
+}
+
+/* PRIMARY BUTTON (Find Work) */
+.primary {
+  background: white;
+  color: #0f4c5c;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* SECONDARY BUTTON (Post Job) */
+.secondary {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+}
+
+/* HOVER EFFECT */
+.btn:hover {
+  transform: translateY(-5px) scale(1.05);
+}
+
+/* glow effect */
+.primary:hover {
+  box-shadow: 0 15px 40px rgba(255,255,255,0.4);
+}
+
+.secondary:hover {
+  box-shadow: 0 15px 40px rgba(0, 168, 150, 0.5);
+}
+
+/* click effect */
+.btn:active {
+  transform: scale(0.96);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .about-stats {
-    flex-direction: column;
-    gap: 25px;
-  }
-
   .about-mission {
     grid-template-columns: 1fr;
+  }
+
+  .about-header h1 {
+    font-size: 32px;
   }
 }

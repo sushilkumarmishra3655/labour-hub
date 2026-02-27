@@ -8,9 +8,20 @@ const ApplicationProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const addApplication = (application) => {
-    setApplications((prev) => [...prev, application]);
-  };
+ const addApplication = (application) => {
+  const exists = applications.some(
+    (app) =>
+      app.jobId === application.jobId &&
+      app.workerId === application.workerId
+  );
+
+  if (exists) {
+    alert("You already applied for this job");
+    return;
+  }
+
+  setApplications((prev) => [...prev, application]);
+};
 
   const updateStatus = (id, status) => {
     setApplications((prev) =>

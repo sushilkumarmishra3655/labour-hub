@@ -3,49 +3,47 @@ import { ApplicationContext } from "../context/ApplicationContext";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { CheckCircle, XCircle, RotateCcw } from "lucide-react";
 
 const EmployerDashboard = () => {
   const { applications, updateStatus } = useContext(ApplicationContext);
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  let receivedApplications = [];
-
-  if (user?.role === "admin") {
-    receivedApplications = applications;
-  } else {
-    receivedApplications = applications.filter(
-      (app) => app.employerId === user?.id
-    );
+  // 🔐 protect route
+  if (!user || !user.isLoggedIn) {
+    navigate("/login");
+    return null;
   }
+
+  // 🔥 correct filtering
+  const receivedApplications =
+    user.role === "admin"
+      ? applications
+      : applications.filter(
+          (app) =>
+            app.employerId &&
+            app.employerId.toString() === user.id.toString()
+        );
 
   const [filter, setFilter] = useState("All");
 
-  const pending = receivedApplications.filter(
-    (app) => app.status === "Pending"
-  ).length;
-
-  const accepted = receivedApplications.filter(
+  // 📊 hired count
+  const hiredCount = receivedApplications.filter(
     (app) => app.status === "Accepted"
   ).length;
 
-  const rejected = receivedApplications.filter(
-    (app) => app.status === "Rejected"
-  ).length;
-
+  // 🔍 filtering + safe sorting
   const filteredApplications =
     (filter === "All"
       ? receivedApplications
       : receivedApplications.filter((app) => app.status === filter)
-    ).sort((a, b) => b.id - a.id);
-
-  const navigate = useNavigate();
-  const { logout } = useContext(AuthContext);
+    ).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
   const handleLogout = () => {
     logout();
     navigate("/", { replace: true });
   };
-
 
   return (
     <div className="dashboard-page">
@@ -53,36 +51,25 @@ const EmployerDashboard = () => {
       {/* HEADER */}
       <div className="dashboard-header">
         <h1 className="dashboard-title">Employer Dashboard</h1>
-
         <button className="logout-btn" onClick={handleLogout}>
-          🚪 Logout
+          Logout
         </button>
       </div>
 
-      {/* Stats Section */}
+      {/* STATS */}
       <div className="dashboard-stats">
         <div className="stat-card">
           <h3>{receivedApplications.length}</h3>
           <p>Total Applications</p>
         </div>
 
-        <div className="stat-card pending">
-          <h3>{pending}</h3>
-          <p>Pending</p>
-        </div>
-
         <div className="stat-card accepted">
-          <h3>{accepted}</h3>
-          <p>Accepted</p>
-        </div>
-
-        <div className="stat-card rejected">
-          <h3>{rejected}</h3>
-          <p>Rejected</p>
+          <h3>{hiredCount}</h3>
+          <p>Total Hired</p>
         </div>
       </div>
 
-      {/* Filter Tabs */}
+      {/* FILTER TABS */}
       <div className="filter-tabs">
         {["All", "Pending", "Accepted", "Rejected"].map((type) => (
           <button
@@ -95,29 +82,31 @@ const EmployerDashboard = () => {
         ))}
       </div>
 
-      {/* Applications Grid */}
+      {/* APPLICATION LIST */}
       <div className="dashboard-list">
         {filteredApplications.length === 0 ? (
-          <p>No applications yet</p>
+          <p className="empty-msg">No applications yet</p>
         ) : (
           filteredApplications.map((app) => (
             <div className="dashboard-card" key={app.id}>
-              <h3>{app.jobTitle}</h3>
-              <p>👷 {app.workerName}</p>
-              <p>📞 {app.workerPhone}</p>
+              
+              <h3>{app.jobTitle || "Job Title"}</h3>
+              <p>Job ID: {app.jobId}</p>
+
+              <p>👷 {app.workerName || "Worker"}</p>
+              <p>📞 {app.workerPhone || "No phone"}</p>
 
               <span className={`status ${app.status.toLowerCase()}`}>
                 {app.status}
               </span>
 
               <div className="action-buttons">
-
                 {app.status !== "Accepted" && (
                   <button
                     className="accept-btn"
                     onClick={() => updateStatus(app.id, "Accepted")}
                   >
-                    Accept
+                    <CheckCircle size={16}/> Accept
                   </button>
                 )}
 
@@ -126,7 +115,7 @@ const EmployerDashboard = () => {
                     className="reject-btn"
                     onClick={() => updateStatus(app.id, "Rejected")}
                   >
-                    Reject
+                    <XCircle size={16}/> Reject
                   </button>
                 )}
 
@@ -135,10 +124,9 @@ const EmployerDashboard = () => {
                     className="reset-btn"
                     onClick={() => updateStatus(app.id, "Pending")}
                   >
-                    Set Pending
+                    <RotateCcw size={16}/> Reset
                   </button>
                 )}
-
               </div>
 
             </div>

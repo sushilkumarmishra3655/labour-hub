@@ -1,0 +1,70 @@
+/* ===== LOGO CONTAINER ===== */
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-container:hover {
+  transform: translateY(-2px);
+}
+
+/* ICON */
+.logo-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.logo-container:hover .logo-icon {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.7));
+}
+
+/* TEXT WRAPPER */
+.logo-text-wrap {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+/* MAIN TITLE */
+.logo-title {
+  font-family: "Poppins", sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  margin: 0;
+}
+
+/* Labour text */
+.logo-labour {
+  color: #ffffff;
+}
+
+/* Hub gradient */
+.logo-hub {
+  background: linear-gradient(90deg, #0ea5e9, #22c55e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+
+/* text glow (Hub gradient text) */
+.logo-container:hover .logo-hub {
+  text-shadow: 
+    0 0 8px rgba(14, 165, 233, 0.7),
+    0 0 14px rgba(34, 197, 94, 0.6);
+}
+
+/* tagline */
+.logo-tag {
+  font-size: 13px;
+  color: #d1d5db;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+
+

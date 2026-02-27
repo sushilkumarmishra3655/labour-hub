@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
-import logo from "../assets/logo.jpeg";
+import Logo from "./Logo";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
@@ -44,7 +44,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="logos">
-        <img src={logo} alt="Labour Hub Logo" />
+        <Logo />
       </div>
 
       <ul className="nav-links">
@@ -111,7 +111,11 @@ const Navbar = () => {
         {/* JOIN US BUTTON (only when NOT logged in) */}
         {!user.isLoggedIn && (
           <li>
-            <Link to="/login" className="login-btn">
+            <Link
+              to="/login"
+              state={{ from: window.location.pathname }}
+              className="login-btn"
+            >
               <span className="top-text">JOIN US</span>
               <span className="bottom-text">Click to Sign Up</span>
             </Link>
