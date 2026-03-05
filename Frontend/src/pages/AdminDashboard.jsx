@@ -1,141 +1,165 @@
-import { useContext, useState } from "react";
+import { useContext, useMemo } from "react";
 import { ApplicationContext } from "../context/ApplicationContext";
 import { JobContext } from "../context/JobContext";
-import "../layout/DashboardLayout.css";
-import { Search, Trash2 } from "lucide-react";
+import {
+  Trash2,
+  ShieldCheck,
+  Database,
+  TrendingUp,
+  Briefcase,
+  Users
+} from "lucide-react";
+import DashboardLayout from "../Layout/DashboardLayout";
+import "./Dashboard.css";
 
 const AdminDashboard = () => {
-  const { applications, deleteApplication } = useContext(ApplicationContext);
+  const { applications } = useContext(ApplicationContext);
   const { jobs, deleteJob } = useContext(JobContext);
 
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  /* ================= CALCULATIONS ================= */
 
-  if (!applications || !jobs) return null;
+  const revenue = useMemo(() => {
+    return applications
+      .filter(a => a.status === "Accepted")
+      .reduce((sum, a) => sum + (Number(a.wage) || 0) * 0.10, 0);
+  }, [applications]);
 
-  // ===== STATS =====
-  const totalApplications = applications.length;
-  const totalJobs = jobs.length;
+  const acceptedApps = applications.filter(a => a.status === "Accepted");
 
-  const accepted = applications.filter(app => app.status === "Accepted").length;
-  const rejected = applications.filter(app => app.status === "Rejected").length;
-  const pending = applications.filter(app => app.status === "Pending").length;
-
-  // ===== FILTER APPLICATIONS =====
-  const filteredApplications = applications
-    .filter(app =>
-      app.workerName?.toLowerCase().includes(search.toLowerCase())
-    )
-    .filter(app =>
-      statusFilter === "All" ? true : app.status === statusFilter
-    )
-    .sort((a, b) => b.createdAt - a.createdAt)
-    .slice(0, 5);
-
-  // ===== FILTER JOBS =====
-  const filteredJobs = jobs
-    .filter(job =>
-      job.title?.toLowerCase().includes(search.toLowerCase())
-    )
-    .sort((a, b) => b.createdAt - a.createdAt);
+  /* ================= UI ================= */
 
   return (
-    <div className="dashboard-page">
-      <h1 className="dashboard-title">Admin Dashboard</h1>
+    <DashboardLayout>
+      <div className="dashboard-page">
 
-      {/* ===== STATS ===== */}
-      <div className="dashboard-stats">
-        <div className="stat-card"><h3>{totalJobs}</h3><p>Total Jobs</p></div>
-        <div className="stat-card"><h3>{totalApplications}</h3><p>Total Applications</p></div>
-        <div className="stat-card accepted"><h3>{accepted}</h3><p>Accepted</p></div>
-        <div className="stat-card rejected"><h3>{rejected}</h3><p>Rejected</p></div>
-        <div className="stat-card pending"><h3>{pending}</h3><p>Pending</p></div>
-      </div>
-
-      {/* ===== SEARCH + FILTER ===== */}
-      <div className="dashboard-controls">
-        <div className="search-box">
-          <Search size={18} />
-          <input
-            type="text"
-            placeholder="Search worker or job..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        {/* ===== HEADER ===== */}
+        <div className="dashboard-header">
+          <div>
+            <h1 className="dashboard-title">
+              Admin Control Center 🛡️
+            </h1>
+            <p className="dashboard-subtitle">
+              Monitor platform activity and manage system operations.
+            </p>
+          </div>
         </div>
 
-        <select
-          className="status-dropdown"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option>All</option>
-          <option>Pending</option>
-          <option>Accepted</option>
-          <option>Rejected</option>
-        </select>
-      </div>
+        {/* ===== STATS ===== */}
+        <div className="stats-grid">
 
-      {/* ===== APPLICATIONS ===== */}
-      <h2>Recent Applications</h2>
-
-      <div className="dashboard-list">
-        {filteredApplications.length === 0 ? (
-          <p className="empty-msg">No matching applications</p>
-        ) : (
-          filteredApplications.map((app) => (
-            <div className="dashboard-card" key={app.id}>
-              <h3>{app.jobTitle}</h3>
-              <p>👷 {app.workerName}</p>
-              <p>🏢 Employer: {app.employerName || "N/A"}</p>
-
-              <span className={`status ${app.status.toLowerCase()}`}>
-                {app.status}
-              </span>
-
-              <button
-                className="delete-btn"
-                onClick={() => {
-                  if (window.confirm("Delete this application?")) {
-                    deleteApplication(app.id);
-                  }
-                }}
-              >
-                <Trash2 size={16}/> Delete
-              </button>
+          <div className="stat-card">
+            <TrendingUp size={20}/>
+            <div>
+              <h3 className="Stats-card-h3">₹{revenue.toFixed(0)}</h3>
+              <p>Estimated Revenue (10%)</p>
             </div>
-          ))
-        )}
-      </div>
+          </div>
 
-      {/* ===== JOBS ===== */}
-      <h2 style={{ marginTop: "40px" }}>All Jobs</h2>
-
-      <div className="dashboard-list">
-        {filteredJobs.length === 0 ? (
-          <p className="empty-msg">No jobs available</p>
-        ) : (
-          filteredJobs.map((job) => (
-            <div className="dashboard-card" key={job.id}>
-              <h3>{job.title}</h3>
-              <p>📍 {job.location}</p>
-              <p>💰 ₹{job.wage}</p>
-
-              <button
-                className="delete-btn"
-                onClick={() => {
-                  if (window.confirm("Delete this job?")) {
-                    deleteJob(job.id);
-                  }
-                }}
-              >
-                <Trash2 size={16}/> Delete
-              </button>
+          <div className="stat-card">
+            <Briefcase size={20}/>
+            <div>
+              <h3 className="Stats-card-h3">{jobs.length}</h3>
+              <p>Total Jobs</p>
             </div>
-          ))
-        )}
+          </div>
+
+          <div className="stat-card success">
+            <Users size={20}/>
+            <div>
+              <h3 className="Stats-card-h3">{applications.length}</h3>
+              <p>Total Applications</p>
+            </div>
+          </div>
+
+          <div className="stat-card warning">
+            <ShieldCheck size={20}/>
+            <div>
+              <h3 className="Stats-card-h3">{acceptedApps.length}</h3>
+              <p>Total Hired</p>
+            </div>
+          </div>
+
+        </div>
+
+        {/* ===== CONTENT ===== */}
+        <div className="dashboard-content">
+
+          {/* ===== LEFT: JOB MODERATION ===== */}
+          <section>
+            <h2 className="section-title">
+              <Database size={18}/> All Job Postings
+            </h2>
+
+            {jobs.length === 0 && (
+              <div className="empty-state">
+                No jobs available.
+              </div>
+            )}
+
+            {jobs.length > 0 && (
+              <div className="dashboard-card table-card">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Job Title</th>
+                      <th>Employer</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {jobs.map(job => (
+                      <tr key={job.id}>
+                        <td>{job.title}</td>
+                        <td>
+                          {job.employerName || `ID: ${job.employerId}`}
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-danger btn-small"
+                            onClick={() => deleteJob(job.id)}
+                          >
+                            <Trash2 size={14}/>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+
+          {/* ===== RIGHT: PLATFORM HEALTH ===== */}
+          <section>
+            <h2 className="section-title">
+              <ShieldCheck size={18}/> Platform Health
+            </h2>
+
+            <div className="dashboard-card">
+
+              <h4>Quick Actions</h4>
+
+              <div className="admin-actions">
+                <button className="btn btn-outline">
+                  Verify New Users
+                </button>
+
+                <button className="btn btn-outline">
+                  Resolve Disputes
+                </button>
+
+                <button className="btn btn-danger">
+                  System Maintenance
+                </button>
+              </div>
+
+            </div>
+          </section>
+
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

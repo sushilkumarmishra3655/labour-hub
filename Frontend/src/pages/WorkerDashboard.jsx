@@ -1,83 +1,172 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useMemo } from "react";
 import { ApplicationContext } from "../context/ApplicationContext";
-import "./Dashboard.css";
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  Eye,
+  IndianRupee,
+  Clock,
+  CheckCircle,
+  XCircle
+} from "lucide-react";
+import DashboardLayout from "../Layout/DashboardLayout";
+import "./Dashboard.css";
 
 const WorkerDashboard = () => {
   const { applications } = useContext(ApplicationContext);
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [filter, setFilter] = useState("All");
 
   if (!user) return null;
 
-  const myApplications =
-    user.role === "admin"
-      ? applications
-      : applications.filter(
-          (app) => app.workerId?.toString() === user.id?.toString()
-        );
+  /* ================= FILTER APPLICATIONS ================= */
 
-  const [filter, setFilter] = useState("All");
+  const myApps = useMemo(() => {
+    return applications.filter(
+      (app) => app.workerId?.toString() === user.id?.toString()
+    );
+  }, [applications, user.id]);
 
-  const filteredApplications =
-    (filter === "All"
-      ? myApplications
-      : myApplications.filter((app) => app.status === filter)
-    ).sort((a, b) => b.createdAt - a.createdAt);
+  const earnings = useMemo(() => {
+    return myApps
+      .filter((a) => a.status === "Accepted")
+      .reduce((sum, a) => sum + (Number(a.wage) || 0), 0);
+  }, [myApps]);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/", { replace: true });
-  };
+  const filteredApps =
+    filter === "All"
+      ? myApps
+      : myApps.filter((a) => a.status === filter);
+
+  /* ================= UI ================= */
 
   return (
-    <div className="dashboard-page">
+    <DashboardLayout>
+      <div className="dashboard-page">
 
-      <div className="dashboard-header">
-        <h1 className="dashboard-title">Worker Dashboard</h1>
-        <button className="logout-btn" onClick={handleLogout}>Logout</button>
-      </div>
+        {/* ===== HEADER ===== */}
+        <div className="dashboard-header">
+          <div>
+            <h1 className="dashboard-title">
+              Hello, {user.name} 👋
+            </h1>
+            <p className="dashboard-subtitle">
+              Manage your job applications and track your earnings.
+            </p>
+          </div>
 
-      <div className="filter-tabs">
-        {["All", "Accepted", "Rejected"].map((type) => (
           <button
-            key={type}
-            className={filter === type ? "active-tab" : ""}
-            onClick={() => setFilter(type)}
+            className="btn btn-outline"
+            onClick={() => navigate("/findwork")}
           >
-            {type}
+            Find Work
           </button>
-        ))}
-      </div>
+        </div>
 
-      <div className="dashboard-list">
-        {filteredApplications.length === 0 ? (
-          <p className="empty-msg">No applications yet</p>
-        ) : (
-          filteredApplications.map((app) => (
+        {/* ===== STATS ===== */}
+        <div className="stats-grid">
+
+          <div className="stat-card">
+            <IndianRupee size={20} />
+            <div>
+              <h3 className="Stats-card-h3">₹{earnings}</h3>
+              <p>Total Earnings</p>
+            </div>
+          </div>
+
+          <div className="stat-card success">
+            <CheckCircle size={20} />
+            <div>
+              <h3 className="Stats-card-h3">{myApps.filter(a => a.status === "Accepted").length}</h3>
+              <p>Jobs Accepted</p>
+            </div>
+          </div>
+
+          <div className="stat-card warning">
+            <Clock size={20} />
+            <div>
+              <h3 className="Stats-card-h3">{myApps.filter(a => a.status === "Pending").length}</h3>
+              <p>Pending Applications</p>
+            </div>
+          </div>
+
+          <div className="stat-card danger">
+            <XCircle size={20} />
+            <div>
+              <h3 className="Stats-card-h3">{myApps.filter(a => a.status === "Rejected").length}</h3>
+              <p>Rejected</p>
+            </div>
+          </div>
+
+        </div>
+
+        {/* ===== FILTER TABS ===== */}
+        <h2 className="section-title">
+          <Clock size={18}/> Recent Applications
+        </h2>
+
+        <div className="tabs">
+          {["All", "Pending", "Accepted", "Rejected"].map((tab) => (
+            <button
+              key={tab}
+              className={`tab ${filter === tab ? "active" : ""}`}
+              onClick={() => setFilter(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* ===== APPLICATION LIST ===== */}
+        <div className="dashboard-list">
+
+          {filteredApps.length === 0 && (
+            <div className="empty-state">
+              No applications found.
+            </div>
+          )}
+
+          {filteredApps.map((app) => (
             <div className="dashboard-card" key={app.id}>
-              <h3>{app.jobTitle}</h3>
-              <p>📍 {app.location}</p>
-              <p>💰 ₹{app.wage}</p>
-              <p>📞 Employer: {app.employerPhone || "N/A"}</p>
 
-              <span className={`status ${app.status.toLowerCase()}`}>
-                {app.status}
-              </span>
+              <div className="card-top">
+                <span
+                  className={`badge badge-${app.status.toLowerCase()}`}
+                >
+                  {app.status}
+                </span>
+
+                <span className="wage">
+                  ₹{app.wage}
+                </span>
+              </div>
+
+              <h3 className="job-title">
+                {app.jobTitle}
+              </h3>
+
+              <p className="job-meta">
+                📍 {app.location}
+              </p>
+
+              <p className="job-meta">
+                🏢 {app.employerName || "Employer"}
+              </p>
 
               <button
-                className="view-btn"
+                className="btn btn-primary"
                 onClick={() => navigate(`/job/${app.jobId}`)}
               >
-                <Eye size={16}/> View Job
+                <Eye size={16}/> View Details
               </button>
+
             </div>
-          ))
-        )}
+          ))}
+
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

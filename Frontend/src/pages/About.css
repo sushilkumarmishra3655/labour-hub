@@ -152,47 +152,49 @@
 .cta-buttons {
   display: flex;
   justify-content: center;
-  gap: 25px;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
-/* Base Button */
+/* BASE BUTTON */
 .btn {
-  padding: 16px 32px;
-  border-radius: 14px;
+  padding: 18px 32px;
+  border-radius: 12px;
   text-decoration: none;
+
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.35s ease;
-  position: relative;
-  overflow: hidden;
-  min-width: 180px;
+  justify-content: center;   /* vertical center */
+  align-items: center;       /* horizontal center */
+
+  min-width: 200px;
+  min-height: 70px;          /* important */
+
+  transition: all 0.3s ease;
 }
 
-/* Main Text */
+/* MAIN TEXT */
 .btn-main {
   font-size: 18px;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  line-height: 1.2;
 }
 
-/* Sub Text */
+/* SUB TEXT */
 .btn-sub {
-  font-size: 12px;
+  font-size: 13px;
   opacity: 0.85;
-  margin-top: 3px;
+  margin-top: 4px;
 }
 
-/* PRIMARY BUTTON (Find Work) */
+/* PRIMARY */
 .primary {
   background: white;
   color: #0f4c5c;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
-/* SECONDARY BUTTON (Post Job) */
+/* SECONDARY */
 .secondary {
   background: rgba(255,255,255,0.15);
   color: white;
@@ -200,18 +202,17 @@
   backdrop-filter: blur(10px);
 }
 
-/* HOVER EFFECT */
+/* HOVER */
 .btn:hover {
-  transform: translateY(-5px) scale(1.05);
+  transform: translateY(-4px);
 }
 
-/* glow effect */
 .primary:hover {
-  box-shadow: 0 15px 40px rgba(255,255,255,0.4);
+  box-shadow: 0 12px 35px rgba(255,255,255,0.35);
 }
 
 .secondary:hover {
-  box-shadow: 0 15px 40px rgba(0, 168, 150, 0.5);
+  box-shadow: 0 12px 35px rgba(0,168,150,0.45);
 }
 
 /* click effect */

@@ -1,139 +1,190 @@
-import { useContext, useState } from "react";
+import { useContext, useMemo } from "react";
 import { ApplicationContext } from "../context/ApplicationContext";
-import "./Dashboard.css";
-import { useNavigate } from "react-router-dom";
+import { JobContext } from "../context/JobContext";
 import { AuthContext } from "../context/AuthContext";
-import { CheckCircle, XCircle, RotateCcw } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  Plus,
+  Users,
+  Briefcase,
+  Check,
+  X,
+  Clock,
+  TrendingUp
+} from "lucide-react";
+import DashboardLayout from "../Layout/DashboardLayout";
+import "./Dashboard.css";
 
 const EmployerDashboard = () => {
   const { applications, updateStatus } = useContext(ApplicationContext);
-  const { user, logout } = useContext(AuthContext);
+  const { jobs } = useContext(JobContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // 🔐 protect route
-  if (!user || !user.isLoggedIn) {
-    navigate("/login");
-    return null;
-  }
+  if (!user) return null;
 
-  // 🔥 correct filtering
-  const receivedApplications =
-    user.role === "admin"
-      ? applications
-      : applications.filter(
-          (app) =>
-            app.employerId &&
-            app.employerId.toString() === user.id.toString()
-        );
+  /* ================= FILTER DATA ================= */
 
-  const [filter, setFilter] = useState("All");
+  const myPostedJobs = useMemo(() => {
+    if (user.role === "admin") return jobs;
 
-  // 📊 hired count
-  const hiredCount = receivedApplications.filter(
-    (app) => app.status === "Accepted"
-  ).length;
+    return jobs.filter(
+      j => j.employerId?.toString() === user.id?.toString()
+    );
+  }, [jobs, user.id, user.role]);
 
-  // 🔍 filtering + safe sorting
-  const filteredApplications =
-    (filter === "All"
-      ? receivedApplications
-      : receivedApplications.filter((app) => app.status === filter)
-    ).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  const myApps = useMemo(() => {
+    if (user.role === "admin") return applications;
 
-  const handleLogout = () => {
-    logout();
-    navigate("/", { replace: true });
-  };
+    return applications.filter(
+      app => app.employerId?.toString() === user.id?.toString()
+    );
+  }, [applications, user.id, user.role]);
+
+  const pendingApps = myApps.filter(a => a.status === "Pending");
+  const acceptedApps = myApps.filter(a => a.status === "Accepted");
+
+  /* ================= UI ================= */
 
   return (
-    <div className="dashboard-page">
+    <DashboardLayout>
+      <div className="dashboard-page">
 
-      {/* HEADER */}
-      <div className="dashboard-header">
-        <h1 className="dashboard-title">Employer Dashboard</h1>
-        <button className="logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
+        {/* ===== HEADER ===== */}
+        <div className="dashboard-header">
+          <div>
+            <h1 className="dashboard-title">
+              Employer Console 🏢
+            </h1>
+            <p className="dashboard-subtitle">
+              Manage job postings and review applications.
+            </p>
+          </div>
 
-      {/* STATS */}
-      <div className="dashboard-stats">
-        <div className="stat-card">
-          <h3>{receivedApplications.length}</h3>
-          <p>Total Applications</p>
-        </div>
-
-        <div className="stat-card accepted">
-          <h3>{hiredCount}</h3>
-          <p>Total Hired</p>
-        </div>
-      </div>
-
-      {/* FILTER TABS */}
-      <div className="filter-tabs">
-        {["All", "Pending", "Accepted", "Rejected"].map((type) => (
           <button
-            key={type}
-            className={filter === type ? "active-tab" : ""}
-            onClick={() => setFilter(type)}
+            className="btn btn-primary"
+            onClick={() => navigate("/postjob")}
           >
-            {type}
+            <Plus size={18} /> Post New Job
           </button>
-        ))}
-      </div>
+        </div>
 
-      {/* APPLICATION LIST */}
-      <div className="dashboard-list">
-        {filteredApplications.length === 0 ? (
-          <p className="empty-msg">No applications yet</p>
-        ) : (
-          filteredApplications.map((app) => (
-            <div className="dashboard-card" key={app.id}>
-              
-              <h3>{app.jobTitle || "Job Title"}</h3>
-              <p>Job ID: {app.jobId}</p>
+        {/* ===== STATS ===== */}
+        <div className="stats-grid">
 
-              <p>👷 {app.workerName || "Worker"}</p>
-              <p>📞 {app.workerPhone || "No phone"}</p>
+          <div className="stat-card">
+            <Briefcase size={20} />
+            <div>
+              <h3 className="Stats-card-h3">{myPostedJobs.length}</h3>
+              <p>Active Jobs</p>
+            </div>
+          </div>
 
-              <span className={`status ${app.status.toLowerCase()}`}>
-                {app.status}
-              </span>
+          <div className="stat-card warning">
+            <Clock size={20} />
+            <div>
+              <h3 className="Stats-card-h3">{pendingApps.length}</h3>
+              <p>New Applicants</p>
+            </div>
+          </div>
 
-              <div className="action-buttons">
-                {app.status !== "Accepted" && (
+          <div className="stat-card success">
+            <Users size={20} />
+            <div>
+              <h3 className="Stats-card-h3">{acceptedApps.length}</h3>
+              <p>Total Hired</p>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <TrendingUp size={20} />
+            <div>
+              <h3 className="Stats-card-h3">{myApps.length}</h3>
+              <p>Total Applications</p>
+            </div>
+          </div>
+
+        </div>
+
+        {/* ===== CONTENT SPLIT ===== */}
+        <div className="dashboard-content">
+
+          {/* ===== LEFT: JOB MANAGEMENT ===== */}
+          <section>
+            <h2 className="section-title">
+              <Briefcase size={18} /> Your Posted Jobs
+            </h2>
+
+            {myPostedJobs.length === 0 && (
+              <div className="empty-state">
+                No jobs posted yet.
+              </div>
+            )}
+
+            {myPostedJobs.map(job => (
+              <div className="dashboard-card job-card" key={job.id}>
+
+                <div>
+                  <h3 className="job-title">{job.title}</h3>
+                  <p className="job-meta">
+                    ₹{job.wage} • {job.location}
+                  </p>
+                </div>
+
+                <button
+                  className="btn btn-outline"
+                  onClick={() => navigate(`/job/${job.id}`)}
+                >
+                  Edit
+                </button>
+
+              </div>
+            ))}
+          </section>
+
+          {/* ===== RIGHT: APPLICANT REVIEW ===== */}
+          <section>
+            <h2 className="section-title">
+              <Users size={18} /> Pending Reviews
+            </h2>
+
+            {pendingApps.length === 0 && (
+              <div className="empty-state">
+                No new applicants.
+              </div>
+            )}
+
+            {pendingApps.map(app => (
+              <div className="dashboard-card" key={app.id}>
+
+                <h3 className="job-title">{app.workerName}</h3>
+                <p className="job-meta">
+                  Applied for: {app.jobTitle}
+                </p>
+
+                <div className="btn-group">
                   <button
-                    className="accept-btn"
+                    className="btn btn-success"
                     onClick={() => updateStatus(app.id, "Accepted")}
                   >
-                    <CheckCircle size={16}/> Accept
+                    <Check size={16} /> Hire
                   </button>
-                )}
 
-                {app.status !== "Rejected" && (
                   <button
-                    className="reject-btn"
+                    className="btn btn-danger"
                     onClick={() => updateStatus(app.id, "Rejected")}
                   >
-                    <XCircle size={16}/> Reject
+                    <X size={16} /> Reject
                   </button>
-                )}
+                </div>
 
-                {app.status !== "Pending" && (
-                  <button
-                    className="reset-btn"
-                    onClick={() => updateStatus(app.id, "Pending")}
-                  >
-                    <RotateCcw size={16}/> Reset
-                  </button>
-                )}
               </div>
+            ))}
+          </section>
 
-            </div>
-          ))
-        )}
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

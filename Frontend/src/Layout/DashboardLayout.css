@@ -1,81 +1,90 @@
 .dashboard-container {
   display: flex;
   min-height: 100vh;
+  font-family: 'Inter', sans-serif;
 }
 
+/* ===== SIDEBAR ===== */
 .sidebar {
-  width: 240px;
-  background: linear-gradient(180deg, #1E656D, #134447);
+  width: 260px;
+  background: linear-gradient(180deg, #0ea5e9 0%, #22c55e 100%);
   color: white;
-  padding: 20px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.sidebar-header {
+.logo {
   font-size: 20px;
+  font-weight: 700;
   margin-bottom: 30px;
-  font-weight: bold;
 }
 
 .sidebar-menu {
-  list-style: none;
-  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.sidebar-menu li {
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 12px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: 0.3s;
+  border-radius: 8px;
+  text-decoration: none;
+  color: white;
+  transition: 0.3s ease;
 }
 
-.sidebar-menu li:hover {
+.nav-item:hover {
   background: rgba(255,255,255,0.2);
 }
 
+.logout-btn {
+  margin-top: auto;
+  padding: 10px;
+  background: rgba(0,0,0,0.2);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== MAIN ===== */
 .dashboard-main {
   flex: 1;
-  padding: 30px;
   background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
 }
 
-.logout-btn {
-  margin-top: 30px;
-  background: #ff4d4d;
-}
-
-.logout-btn:hover {
-  background: #e60000;
-}
-
-.users-table {
-  width: 100%;
-  border-collapse: collapse;
+/* ===== TOPBAR ===== */
+.topbar {
+  height: 60px;
   background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.users-table th,
-.users-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: left;
+.page-title {
+  font-weight: 600;
 }
 
-.users-table th {
-  background: #1E656D;
-  color: white;
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-.delete-btn {
-  background: #ff4d4d;
-  border: none;
-  padding: 6px 10px;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-
-.delete-btn:hover {
-  background: #e60000;
-}
-

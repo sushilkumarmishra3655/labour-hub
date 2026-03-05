@@ -14,7 +14,7 @@ const About = () => {
           <div className="hero-badge">Since 2026</div>
           <h1>Helping India Work Better</h1>
           <p className="hero-subtitle">
-            We connect hardworking people with honest employers. 
+            We connect hardworking people with honest employers.
             <strong> Simple. Fast. Secure.</strong>
           </p>
         </header>
@@ -99,13 +99,13 @@ const About = () => {
 
           <div className="cta-buttons">
             <Link to="/FindWork" className="btn primary">
-              <span>Find Work</span>
-              <small>Apply jobs easily</small>
+              <span className="btn-main">Find Work</span>
+              <span className="btn-sub">Apply jobs easily</span>
             </Link>
 
             <Link to="/PostJob" className="btn secondary">
-              <span>Post a Job</span>
-              <small>Hire workers quickly</small>
+              <span className="btn-main">Post a Job</span>
+              <span className="btn-sub">Hire workers quickly</span>
             </Link>
           </div>
         </div>

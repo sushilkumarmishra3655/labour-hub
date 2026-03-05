@@ -15,7 +15,7 @@ const LandingSections = () => {
         <div className="container">
           <div className="text-center section-header">
             <span className="badge">Easy Process</span>
-            <h2 className="section-title">How It Works</h2>
+            <h2 className="section-title-landing">How It Works</h2>
             <p className="section-desc">
               Finding work or hiring help is now as easy as 1-2-3.
             </p>
@@ -99,14 +99,6 @@ const LandingSections = () => {
           <div className="feature-visual">
             <div className="image-stack">
               <img src="\Landing.jpeg" alt="Worker" className="main-img"/>
-
-              <div className="floating-card">
-                <Award size={22}/>
-                <div>
-                  <h5>100% Reliable</h5>
-                  <p>Top Rated Platform</p>
-                </div>
-              </div>
             </div>
           </div>
 

@@ -5,111 +5,128 @@ import Logo from "./Logo";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { user, logout } = useContext(AuthContext);   // 👈 logout add
+
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Outside click close
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
   }, []);
 
-  // Navigate + Close dropdown
-  const handleNavigate = (path) => {
-    setOpen(false);
-    navigate(path);
-  };
-
-  // 🚪 Logout handler
   const handleLogout = () => {
     logout();
     setOpen(false);
     navigate("/");
   };
 
+  const goDashboard = () => {
+
+    if (user.role === "worker") navigate("/worker-dashboard");
+    else if (user.role === "employer") navigate("/employer-dashboard");
+    else if (user.role === "admin") navigate("/admin-dashboard");
+
+    setOpen(false);
+  };
+
   return (
     <nav className="navbar">
+
       <div className="logos">
         <Logo />
       </div>
 
       <ul className="nav-links">
+
         <li><Link to="/">Home</Link></li>
         <li><Link to="/about">About</Link></li>
-        <li><Link to="/FindWork">Find Work</Link></li>
-        <li><Link to="/PostJob">Post Job</Link></li>
+
+        {/* NOT LOGGED IN → SHOW BOTH */}
+        {!user?.isLoggedIn && (
+          <>
+            <li><Link to="/FindWork">Find Work</Link></li>
+            <li><Link to="/PostJob">Post Job</Link></li>
+          </>
+        )}
+
+        {/* WORKER */}
+        {user?.isLoggedIn && user.role === "worker" && (
+          <li><Link to="/FindWork">Find Work</Link></li>
+        )}
+
+        {/* EMPLOYER */}
+        {user?.isLoggedIn && user.role === "employer" && (
+          <li><Link to="/PostJob">Post Job</Link></li>
+        )}
+
+        {/* ADMIN */}
+        {user?.isLoggedIn && user.role === "admin" && (
+          <>
+            <li><Link to="/FindWork">Find Work</Link></li>
+            <li><Link to="/PostJob">Post Job</Link></li>
+          </>
+        )}
+
         <li><Link to="/contact">Contact</Link></li>
 
-        {/* ACCOUNT */}
-        <li className="account-wrapper" ref={dropdownRef}>
-          <button
-            type="button"
-            className="account-btn"
-            onClick={() => setOpen(prev => !prev)}
-          >
-            <span>Account</span>
-            <span className={`caret ${open ? "open" : ""}`}>▾</span>
-          </button>
+        {/* PROFILE / LOGIN */}
+        {user?.isLoggedIn ? (
 
-          {open && (
-            <div className="account-dropdown">
+          <li className="profile-menu" ref={dropdownRef}>
 
-              {/* ❌ NOT LOGGED IN */}
-              {!user.isLoggedIn && (
-                <>
-                  <div onClick={() => handleNavigate("/login")}>Login</div>
-                  <div onClick={() => handleNavigate("/register")}>Register</div>
-                </>
-              )}
+            <button
+              className="profile-btn"
+              onClick={() => setOpen(!open)}
+            >
 
-              {/* 👷 WORKER */}
-              {(user.role === "worker" || user.role === "admin") && (
-                <div onClick={() => handleNavigate("/worker-dashboard")}>
-                  Worker Dashboard
+              <div className="profile-avatar-letter">
+                {user?.name?.charAt(0).toUpperCase()}
+              </div>
+
+              <span className="profile-name">
+                {user.name}
+              </span>
+
+              <span className={`caret ${open ? "open" : ""}`}>
+                ▾
+              </span>
+
+            </button>
+
+            {open && (
+
+              <div className="profile-dropdown">
+
+                <div onClick={goDashboard}>
+                  Dashboard
                 </div>
-              )}
 
-              {/* 🏢 EMPLOYER */}
-              {(user.role === "employer" || user.role === "admin") && (
-                <div onClick={() => handleNavigate("/employer-dashboard")}>
-                  Employer Dashboard
-                </div>
-              )}
-
-              {/* 👑 ADMIN */}
-              {user.role === "admin" && (
-                <div onClick={() => handleNavigate("/admin-dashboard")}>
-                  Admin Dashboard
-                </div>
-              )}
-
-              {/* 🚪 LOGOUT */}
-              {user.isLoggedIn && (
-                <div className="logout-option" onClick={handleLogout}>
+                <div
+                  className="logout-option"
+                  onClick={handleLogout}
+                >
                   Logout
                 </div>
-              )}
 
-            </div>
-          )}
-        </li>
+              </div>
 
-        {/* JOIN US BUTTON (only when NOT logged in) */}
-        {!user.isLoggedIn && (
+            )}
+
+          </li>
+
+        ) : (
+
           <li>
             <Link
               to="/login"
@@ -120,6 +137,7 @@ const Navbar = () => {
               <span className="bottom-text">Click to Sign Up</span>
             </Link>
           </li>
+
         )}
 
       </ul>

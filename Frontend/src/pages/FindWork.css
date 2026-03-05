@@ -13,7 +13,7 @@
 
 /* ===== PAGE ===== */
 .find-work-page {
-  padding: 40px 70px;
+  padding: 40px 60px;
   background: var(--bg-color);
   min-height: 100vh;
 }
@@ -95,11 +95,9 @@
 /* ===== JOB GRID ===== */
 .job-list {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);  
+  grid-template-columns: repeat(4, 1fr);
   gap: 25px;
   width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
 }
 
 /* ===== CARD ===== */
@@ -167,20 +165,10 @@
   font-weight: 500;
 }
 
-/* 🔥 COLOR CODING */
-.info-item.location {
-  color: var(--blue);
-}
+.info-item.location { color: var(--blue); }
+.info-item.wage { color: #1E656D; }
+.info-item.type { color: rgb(69, 66, 66); }
 
-.info-item.wage {
-  color: #1E656D;
-}
-
-.info-item.type {
-  color: rgb(69, 66, 66)
-}
-
-/* ICON COLOR FOLLOW TEXT */
 .info-item svg {
   color: inherit;
 }
@@ -215,13 +203,51 @@
   box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
+
+/*  RESPONSIVE BREAKPOINTS */
+
+/* LARGE LAPTOP */
+@media (max-width: 1200px) {
+  .job-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ===== TABLET ===== */
+@media (max-width: 900px) {
+  .find-work-page {
+    padding: 30px 25px;
+  }
+
+  .job-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ===== MOBILE ===== */
 @media (max-width: 600px) {
+  .find-work-page {
+    padding: 20px 15px;
+  }
+
   .find-work-header h1 {
     font-size: 1.8rem;
   }
 
+  .job-list {
+    grid-template-columns: 1fr;
+  }
+
   .category-filter {
     justify-content: flex-start;
+  }
+
+  .cat-btn {
+    min-width: 80px;
+    padding: 10px;
+  }
+
+  .card-image-wrapper {
+    height: 150px;
   }
 }

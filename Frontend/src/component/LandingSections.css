@@ -40,8 +40,9 @@
   font-weight: 700;
 }
 
-.section-title {
-  font-size: 38px;
+.section-title-landing {
+  justify-content: center;
+  font-size: 2.3rem;
   color: var(--brand);
   margin-top: 10px;
   font-weight: 800;
@@ -54,7 +55,8 @@
 
 /* ================= HOW IT WORKS ================= */
 .how-it-works {
-  background: var(--bg-light);
+  /* background: var(--bg-light); */
+  border: gray;
 }
 
 .process-grid {
@@ -65,8 +67,8 @@
 }
 
 .process-card {
-    position: relative;
-  background: linear-gradient(135deg, #1E656D, #2a8a94);
+  position: relative;
+  background: linear-gradient(135deg, #0f4c5c, #00a896);
   border-radius: 20px;
   padding: 35px 25px;
   text-align: center;
@@ -117,7 +119,7 @@
   width: 32px;
   height: 32px;
 
-  background: var(--accent);
+  background: #ffffff;
   color: #1e293b;
 
   border-radius: 50%;
@@ -195,19 +197,6 @@
   border-radius: 20px;
 }
 
-.floating-card {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  background: white;
-  padding: 12px 18px;
-  border-radius: 12px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
 /* ================= STATS ================= */
 .stats-strip {
   background: linear-gradient(135deg, var(--brand), var(--brand-light));
@@ -233,7 +222,7 @@
 .stat-icon {
   width: 55px;
   height: 55px;
-  background: var(--accent);
+  background: #ffffff;
   color: #1e293b;
   border-radius: 12px;
   display: flex;

@@ -1,44 +1,84 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
 
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("authUser");
-    return stored
-      ? JSON.parse(stored)
-      : { isLoggedIn: false, role: null, id: null };
+  const [user, setUser] = useState({
+    isLoggedIn: false,
+    id: null,
+    name: "",
+    role: null
   });
 
-  const login = (role) => {
-    const existingUser = JSON.parse(localStorage.getItem("authUser"));
+  // 🔁 Restore user on refresh
+  useEffect(() => {
 
-    const newUser = existingUser && existingUser.role === role
-      ? existingUser
-      : {
-        id: role === "employer" ? "EMP1" : "WORK1", // stable ID
+    const storedUser = JSON.parse(
+      localStorage.getItem("loggedUser")
+    );
+
+    if (storedUser) {
+
+      setUser({
         isLoggedIn: true,
-        role,
-      };
+        id: storedUser.id,
+        name: storedUser.name,
+        role: storedUser.role
+      });
 
-    setUser(newUser);
-    localStorage.setItem("authUser", JSON.stringify(newUser));
+    }
+
+  }, []);
+
+  // 🔑 Login function
+  const login = (userData) => {
+
+    const authUser = {
+      isLoggedIn: true,
+      id: userData.id,
+      name: userData.name,
+      role: userData.role
+    };
+
+    setUser(authUser);
+
+    localStorage.setItem(
+      "loggedUser",
+      JSON.stringify(userData)
+    );
   };
 
+  // 🚪 Logout
   const logout = () => {
-    setUser({ isLoggedIn: false, role: null, id: null });
 
-    // 🔥 clear everything
-    localStorage.removeItem("authUser");
-    localStorage.removeItem("user");  // old key cleanup
+    setUser({
+      isLoggedIn: false,
+      id: null,
+      name: "",
+      role: null
+    });
+
+    localStorage.removeItem("loggedUser");
+
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout
+      }}
+    >
+
       {children}
+
     </AuthContext.Provider>
+
   );
+
 };
 
 export default AuthProvider;

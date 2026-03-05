@@ -25,21 +25,23 @@ const FindWork = () => {
     { name: "Factory Helper", icon: <Factory size={20} /> },
   ];
 
-  // 2. FIXED FILTER LOGIC (Case-Insensitive)
-  const filteredJobs = jobs.filter((job) => {
-    // Search filter
-    const matchesSearch = 
-      job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      job.location.toLowerCase().includes(searchTerm.toLowerCase());
+const filteredJobs = jobs.filter((job) => {
 
-    // Category filter (Matches "Construction" with "construction")
-    const matchesCategory = 
-      activeCategory === "All" || 
-      job.jobType?.toLowerCase() === activeCategory.toLowerCase() ||
-      job.category?.toLowerCase() === activeCategory.toLowerCase();
+  // SEARCH FILTER
+  const matchesSearch =
+    job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.category?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesSearch && matchesCategory;
-  });
+  // CATEGORY FILTER
+  const matchesCategory =
+    activeCategory === "All" ||
+    job.title?.toLowerCase() === activeCategory.toLowerCase() ||
+    job.category?.toLowerCase() === activeCategory.toLowerCase() ||
+    job.jobType?.toLowerCase() === activeCategory.toLowerCase();
+
+  return matchesSearch && matchesCategory;
+});
 
   return (
     <div className="find-work-page">
@@ -78,7 +80,7 @@ const FindWork = () => {
         {filteredJobs.length === 0 ? (
           <div className="no-jobs">
             <Users size={48} />
-            <h3>No {activeCategory !== "All" ? activeCategory : ""} jobs available right now</h3>
+            <h3 className="no-jobs-h3">No {activeCategory !== "All" ? activeCategory : ""} jobs available right now</h3>
             <p>Try searching in a different city or category.</p>
           </div>
         ) : (
