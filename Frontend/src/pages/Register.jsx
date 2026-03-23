@@ -45,41 +45,47 @@ const Register = () => {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
     if (!validate()) return;
 
-    const users =
-      JSON.parse(localStorage.getItem("users")) || [];
+    try {
 
-    const existingUser =
-      users.find((u) => u.phone === form.phone);
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.phone,
+          gender: form.gender,
+          role: form.role,
+          password: form.password
+        })
+      });
 
-    if (existingUser) {
-      alert("User already registered");
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Registration failed");
+        return;
+      }
+
+      alert("Registration successful");
+
+      navigate("/login");
+
+    } catch (error) {
+
+      console.log(error);
+      alert("Server error");
+
     }
 
-    const newUser = {
-      id: Date.now(),
-      name: form.name,
-      phone: form.phone,
-      gender: form.gender,
-      role: form.role,
-      password: form.password
-    };
-
-    users.push(newUser);
-
-    localStorage.setItem("users", JSON.stringify(users));
-
-    alert("Registration successful");
-
-    navigate("/login");
   };
-
   return (
     <div className="auth-page">
       <div className="auth-card large">
@@ -94,7 +100,7 @@ const Register = () => {
             <label>Name</label>
 
             <div className="input-box">
-              <User className="input-icon" size={18} />
+              <User className="auth-input-icon" size={18} />
 
               <input
                 type="text"
@@ -113,7 +119,7 @@ const Register = () => {
             <label>Phone</label>
 
             <div className="input-box">
-              <Phone className="input-icon" size={18} />
+              <Phone className="auth-input-icon" size={18} />
 
               <input
                 type="text"
@@ -169,7 +175,7 @@ const Register = () => {
               <label>Admin Key</label>
 
               <div className="input-box">
-                <Key className="input-icon" size={18} />
+                <Key className="auth-input-icon" size={18} />
 
                 <input
                   type="password"
@@ -189,7 +195,7 @@ const Register = () => {
             <label>Password</label>
 
             <div className="input-box">
-              <Lock className="input-icon" size={18} />
+              <Lock className="auth-input-icon" size={18} />
 
               <input
                 type="password"

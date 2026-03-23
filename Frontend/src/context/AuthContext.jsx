@@ -4,36 +4,35 @@ export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
 
-  const [user, setUser] = useState({
-    isLoggedIn: false,
-    id: null,
-    name: "",
-    role: null
-  });
+  // 🔥 IMPORTANT CHANGE
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // 🔁 Restore user on refresh
   useEffect(() => {
-
-    const storedUser = JSON.parse(
-      localStorage.getItem("loggedUser")
-    );
+    const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
     if (storedUser) {
-
       setUser({
         isLoggedIn: true,
         id: storedUser.id,
         name: storedUser.name,
         role: storedUser.role
       });
-
+    } else {
+      setUser({
+        isLoggedIn: false,
+        id: null,
+        name: "",
+        role: null
+      });
     }
 
+    setLoading(false); // 🔥 VERY IMPORTANT
   }, []);
 
-  // 🔑 Login function
+  // 🔑 Login
   const login = (userData) => {
-
     const authUser = {
       isLoggedIn: true,
       id: userData.id,
@@ -43,15 +42,11 @@ const AuthProvider = ({ children }) => {
 
     setUser(authUser);
 
-    localStorage.setItem(
-      "loggedUser",
-      JSON.stringify(userData)
-    );
+    localStorage.setItem("loggedUser", JSON.stringify(userData));
   };
 
   // 🚪 Logout
   const logout = () => {
-
     setUser({
       isLoggedIn: false,
       id: null,
@@ -60,25 +55,20 @@ const AuthProvider = ({ children }) => {
     });
 
     localStorage.removeItem("loggedUser");
-
   };
 
   return (
-
     <AuthContext.Provider
       value={{
         user,
         login,
-        logout
+        logout,
+        loading // 🔥 ADD THIS
       }}
     >
-
       {children}
-
     </AuthContext.Provider>
-
   );
-
 };
 
 export default AuthProvider;

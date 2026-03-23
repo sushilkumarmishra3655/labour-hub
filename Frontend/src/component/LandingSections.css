@@ -12,7 +12,7 @@
   --accent: #F1C40F;
   --bg-light: #f4f9f9;
   --text-dark: #1e293b;
-  --text-gray: #64748b;
+  --text-gray: #151617;
 }
 
 /* ================= COMMON ================= */
@@ -53,10 +53,10 @@
   color: var(--text-gray);
 }
 
-/* ================= HOW IT WORKS ================= */
+/* HOW IT WORKS */
 .how-it-works {
-  /* background: var(--bg-light); */
-  border: gray;
+  background: var(--bg-light);
+  /* background-color: #bcb9b9d6; */
 }
 
 .process-grid {

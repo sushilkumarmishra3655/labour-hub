@@ -1,6 +1,6 @@
 /* ===== BODY SPACE FOR FIXED NAVBAR ===== */
 body {
-  padding-top: 90px;
+  padding-top: 50px;
 }
 
 /* ===== NAVBAR ===== */
@@ -34,7 +34,7 @@ body {
   display: inline-block;
   text-decoration: none;
   color: #ffffff;
-  font-size: 20px;
+  font-size: 18px;
   border-bottom: 2px solid transparent;
   transition: all 0.3s ease;
 }
@@ -151,4 +151,43 @@ font-size:16px;
 
 .caret.open{
   transform:rotate(180deg);
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  font-size: 26px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* Mobile navbar */
+@media (max-width: 768px) {
+
+  .hamburger {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 85px;
+    left: 0;
+    width: 100%;
+    background: #1E656D;
+
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+
+    padding: 20px 0;
+
+    transform: translateY(-200%);
+    transition: 0.3s ease;
+  }
+
+  .nav-links.active {
+    transform: translateY(0);
+  }
 }

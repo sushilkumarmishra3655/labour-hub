@@ -1,18 +1,23 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./Auth.css";
 import { AuthContext } from "../context/AuthContext";
 import { Phone, Lock } from "lucide-react";
 
 const Login = () => {
+  const { login, user } = useContext(AuthContext);
 
-  const { login } = useContext(AuthContext);
+  useEffect(() => {
+    if (user?.isLoggedIn) {
+      navigate("/");
+    }
+  }, [user]);
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from;
-  const redirectPath = from && from !== "/login" ? from : "/";
+  // 🔥 IMPORTANT: jaha se aaya wahi wapas
+  const from = location.state?.from || "/";
 
   const [form, setForm] = useState({
     phone: "",
@@ -20,49 +25,61 @@ const Login = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
-
     const e = {};
 
-    if (!form.phone)
+    if (!form.phone) {
       e.phone = "Phone required";
-    else if (!/^[0-9]{10}$/.test(form.phone))
-      e.phone = "Enter valid number";
+    } else if (!/^[0-9]{10}$/.test(form.phone)) {
+      e.phone = "Enter valid 10 digit number";
+    }
 
-    if (!form.password)
+    if (!form.password) {
       e.password = "Password required";
+    }
 
     setErrors(e);
-
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
-    const users =
-      JSON.parse(localStorage.getItem("users")) || [];
+    setLoading(true);
 
-    const foundUser = users.find(
-      (u) =>
-        u.phone === form.phone &&
-        u.password === form.password
-    );
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(form)
+      });
 
-    if (!foundUser) {
-      alert("Invalid phone or password");
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Invalid phone or password");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Save user in context
+      login(data);
+
+      // ✅ Redirect BACK to previous page
+      navigate(from, { replace: true });
+
+    } catch (error) {
+      console.log(error);
+      alert("Server error");
+    } finally {
+      setLoading(false);
     }
-
-    login(foundUser);
-
-    alert("Login successful");
-
-    navigate(redirectPath, { replace: true });
   };
 
   return (
@@ -76,12 +93,12 @@ const Login = () => {
 
         <form onSubmit={handleSubmit}>
 
+          {/* PHONE */}
           <div className="form-group">
-
             <label>Phone</label>
 
             <div className="input-box">
-              <Phone className="input-icon" size={18} />
+              <Phone className="auth-input-icon" size={18} />
 
               <input
                 type="text"
@@ -96,12 +113,12 @@ const Login = () => {
             {errors.phone && <small>{errors.phone}</small>}
           </div>
 
+          {/* PASSWORD */}
           <div className="form-group">
-
             <label>Password</label>
 
             <div className="input-box">
-              <Lock className="input-icon" size={18} />
+              <Lock className="auth-input-icon" size={18} />
 
               <input
                 type="password"
@@ -109,14 +126,16 @@ const Login = () => {
                 onChange={(e) =>
                   setForm({ ...form, password: e.target.value })
                 }
+                placeholder="Password"
               />
             </div>
 
             {errors.password && <small>{errors.password}</small>}
           </div>
 
-          <button className="auth-btn">
-            Login
+          {/* BUTTON */}
+          <button className="auth-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
 
         </form>

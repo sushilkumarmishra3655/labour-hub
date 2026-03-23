@@ -75,22 +75,22 @@ const Contact = () => {
               <h3 className="contact-h3">Write to Us</h3>
               <form className="modern-form" onSubmit={handleSubmit}>
                 <div className="input-group">
-                  <User className="input-icon" size={18} />
+                  <User className="contact-input-icon" size={18} />
                   <input type="text" placeholder="Your Name" required />
                 </div>
 
                 <div className="input-group">
-                  <Phone className="input-icon" size={18} />
+                  <Phone className="contact-input-icon" size={18} />
                   <input type="tel" placeholder="Your Mobile Number" required />
                 </div>
 
                 <div className="input-group">
-                  <Type className="input-icon" size={18} />
+                  <Type className="contact-input-icon" size={18} />
                   <input type="text" placeholder="Subject (e.g. Need a job)" />
                 </div>
 
                 <div className="input-group">
-                  <MessageSquare className="input-icon message" size={18} />
+                  <MessageSquare className="contact-input-icon message" size={18} />
                   <textarea placeholder="How can we help you?"></textarea>
                 </div>
 

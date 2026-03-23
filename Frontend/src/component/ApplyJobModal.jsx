@@ -1,11 +1,10 @@
 import React, { useState, useContext } from "react";
-import { ApplicationContext } from "../context/ApplicationContext";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "./ApplyJobModal.css";
 
 const ApplyJobModal = ({ show, onClose, job }) => {
-  const { addApplication } = useContext(ApplicationContext);
+
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -18,7 +17,7 @@ const ApplyJobModal = ({ show, onClose, job }) => {
   // ❗ safety
   if (!show || !job) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // 🔐 login check
@@ -36,12 +35,10 @@ const ApplyJobModal = ({ show, onClose, job }) => {
       return;
     }
 
-    // 🔥 final application object
+    // 🔥 Backend ready application object
     const newApplication = {
-      id: Date.now(),
-
       // job data
-      jobId: job.id,
+      jobId: job._id, // 🔥 important change
       jobTitle: job.title,
       location: job.location,
       wage: job.wage,
@@ -51,7 +48,7 @@ const ApplyJobModal = ({ show, onClose, job }) => {
       workerName: form.name || user.name || "Worker",
       workerPhone: form.phone || user.phone || "No Phone",
 
-      // employer data (🔥 VERY IMPORTANT FOR DASHBOARD)
+      // employer data
       employerId: job.employerId,
       employerName: job.employerName || "Employer",
       employerPhone: job.contact || "N/A",
@@ -61,18 +58,40 @@ const ApplyJobModal = ({ show, onClose, job }) => {
       createdAt: Date.now(),
     };
 
-    addApplication(newApplication);
+    try {
 
-    alert("✅ Applied successfully!");
+      const res = await fetch("http://localhost:5000/api/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newApplication),
+      });
 
-    // reset form
-    setForm({
-      name: "",
-      phone: "",
-      message: "",
-    });
+      const data = await res.json();
 
-    onClose();
+      if (!res.ok) {
+        alert(data.message || "Application failed");
+        return;
+      }
+
+      alert("✅ Applied successfully!");
+
+      // reset form
+      setForm({
+        name: "",
+        phone: "",
+        message: "",
+      });
+
+      onClose();
+
+    } catch (error) {
+
+      console.log(error);
+      alert("Server error");
+
+    }
   };
 
   return (
@@ -81,6 +100,7 @@ const ApplyJobModal = ({ show, onClose, job }) => {
         <h3 className="appjob-h3">Apply for {job.title}</h3>
 
         <form onSubmit={handleSubmit}>
+
           <input
             type="text"
             placeholder="Your Name"
@@ -110,6 +130,7 @@ const ApplyJobModal = ({ show, onClose, job }) => {
           />
 
           <div className="modal-actions">
+
             <button
               type="button"
               className="cancel-btn"
@@ -121,7 +142,9 @@ const ApplyJobModal = ({ show, onClose, job }) => {
             <button type="submit" className="apply-btn">
               Apply
             </button>
+
           </div>
+
         </form>
       </div>
     </div>

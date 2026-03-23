@@ -3,11 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import Logo from "./Logo";
 import { AuthContext } from "../context/AuthContext";
+import { Menu } from "lucide-react";
 
 const Navbar = () => {
 
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -47,7 +49,11 @@ const Navbar = () => {
         <Logo />
       </div>
 
-      <ul className="nav-links">
+      <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+        <Menu size={28} />
+      </button>
+
+      <ul className={`nav-links ${menuOpen ? "active" : ""}`}>
 
         <li><Link to="/">Home</Link></li>
         <li><Link to="/about">About</Link></li>

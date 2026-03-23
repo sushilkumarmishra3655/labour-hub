@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
 import { JobContext } from "../context/JobContext";
 import JobCard from "../component/JobCard";
-import { 
-  Search, LayoutGrid, HardHat, Paintbrush, 
-  Zap, Droplets, Hammer, Users, Factory, Pickaxe 
-} from "lucide-react"; 
+import {
+  Search, LayoutGrid, HardHat, Paintbrush,
+  Zap, Droplets, Hammer, Users, Factory, Pickaxe
+} from "lucide-react";
 import "./FindWork.css";
 
 const FindWork = () => {
@@ -25,35 +25,35 @@ const FindWork = () => {
     { name: "Factory Helper", icon: <Factory size={20} /> },
   ];
 
-const filteredJobs = jobs.filter((job) => {
+  const filteredJobs = jobs.filter((job) => {
 
-  // SEARCH FILTER
-  const matchesSearch =
-    job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.category?.toLowerCase().includes(searchTerm.toLowerCase());
+    // SEARCH FILTER
+    const matchesSearch =
+      job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.category?.toLowerCase().includes(searchTerm.toLowerCase());
 
-  // CATEGORY FILTER
-  const matchesCategory =
-    activeCategory === "All" ||
-    job.title?.toLowerCase() === activeCategory.toLowerCase() ||
-    job.category?.toLowerCase() === activeCategory.toLowerCase() ||
-    job.jobType?.toLowerCase() === activeCategory.toLowerCase();
+    // CATEGORY FILTER
+    const matchesCategory =
+      activeCategory === "All" ||
+      job.title?.toLowerCase() === activeCategory.toLowerCase() ||
+      job.category?.toLowerCase() === activeCategory.toLowerCase() ||
+      job.jobType?.toLowerCase() === activeCategory.toLowerCase();
 
-  return matchesSearch && matchesCategory;
-});
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="find-work-page">
       <div className="find-work-header">
         <h1>Find Your Next Work</h1>
         <p>Real jobs, Daily pay, Nearby.</p>
-        
+
         <div className="search-container">
           <Search className="search-icon" />
-          <input 
-            type="text" 
-            placeholder="Search city or job..." 
+          <input
+            type="text"
+            placeholder="Search city or job..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -64,7 +64,7 @@ const filteredJobs = jobs.filter((job) => {
       <div className="category-filter-container">
         <div className="category-filter">
           {categories.map((cat) => (
-            <button 
+            <button
               key={cat.name}
               className={`cat-btn ${activeCategory === cat.name ? "active" : ""}`}
               onClick={() => setActiveCategory(cat.name)}
@@ -86,7 +86,7 @@ const filteredJobs = jobs.filter((job) => {
         ) : (
           <div className="job-list">
             {filteredJobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+              <JobCard key={job._id || job.id} job={job} />
             ))}
           </div>
         )}

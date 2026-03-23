@@ -9,7 +9,7 @@ import About from "./pages/About";
 import FindWork from "./pages/FindWork";
 import PostJob from "./pages/PostJob";
 import Contact from "./pages/Contact";
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 import WorkerDashboard from "./pages/WorkerDashboard";
