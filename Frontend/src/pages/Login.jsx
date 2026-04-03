@@ -6,18 +6,18 @@ import { Phone, Lock } from "lucide-react";
 
 const Login = () => {
   const { login, user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user?.isLoggedIn) {
-      navigate("/");
+      if (user.role === "worker") navigate("/worker-dashboard", { replace: true });
+      else if (user.role === "employer") navigate("/employer-dashboard", { replace: true });
+      else if (user.role === "admin") navigate("/admin-dashboard", { replace: true });
+      else navigate("/", { replace: true });
     }
-  }, [user]);
+  }, [user, navigate]);
 
-  const navigate = useNavigate();
   const location = useLocation();
-
-  // 🔥 IMPORTANT: jaha se aaya wahi wapas
-  const from = location.state?.from || "/";
 
   const [form, setForm] = useState({
     phone: "",
@@ -71,8 +71,16 @@ const Login = () => {
       // ✅ Save user in context
       login(data);
 
-      // ✅ Redirect BACK to previous page
-      navigate(from, { replace: true });
+      // ✅ Redirect Based on Role
+      if (data.user.role === "worker") {
+        navigate("/worker-dashboard", { replace: true });
+      } else if (data.user.role === "employer") {
+        navigate("/employer-dashboard", { replace: true });
+      } else if (data.user.role === "admin") {
+        navigate("/admin-dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
 
     } catch (error) {
       console.log(error);

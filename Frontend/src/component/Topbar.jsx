@@ -1,4 +1,4 @@
-import { Bell, UserCircle } from "lucide-react";
+import { Bell, UserCircle, Search } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import "../Layout/DashboardLayout.css";
@@ -7,17 +7,29 @@ const Topbar = () => {
   const { user } = useContext(AuthContext);
 
   return (
-    <div className="topbar">
-      <h3 className="page-title">Dashboard</h3>
+    <header className="topbar">
+      <div className="topbar-left">
+        <h3 className="page-title">Overview</h3>
+        <div className="topbar-breadcrumb">Dashboard / {user?.role}</div>
+      </div>
 
       <div className="topbar-right">
-        <Bell size={20} />
-        <div className="user-box">
-          <UserCircle size={22} />
-          <span>{user?.name}</span>
+        <div className="icon-action-btn">
+          <Bell size={20} />
+          <span className="notification-dot"></span>
+        </div>
+
+        <div className="user-profile-trigger">
+          <div className="user-avatar-circle">
+            {user?.name?.charAt(0).toUpperCase()}
+          </div>
+          <div className="user-info-text">
+            <span className="user-name">{user?.name}</span>
+            <span className="user-role-label">{user?.role}</span>
+          </div>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 

@@ -1,171 +1,268 @@
-import { useContext, useMemo, useState } from "react";
-import { ApplicationContext } from "../context/ApplicationContext";
-import { JobContext } from "../context/JobContext";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Plus, Users, Briefcase, Check, X, Clock, TrendingUp, ChevronRight } from "lucide-react";
-import DashboardLayout from "../Layout/DashboardLayout";
-import "./Dashboard.css";
+import {
+  Plus, Users, Briefcase, Clock, TrendingUp, Check, X, Eye, Phone, MapPin, Mail, Award, Calendar
+} from "lucide-react";
+import api from "../services/api";
+import "./EmployerDashboard.css";
 
 const EmployerDashboard = () => {
-  const { applications, updateStatus } = useContext(ApplicationContext);
-  const { jobs } = useContext(JobContext);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("jobs");
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ activeJobs: 0, pendingReview: 0, totalHired: 0, totalApplications: 0 });
+  const [applications, setApplications] = useState([]);
+  const [selectedApp, setSelectedApp] = useState(null);
+  const [isActionLoading, setIsActionLoading] = useState(false);
 
-  if (!user) return null;
+  // FETCH STATS & APPLICATIONS
+  const fetchData = async () => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      const [statsRes, appsRes] = await Promise.all([
+        api.get("/applications/employer/dashboard-stats"),
+        api.get("/applications/employer")
+      ]);
+      setStats(statsRes.data);
+      setApplications(appsRes.data);
+    } catch (e) {
+      console.error("Dashboard Fetch Error:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const myPostedJobs = useMemo(() =>
-    user.role === "admin" ? jobs : jobs.filter(j => j.employerId?.toString() === user.id?.toString()),
-    [jobs, user.id, user.role]
-  );
+  useEffect(() => {
+    fetchData();
+  }, [user]);
 
-  const myApps = useMemo(() =>
-    user.role === "admin" ? applications : applications.filter(app => app.employerId?.toString() === user.id?.toString()),
-    [applications, user.id, user.role]
-  );
+  // STATUS UPDATE (Accept / Reject)
+  const handleStatusUpdate = async (id, newStatus) => {
+    if (isActionLoading) return;
+    if (!window.confirm(`Update status to ${newStatus}?`)) return;
 
-  const pendingApps  = myApps.filter(a => a.status === "Pending");
-  const acceptedApps = myApps.filter(a => a.status === "Accepted");
+    setIsActionLoading(true);
+    try {
+      await api.patch(`/applications/${id}/status`, { status: newStatus });
+      alert(`Success: Worker is now ${newStatus}`);
 
-  const stats = [
-    { icon: <Briefcase  size={18} />, value: myPostedJobs.length, label: "Active Jobs",        color: "blue"   },
-    { icon: <Clock      size={18} />, value: pendingApps.length,  label: "Pending Review",     color: "amber"  },
-    { icon: <Users      size={18} />, value: acceptedApps.length, label: "Total Hired",        color: "green"  },
-    { icon: <TrendingUp size={18} />, value: myApps.length,       label: "Total Applications", color: "purple" },
+      // Update local application list immediately
+      setApplications(prev => prev.map(a => a._id === id ? { ...a, status: newStatus } : a));
+
+      // Refresh Stats
+      const statsRes = await api.get("/applications/employer/dashboard-stats");
+      setStats(statsRes.data);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update status. Check console.");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const statCards = [
+    { icon: <Briefcase />, val: stats.activeJobs, label: "Active Jobs", color: "blue" },
+    { icon: <Clock />, val: stats.pendingReview, label: "Pending Review", color: "amber" },
+    { icon: <Users />, val: stats.totalHired, label: "Total Hired", color: "green" },
+    { icon: <TrendingUp />, val: stats.totalApplications, label: "Applications", color: "purple" },
   ];
 
+  if (loading) return <div className="employer-dashboard employer-dashboard-content-wrapper">Loading Employer Dashboard...</div>;
+
   return (
-    <DashboardLayout>
-      <div className="db-page">
-
-        {/* ── Header ── */}
-        <div className="db-header">
-          <div>
-            <p className="db-eyebrow db-eyebrow--blue">Employer Console</p>
-            <h1 className="db-title">Welcome back, {user.name} 🏢</h1>
-            <p className="db-subtitle">Manage your job postings and review incoming applications.</p>
-          </div>
-          <button className="btn btn--primary" onClick={() => navigate("/postjob")}>
-            <Plus size={16} /> Post New Job
+    <div className="employer-dashboard employer-dashboard-content-wrapper employer-db">
+      {/* WELCOME AREA */}
+      <div className="employer-welcome-section">
+        <div className="employer-welcome-text">
+          <h1>Welcome back, {user?.name?.split(' ')[0]} 👋</h1>
+          <p>You have {stats.pendingReview} applications waiting for review.</p>
+        </div>
+        <div className="action-buttons">
+          <button className="btn-create" onClick={() => navigate("/postjob")}>
+            <Plus size={20} /> <span>Post a New Job</span>
+          </button>
+          <button className="btn-secondary-outline" onClick={() => navigate("/employer-dashboard/manage-listings")}>
+            Manage Listings
           </button>
         </div>
-
-        {/* ── Stats ── */}
-        <div className="stats-grid">
-          {stats.map((s, i) => (
-            <div key={i} className="stat-card" style={{ animationDelay: `${i * 60}ms` }}>
-              <div className={`stat-card__icon stat-card__icon--${s.color}`}>{s.icon}</div>
-              <div>
-                <div className="stat-card__value">{s.value}</div>
-                <div className="stat-card__label">{s.label}</div>
-              </div>
-              <div className={`stat-card__bar stat-card__bar--${s.color}`} />
-            </div>
-          ))}
-        </div>
-
-        {/* ── Tab switcher ── */}
-        <div className="tab-switcher">
-          <button
-            className={`switch-tab ${activeTab === "jobs" ? "active" : ""}`}
-            onClick={() => setActiveTab("jobs")}
-          >
-            <Briefcase size={14} /> Your Jobs
-            <span className="switch-tab__pill">{myPostedJobs.length}</span>
-          </button>
-          <button
-            className={`switch-tab ${activeTab === "applicants" ? "active" : ""}`}
-            onClick={() => setActiveTab("applicants")}
-          >
-            <Users size={14} /> Pending Reviews
-            {pendingApps.length > 0 && (
-              <span className="switch-tab__pill switch-tab__pill--red">{pendingApps.length}</span>
-            )}
-          </button>
-        </div>
-
-        {/* ── Jobs Panel ── */}
-        {activeTab === "jobs" && (
-          <>
-            {myPostedJobs.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-state__icon">💼</div>
-                <div className="empty-state__title">No jobs posted yet</div>
-                <div className="empty-state__sub">Start hiring by posting your first job</div>
-                <button className="btn btn--primary" onClick={() => navigate("/postjob")}>
-                  <Plus size={14} /> Post a Job
-                </button>
-              </div>
-            ) : (
-              <div className="list-panel">
-                {myPostedJobs.map((job, i) => (
-                  <div key={job.id} className="list-row" style={{ animationDelay: `${i * 40}ms` }}>
-                    <div className="list-row__left">
-                      <div className="list-row__icon list-row__icon--blue">🏗</div>
-                      <div>
-                        <div className="list-row__title">{job.title}</div>
-                        <div className="list-row__meta">📍 {job.location} &nbsp;·&nbsp; ₹{job.wage}/day</div>
-                      </div>
-                    </div>
-                    <div className="list-row__right">
-                      <span className="badge badge--active">Active</span>
-                      <button
-                        className="btn btn--ghost btn--sm"
-                        onClick={() => navigate(`/job/${job.id}`)}
-                      >
-                        Edit <ChevronRight size={13} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* ── Applicants Panel ── */}
-        {activeTab === "applicants" && (
-          <>
-            {pendingApps.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-state__icon">✅</div>
-                <div className="empty-state__title">All caught up!</div>
-                <div className="empty-state__sub">No pending applications to review</div>
-              </div>
-            ) : (
-              <div className="list-panel">
-                {pendingApps.map((app, i) => (
-                  <div key={app.id} className="list-row" style={{ animationDelay: `${i * 40}ms` }}>
-                    <div className="list-row__left">
-                      <div className="avatar-chip avatar-chip--blue">
-                        {app.workerName?.[0]?.toUpperCase() || "W"}
-                      </div>
-                      <div>
-                        <div className="list-row__title">{app.workerName}</div>
-                        <div className="list-row__meta">
-                          Applied for: <strong>{app.jobTitle}</strong>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="list-row__right">
-                      <button className="btn btn--success btn--sm" onClick={() => updateStatus(app.id, "Accepted")}>
-                        <Check size={14} /> Hire
-                      </button>
-                      <button className="btn btn--danger btn--sm" onClick={() => updateStatus(app.id, "Rejected")}>
-                        <X size={14} /> Reject
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-
       </div>
-    </DashboardLayout>
+
+      {/* STATS AREA */}
+      <div className="employer-stat-grid-modern">
+        {statCards.map((card, idx) => (
+          <div key={idx} className="employer-stat-card-v2">
+            <div className={`employer-icon-v2 ${card.color}`}>{card.icon}</div>
+            <div className="employer-data-v2">
+              <h3>{card.val}</h3>
+              <span>{card.label}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* APPLICATIONS AREA */}
+      <section className="employer-applications-section-v3">
+        <div className="section-title-v2">
+          <h2>Recent Applications</h2>
+          <span className="total-badge">{applications.length} TOTAL</span>
+        </div>
+
+        <div className="employer-listing-grid-v3" style={{ marginTop: '20px' }}>
+          {applications.length === 0 ? (
+            <div className="employer-empty-state-v2" style={{ gridColumn: '1 / -1' }}>
+              <div className="employer-empty-icon-circle"><Users size={32} /></div>
+              <h2>No Applicants Yet</h2>
+              <p>Your listings are active. Once workers apply, they will show up here.</p>
+            </div>
+          ) : (
+            applications.slice(0, 4).map((app) => (
+              <div key={app._id} className="employer-modern-list-card">
+                <div className="employer-card-status-indicator">
+                  <div className={`status-tag ${app.status?.toLowerCase()}`}>
+                    {app.status}
+                  </div>
+                </div>
+
+                <div className="employer-card-body-v3">
+                  <div className="employer-list-icon-bg">
+                    {app.workerDetails?.profileImage ? (
+                      <img src={app.workerDetails.profileImage} alt={app.workerName} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                    ) : (
+                      app.workerName?.[0] || <Users size={20} />
+                    )}
+                  </div>
+                  <div className="employer-list-details-v3">
+                    <h3>{app.workerName}</h3>
+                    <div className="employer-list-meta-v3">
+                      <span><Briefcase size={14} /> {app.jobTitle}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="employer-card-stats-row">
+                  <div className="employer-c-stat">
+                    <label>Location</label>
+                    <span>{app.workerDetails?.location || "N/A"}</span>
+                  </div>
+                  <div className="employer-c-stat">
+                    <label>Applied</label>
+                    <span>{new Date(app.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+
+                <div className="employer-card-footer-v3">
+                  <div className="employer-list-actions-v3" style={{ width: '100%', justifyContent: 'space-between' }}>
+                    <button className="employer-act-btn-v3 employer-view" onClick={() => setSelectedApp(app)} style={{ flex: 1, gap: '8px', padding: '0 12px' }}>
+                      <Eye size={16} /> Details
+                    </button>
+                    {app.status === "Pending" && (
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button className="employer-act-btn-v3 employer-check" onClick={() => handleStatusUpdate(app._id, "Accepted")}>
+                          <Check size={18} />
+                        </button>
+                        <button className="employer-act-btn-v3 employer-delete" onClick={() => handleStatusUpdate(app._id, "Rejected")}>
+                          <X size={18} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      {/* WORKER DETAILS POPUP */}
+      {selectedApp && (
+        <div className="popup-overlay" onClick={() => setSelectedApp(null)}>
+          <div className="inline-popup employer-worker-modal-v3" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <div className="popup-title">
+                <Award size={20} color="var(--primary-blue)" />
+                <h3>Worker Full Details</h3>
+              </div>
+              <button className="popup-close" onClick={() => setSelectedApp(null)}><X size={18} /></button>
+            </div>
+
+            <div className="worker-details-content">
+              <div className="employer-w-header-v3">
+                <div className="employer-w-avatar-v3">
+                  {selectedApp.workerDetails?.profileImage ? (
+                    <img src={selectedApp.workerDetails.profileImage} alt={selectedApp.workerName} />
+                  ) : (
+                    <span>{selectedApp.workerName?.[0]}</span>
+                  )}
+                </div>
+                <div className="employer-w-title-v3">
+                  <h2>{selectedApp.workerName}</h2>
+                  <p>Applied for {selectedApp.jobTitle}</p>
+                </div>
+              </div>
+
+              <div className="employer-w-grid-v3">
+                <div className="employer-w-item-v3">
+                  <label><Phone size={14} /> Phone</label>
+                  <p>{selectedApp.workerDetails?.phone || selectedApp.workerPhone || "N/A"}</p>
+                </div>
+                <div className="employer-w-item-v3">
+                  <label><Mail size={14} /> Email</label>
+                  <p>{selectedApp.workerDetails?.email || "No email"}</p>
+                </div>
+                <div className="employer-w-item-v3">
+                  <label><MapPin size={14} /> Location</label>
+                  <p>{selectedApp.workerDetails?.location || selectedApp.location || "N/A"}</p>
+                </div>
+                <div className="employer-w-item-v3">
+                  <label><Calendar size={14} /> Applied Date</label>
+                  <p>{new Date(selectedApp.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              {selectedApp.workerDetails?.skills?.length > 0 && (
+                <div className="w-skills-v3">
+                  <label>Skills & Expertise</label>
+                  <div className="employer-w-skills-pills">
+                    {selectedApp.workerDetails.skills.map((s, i) => (
+                      <span key={i} className="employer-skill-pill-v3">{s}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedApp.workerDetails?.experience && (
+                <div className="employer-w-exp-v3">
+                  <label>Work Experience</label>
+                  <p>{selectedApp.workerDetails.experience}</p>
+                </div>
+              )}
+
+              <div className="w-message-v3">
+                <label>Worker Message</label>
+                <div className="employer-message-bubble-v3">
+                  {selectedApp.message || "I am ready for the job!"}
+                </div>
+              </div>
+            </div>
+
+            <div className="popup-footer">
+              <button className="p-btn-cancel" onClick={() => setSelectedApp(null)}>Close</button>
+              {selectedApp.status === "Pending" && (
+                <button
+                  className="p-btn-save"
+                  onClick={() => { handleStatusUpdate(selectedApp._id, "Accepted"); setSelectedApp(null); }}
+                  disabled={isActionLoading}
+                >
+                  Hire Now
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

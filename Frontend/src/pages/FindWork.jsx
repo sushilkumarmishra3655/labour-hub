@@ -50,7 +50,7 @@ const FindWork = () => {
         <p>Real jobs, Daily pay, Nearby.</p>
 
         <div className="search-container">
-          <Search className="search-icon" />
+          <Search className="search-icon-fw" />
           <input
             type="text"
             placeholder="Search city or job..."

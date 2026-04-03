@@ -1,4 +1,5 @@
 /* ===== HERO SECTION ===== */
+
 .hero {
   height: 95vh;
   background-image: url("../assets/Worker.jpeg");
@@ -18,7 +19,8 @@
 /* ===== TOP TRUST BADGE ===== */
 .hero-top-badge {
   position: absolute;
-  top: 65px; /* 🔥 adjust according to navbar height */
+  top: 128px;
+  /* 🔥 adjust according to navbar height */
   left: 50%;
   transform: translateX(-50%);
 
@@ -49,6 +51,7 @@
   z-index: 2;
   max-width: 750px;
   padding: 20px;
+  top: 70px;
 }
 
 /* ===== TEXT ===== */

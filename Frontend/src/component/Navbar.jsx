@@ -34,7 +34,6 @@ const Navbar = () => {
   };
 
   const goDashboard = () => {
-
     if (user.role === "worker") navigate("/worker-dashboard");
     else if (user.role === "employer") navigate("/employer-dashboard");
     else if (user.role === "admin") navigate("/admin-dashboard");
@@ -58,7 +57,7 @@ const Navbar = () => {
         <li><Link to="/">Home</Link></li>
         <li><Link to="/about">About</Link></li>
 
-        {/* NOT LOGGED IN → SHOW BOTH */}
+        {/* NOT LOGGED IN */}
         {!user?.isLoggedIn && (
           <>
             <li><Link to="/FindWork">Find Work</Link></li>
@@ -68,19 +67,25 @@ const Navbar = () => {
 
         {/* WORKER */}
         {user?.isLoggedIn && user.role === "worker" && (
-          <li><Link to="/FindWork">Find Work</Link></li>
+          <>
+            {/* <li><Link to="/worker-dashboard">Dashboard</Link></li> */}
+            <li><Link to="/FindWork">Find Work</Link></li>
+          </>
         )}
 
         {/* EMPLOYER */}
         {user?.isLoggedIn && user.role === "employer" && (
-          <li><Link to="/PostJob">Post Job</Link></li>
+          <>
+            {/* <li><Link to="/employer-dashboard">Dashboard</Link></li> */}
+            <li><Link to="/PostJob">Post Job</Link></li>
+          </>
         )}
 
         {/* ADMIN */}
         {user?.isLoggedIn && user.role === "admin" && (
           <>
-            <li><Link to="/FindWork">Find Work</Link></li>
-            <li><Link to="/PostJob">Post Job</Link></li>
+            {/* <li><Link to="/admin-dashboard">Admin Panel</Link></li>
+            <li><Link to="/users">Users</Link></li> */}
           </>
         )}
 

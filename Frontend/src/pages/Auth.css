@@ -87,7 +87,8 @@
 .form-group input:focus,
 .form-group select:focus {
   border: 1px #d2d7dd;
-  box-shadow: 0 0 0 1px #1E656D;;
+  box-shadow: 0 0 0 1px #1E656D;
+  ;
 }
 
 /* error text */
@@ -204,5 +205,51 @@
 
   .auth-card h2 {
     font-size: 22px;
+  }
+}
+
+/* ===============================
+   USE CURRENT LOCATION BUTTON
+================================ */
+.loc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1.5px dashed #0ea5e9;
+  background: #f0f9ff;
+  color: #0369a1;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: fit-content;
+}
+
+.loc-btn:hover:not(:disabled) {
+  background: #e0f2fe;
+  border-color: #0284c7;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
+}
+
+.loc-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.spin-icon {
+  animation: spinAnim 1s linear infinite;
+}
+
+@keyframes spinAnim {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }

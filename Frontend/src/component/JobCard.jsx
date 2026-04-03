@@ -1,27 +1,27 @@
 import React, { useState, useContext } from "react";
-import ApplyJobModal from "./ApplyJobModal";
 import { getJobImage } from "../utils/jobImages";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { MapPin, Banknote, Briefcase, Zap } from "lucide-react";
+import api from "../services/api";
+import JobDetailsModal from "./JobDetailsModal"; // 🔥 NEW MODAL
+import { MapPin, Banknote, Briefcase, Zap, Eye } from "lucide-react";
 
 const JobCard = ({ job }) => {
-  const [showModal, setShowModal] = useState(false);
-
+  const [isApplying, setIsApplying] = useState(false);
+  const [showDetails, setShowDetails] = useState(false); // 🔥 Modal state
+  
   const navigate = useNavigate();
   const location = useLocation();
-
   const { user } = useContext(AuthContext);
 
-  // 🔥 APPLY BUTTON LOGIC
-  const handleApplyClick = () => {
+  // 🔥 ONE-CLICK APPLY LOGIC
+  const handleApplyClick = async (e) => {
+    e.stopPropagation(); // Stop from opening details
+
     // ❌ Not logged in → go to login
     if (!user || !user.isLoggedIn) {
       navigate("/login", {
-        state: {
-          from: location.pathname, // 👈 back to same page after login
-          jobId: job._id || job.id, // (future use - optional)
-        },
+        state: { from: location.pathname },
       });
       return;
     }
@@ -32,18 +32,47 @@ const JobCard = ({ job }) => {
       return;
     }
 
-    // ✅ Open Apply Modal
-    setShowModal(true);
+    if (isApplying) return;
+
+    try {
+      setIsApplying(true);
+
+      const newApplication = {
+        jobId: job._id || job.id,
+        jobTitle: job.title,
+        location: job.location,
+        wage: job.wage,
+        workerId: user.id,
+        workerName: user.name || "Worker",
+        workerPhone: user.phone || "N/A",
+        employerId: job.employerId,
+        employerName: job.employerName || "Employer",
+        message: "I am interested in this job (One-click Application)",
+        status: "Pending"
+      };
+
+      const res = await api.post("/applications", newApplication);
+
+      if (res.status === 201) {
+        alert("✅ Applied successfully!");
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Failed to apply. You might have already applied.");
+    } finally {
+      setIsApplying(false);
+    }
   };
 
   return (
     <>
-      <div className="job-card-modern">
+      <div className="job-card-modern" onClick={() => setShowDetails(true)}>
         
         {/* IMAGE */}
         <div className="card-image-wrapper">
           <img src={getJobImage(job.title)} alt={job.title} />
-          <div className="job-badge">{job.jobType || "Full Time"}</div>
+          {job.urgent && <div className="job-badge urgent">URGENT</div>}
+          {!job.urgent && <div className="job-badge">{job.jobType || "Full Time"}</div>}
         </div>
 
         {/* CONTENT */}
@@ -52,45 +81,47 @@ const JobCard = ({ job }) => {
 
           <div className="job-info-grid">
             
-            {/* LOCATION */}
             <div className="info-item location">
               <MapPin size={16} color="#3b82f6" />
-              <span className="card-span">
-                {job.location || "Not specified"}
-              </span>
+              <span className="card-span">{job.location || "Not specified"}</span>
             </div>
 
-            {/* WAGE */}
             <div className="info-item wage">
               <Banknote size={16} color="#1E656D" />
-              <span className="bold-wage">
-                ₹{job.wage || "0"} / day
-              </span>
+              <span className="bold-wage">₹{job.wage || "0"} / day</span>
             </div>
 
-            {/* TYPE */}
             <div className="info-item type">
               <Briefcase size={16} color="#64748b" />
-              <span className="card-span">
-                {job.jobType || "Full Time"}
-              </span>
+              <span className="card-span">{job.jobType || "Full Time"}</span>
             </div>
 
           </div>
 
-          {/* APPLY BUTTON */}
-          <button className="apply-btn-modern" onClick={handleApplyClick}>
-            <Zap size={18} fill="currentColor" />
-            Apply Now
-          </button>
+          <div className="card-btns-row">
+            <button className="view-details-btn" onClick={(e) => { e.stopPropagation(); setShowDetails(true); }}>
+              <Eye size={18} />
+              Details
+            </button>
+            <button 
+              className={`apply-btn-modern ${isApplying ? "loading" : ""}`} 
+              onClick={handleApplyClick}
+              disabled={isApplying}
+            >
+              <Zap size={18} fill="currentColor" />
+              {isApplying ? "Applying..." : "Apply Now"}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* APPLY MODAL */}
-      <ApplyJobModal
-        show={showModal}
-        onClose={() => setShowModal(false)}
+      {/* POPUP MODAL */}
+      <JobDetailsModal 
+        show={showDetails} 
+        onClose={() => setShowDetails(false)} 
         job={job}
+        onApply={handleApplyClick}
+        isApplying={isApplying}
       />
     </>
   );

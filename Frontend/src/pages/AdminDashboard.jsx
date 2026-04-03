@@ -1,13 +1,18 @@
 import { useContext, useMemo } from "react";
 import { ApplicationContext } from "../context/ApplicationContext";
 import { JobContext } from "../context/JobContext";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Trash2, ShieldCheck, Database, TrendingUp, Briefcase, Users, AlertTriangle } from "lucide-react";
 import DashboardLayout from "../Layout/DashboardLayout";
-import "./Dashboard.css";
+import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
   const { applications } = useContext(ApplicationContext);
   const { jobs, deleteJob } = useContext(JobContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isRoot = location.pathname === "/admin-dashboard" || location.pathname === "/admin-dashboard/";
 
   const revenue = useMemo(() =>
     applications.filter(a => a.status === "Accepted").reduce((sum, a) => sum + (Number(a.wage) || 0) * 0.10, 0),
@@ -15,166 +20,143 @@ const AdminDashboard = () => {
   );
 
   const acceptedApps = applications.filter(a => a.status === "Accepted");
-  const pendingApps  = applications.filter(a => a.status === "Pending");
+  const pendingApps = applications.filter(a => a.status === "Pending");
 
   const stats = [
-    { icon: <TrendingUp  size={18} />, value: `₹${revenue.toFixed(0)}`, label: "Est. Revenue (10%)", color: "purple" },
-    { icon: <Briefcase   size={18} />, value: jobs.length,               label: "Total Jobs",         color: "blue"   },
-    { icon: <Users       size={18} />, value: applications.length,       label: "Total Applications", color: "green"  },
-    { icon: <ShieldCheck size={18} />, value: acceptedApps.length,       label: "Total Hired",        color: "amber"  },
+    { icon: <TrendingUp size={18} />, value: `₹${revenue.toFixed(0)}`, label: "Est. Revenue (10%)", color: "purple" },
+    { icon: <Briefcase size={18} />, value: jobs.length, label: "Total Jobs", color: "blue" },
+    { icon: <Users size={18} />, value: applications.length, label: "Total Applications", color: "green" },
+    { icon: <ShieldCheck size={18} />, value: acceptedApps.length, label: "Total Hired", color: "amber" },
   ];
 
   const acceptRate = applications.length
     ? Math.round((acceptedApps.length / applications.length) * 100) : 0;
   const pendingRate = applications.length
-    ? Math.round((pendingApps.length  / applications.length) * 100) : 0;
+    ? Math.round((pendingApps.length / applications.length) * 100) : 0;
   const fillRate = jobs.length && acceptedApps.length
     ? Math.min(100, Math.round((acceptedApps.length / jobs.length) * 100)) : 0;
 
   return (
     <DashboardLayout>
-      <div className="db-page">
+      {!isRoot ? (
+        <Outlet />
+      ) : (
+        <div className="admin-dashboard admin-dashboard-content-wrapper">
 
-        {/* ── Header ── */}
-        <div className="db-header">
-          <div>
-            <p className="db-eyebrow db-eyebrow--purple">Admin Control Center</p>
-            <h1 className="db-title">Platform Overview 🛡️</h1>
-            <p className="db-subtitle">Monitor platform activity and manage system operations.</p>
-          </div>
-          <div className="health-badge">
-            <span className="health-badge__dot" />
-            System Healthy
+          {/* ── Header ── */}
+          <header className="admin-welcome-section">
+            <div className="admin-welcome-text">
+              <h1>Platform Overview 🛡️</h1>
+              <p>Monitor platform activity and manage system operations.</p>
+            </div>
+            <div className="status-tag active">
+              System Healthy
+            </div>
+          </header>
+
+          {/* ── Stats ── */}
+          <section className="admin-stat-grid-modern">
+            {stats.map((s, i) => (
+              <div key={i} className="admin-stat-card-v2">
+                <div className={`admin-icon-v2 ${s.color}`}>{s.icon}</div>
+                <div className="admin-data-v2">
+                  <h3>{s.value}</h3>
+                  <span>{s.label}</span>
+                </div>
+              </div>
+            ))}
+          </section>
+
+          {/* ── Two column ── */}
+          <div className="admin-content">
+
+            {/* Left — Job Moderation */}
+            <div>
+              <div className="admin-toolbar-v2" style={{ marginBottom: '16px' }}>
+                <h4 style={{ fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Database size={18} color="var(--primary-blue)" /> Platform Jobs
+                </h4>
+                <span className="admin-tab-badge">{jobs.length} total</span>
+              </div>
+
+              <div className="job-list-v2">
+                {jobs.slice(0, 5).map((job, i) => (
+                  <div key={job._id || i} className="job-card-v2" style={{ padding: '16px 20px' }}>
+                    <div className="job-card-info">
+                      <div className="job-meta-box">
+                        <h4 style={{ fontSize: '15px' }}>{job.title}</h4>
+                        <div className="job-tags" style={{ gap: '12px', fontSize: '12px' }}>
+                          <span>📍 {job.location}</span>
+                          <span>🏢 {job.employerName || "Employer"}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="job-card-right">
+                      <button
+                        className="act-btn del"
+                        onClick={() => deleteJob(job._id || job.id)}
+                        style={{ width: '32px', height: '32px' }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {jobs.length > 5 && (
+                  <button className="btn-secondary-outline" style={{ width: '100%' }} onClick={() => navigate("/admin-dashboard/jobs")}>
+                    View all {jobs.length} jobs
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Right — Health + Quick Actions */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div className="admin-stat-card-v2" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '16px' }}>
+                <h4 style={{ fontWeight: 800, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ShieldCheck size={18} color="var(--primary-green)" /> Platform Health
+                </h4>
+
+                <div className="health-row">
+                  <div className="health-row__top" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)' }}>Acceptance Rate</span>
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary-green)' }}>{acceptRate}%</span>
+                  </div>
+                  <div style={{ height: '6px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${acceptRate}%`, background: 'var(--primary-green)' }} />
+                  </div>
+                </div>
+
+                <div className="health-row">
+                  <div className="health-row__top" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)' }}>Pending Review</span>
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--clr-pending)' }}>{pendingRate}%</span>
+                  </div>
+                  <div style={{ height: '6px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${pendingRate}%`, background: 'var(--clr-pending)' }} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="admin-stat-card-v2" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '16px' }}>
+                <h4 style={{ fontWeight: 800, color: 'var(--text-main)' }}>Quick Actions</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <button className="btn-secondary-outline" style={{ marginTop: 0, justifyContent: 'flex-start', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <ShieldCheck size={16} /> Verify New Users
+                  </button>
+                  <button className="btn-secondary-outline" style={{ marginTop: 0, justifyContent: 'flex-start', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <AlertTriangle size={16} /> Resolve Disputes
+                  </button>
+                  <button className="btn-secondary-outline" style={{ marginTop: 0, justifyContent: 'flex-start', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--clr-danger)', borderColor: '#fee2e2' }}>
+                    <Database size={16} /> System Maintenance
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
-
-        {/* ── Stats ── */}
-        <div className="stats-grid">
-          {stats.map((s, i) => (
-            <div key={i} className="stat-card" style={{ animationDelay: `${i * 60}ms` }}>
-              <div className={`stat-card__icon stat-card__icon--${s.color}`}>{s.icon}</div>
-              <div>
-                <div className="stat-card__value">{s.value}</div>
-                <div className="stat-card__label">{s.label}</div>
-              </div>
-              <div className={`stat-card__bar stat-card__bar--${s.color}`} />
-            </div>
-          ))}
-        </div>
-
-        {/* ── Two column ── */}
-        <div className="admin-content">
-
-          {/* Left — Job Moderation Table */}
-          <div>
-            <div className="section-row">
-              <h2 className="section-title">
-                <Database size={16} style={{ opacity: 0.6 }} /> All Job Postings
-              </h2>
-              <span className="section-count">{jobs.length} jobs</span>
-            </div>
-
-            <div className="table-card">
-              {jobs.length === 0 ? (
-                <div className="table-empty">No jobs on platform yet.</div>
-              ) : (
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Job Title</th>
-                      <th>Employer</th>
-                      <th style={{ textAlign: "center" }}>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {jobs.map((job, i) => (
-                      <tr key={job.id} style={{ animationDelay: `${i * 30}ms` }}>
-                        <td>
-                          <div className="td-title">{job.title}</div>
-                          <div className="td-sub">₹{job.wage}/day · {job.location}</div>
-                        </td>
-                        <td>
-                          <span className="employer-chip">
-                            {(job.employerName || String(job.employerId) || "?")[0]?.toUpperCase()}
-                          </span>
-                          {job.employerName || `ID: ${job.employerId}`}
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <button
-                            className="action-btn action-btn--delete"
-                            onClick={() => deleteJob(job.id)}
-                            title="Delete job"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-
-          {/* Right — Health + Quick Actions */}
-          <div>
-            <div className="section-row">
-              <h2 className="section-title">
-                <ShieldCheck size={16} style={{ opacity: 0.6 }} /> Platform Health
-              </h2>
-            </div>
-
-            <div className="health-card">
-              <div className="health-row">
-                <div className="health-row__top">
-                  <span className="health-row__label">Acceptance Rate</span>
-                  <span className="health-row__pct" style={{ color: "var(--success)" }}>{acceptRate}%</span>
-                </div>
-                <div className="health-track">
-                  <div className="health-fill health-fill--green" style={{ width: `${acceptRate}%` }} />
-                </div>
-              </div>
-
-              <div className="health-row">
-                <div className="health-row__top">
-                  <span className="health-row__label">Pending Review</span>
-                  <span className="health-row__pct" style={{ color: "var(--warning)" }}>{pendingRate}%</span>
-                </div>
-                <div className="health-track">
-                  <div className="health-fill health-fill--amber" style={{ width: `${pendingRate}%` }} />
-                </div>
-              </div>
-
-              <div className="health-row">
-                <div className="health-row__top">
-                  <span className="health-row__label">Jobs Fill Rate</span>
-                  <span className="health-row__pct" style={{ color: "var(--accent)" }}>{fillRate}%</span>
-                </div>
-                <div className="health-track">
-                  <div className="health-fill health-fill--blue" style={{ width: `${fillRate}%` }} />
-                </div>
-              </div>
-            </div>
-
-            <div className="section-row">
-              <h2 className="section-title">Quick Actions</h2>
-            </div>
-
-            <div className="actions-card">
-              <button className="quick-action quick-action--outline">
-                <ShieldCheck size={15} /> Verify New Users
-              </button>
-              <button className="quick-action quick-action--outline">
-                <AlertTriangle size={15} /> Resolve Disputes
-              </button>
-              <button className="quick-action quick-action--danger">
-                <Database size={15} /> System Maintenance
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </div>
+      )}
     </DashboardLayout>
   );
 };

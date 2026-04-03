@@ -13,11 +13,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/worker", require("./routes/workerRoutes"));
+
 app.use("/api/auth", require("./routes/authRoutes"));
 
 app.use("/api/jobs", require("./routes/jobRoutes"));
 
 app.use("/api/applications", require("./routes/applicationRoutes"));
+
+app.use("/api/admin", require("./routes/adminRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Labour Hub API Running");

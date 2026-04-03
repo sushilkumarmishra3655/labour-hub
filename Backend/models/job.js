@@ -21,6 +21,11 @@ const jobSchema = new mongoose.Schema({
 
   employerId: String,
   employerName: String,
+  status: {
+    type: String,
+    default: "Pending",
+    enum: ["Pending", "Approved", "Rejected"]
+  },
 
   createdAt: {
     type: Date,

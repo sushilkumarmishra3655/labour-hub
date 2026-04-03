@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import Navbar from "./component/Navbar";
 import Footer from "./component/Footer";
@@ -11,10 +11,17 @@ import PostJob from "./pages/PostJob";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import JobDetail from "./pages/JobDetail";
 
 import WorkerDashboard from "./pages/WorkerDashboard";
+import WorkerApplications from "./pages/WorkerApplications";
 import EmployerDashboard from "./pages/EmployerDashboard";
+import ManageListings from "./pages/ManageListings";
+import EmployerApplications from "./pages/EmployerApplications";
+import DashboardLayout from "./Layout/DashboardLayout";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsers from "./pages/AdminUsers";
+import AdminManageJobs from "./pages/AdminManageJobs";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -22,7 +29,8 @@ const App = () => {
   const location = useLocation();
 
   const isDashboardRoute =
-    location.pathname.includes("dashboard");
+    location.pathname.toLowerCase().includes("dashboard") ||
+    location.pathname.toLowerCase().includes("jobs");
 
   return (
     <>
@@ -39,6 +47,8 @@ const App = () => {
         <Route path="/Contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/job/:id" element={<JobDetail />} />
+
 
         {/* WORKER */}
         <Route
@@ -48,17 +58,23 @@ const App = () => {
               <WorkerDashboard />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="applications" element={<WorkerApplications />} />
+        </Route>
 
         {/* EMPLOYER */}
         <Route
           path="/employer-dashboard"
           element={
             <ProtectedRoute role="employer">
-              <EmployerDashboard />
+              <DashboardLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<EmployerDashboard />} />
+          <Route path="manage-listings" element={<ManageListings />} />
+          <Route path="applications" element={<EmployerApplications />} />
+        </Route>
 
         {/* ADMIN */}
         <Route
@@ -68,7 +84,13 @@ const App = () => {
               <AdminDashboard />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="jobs" element={<AdminManageJobs />} />
+        </Route>
+
+        {/* REDIRECTS FOR OLD LINKS */}
+        <Route path="/employer-jobs" element={<Navigate to="/employer-dashboard/manage-listings" replace />} />
 
       </Routes>
 

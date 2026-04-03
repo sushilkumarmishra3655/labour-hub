@@ -1,166 +1,244 @@
-import { useState } from "react";
-import { Search, Trash2, Shield, ShieldOff, Users } from "lucide-react";
-import "./Dashboard.css";
+import { useState, useEffect, useMemo, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { Users, Search, Trash2, ShieldCheck, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
+import api from "../services/api";
+import "./AdminDashboard.css";
+
+const FILTERS = ["All", "Workers", "Employers"];
+const ITEMS_PER_PAGE = 5;
 
 const AdminUsers = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: "Ramesh Kumar",   email: "ramesh@gmail.com",   role: "Worker",   status: "Active",  joined: "Jan 2025" },
-    { id: 2, name: "Company A",      email: "companya@gmail.com", role: "Employer", status: "Active",  joined: "Feb 2025" },
-    { id: 3, name: "Suresh Patel",   email: "suresh@gmail.com",   role: "Worker",   status: "Blocked", joined: "Dec 2024" },
-    { id: 4, name: "Admin",          email: "admin@labourhub.in", role: "Admin",    status: "Active",  joined: "Oct 2024" },
-    { id: 5, name: "Mehta Builders", email: "mehta@builders.com", role: "Employer", status: "Active",  joined: "Mar 2025" },
-  ]);
+  const { user } = useContext(AuthContext);
 
-  const [search, setSearch]         = useState("");
-  const [filterRole, setFilterRole] = useState("All");
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const filteredUsers = users.filter(u => {
-    const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) ||
-                        u.email.toLowerCase().includes(search.toLowerCase());
-    const matchRole   = filterRole === "All" || u.role === filterRole;
-    return matchSearch && matchRole;
-  });
+  const [filter, setFilter] = useState("All");
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const deleteUser   = (id) => setUsers(users.filter(u => u.id !== id));
-  const toggleStatus = (id) => setUsers(users.map(u =>
-    u.id === id ? { ...u, status: u.status === "Active" ? "Blocked" : "Active" } : u
-  ));
+  useEffect(() => {
+    if (!user) return;
 
-  const roleCounts = {
-    All:      users.length,
-    Worker:   users.filter(u => u.role === "Worker").length,
-    Employer: users.filter(u => u.role === "Employer").length,
-    Admin:    users.filter(u => u.role === "Admin").length,
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await api.get("/admin/users");
+        setUsers(res.data);
+      } catch (err) {
+        console.error("Users fetch error:", err);
+        setError("Failed to load users data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [user]);
+
+  const filteredUsers = useMemo(() => {
+    // 🚫 Exclude "admin" role from the list entirely
+    let list = users.filter(u => u.role !== "admin");
+
+    // Apply role filter
+    if (filter !== "All") {
+      const matchRole = filter.toLowerCase().replace("s", ""); // 'Workers' -> 'worker'
+      list = list.filter(u => u.role === matchRole);
+    }
+
+    // Apply search filter
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(u =>
+        u.name?.toLowerCase().includes(q) ||
+        u.phone?.toString().includes(q)
+      );
+    }
+
+    // Reset page whenever filter or search changes
+    setCurrentPage(1);
+
+    return list;
+  }, [users, filter, search]);
+
+  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const getRoleIcon = (role) => {
+    if (role === "admin") return <ShieldCheck size={14} />;
+    if (role === "employer") return <Briefcase size={14} />;
+    return <Users size={14} />;
   };
 
+  if (!user) return null;
+
+  // Pre-calculate counts so they don't include admins
+  const nonAdminList = users.filter(u => u.role !== "admin");
+
   return (
-    <div className="db-page">
-
+    <div className="admin-dashboard admin-dashboard-content-wrapper">
       {/* ── Header ── */}
-      <div className="db-header">
-        <div>
-          <p className="db-eyebrow db-eyebrow--purple">Admin Panel</p>
-          <h1 className="db-title">User Management</h1>
-          <p className="db-subtitle">Monitor, manage and moderate platform users.</p>
+      <header className="admin-welcome-section">
+        <div className="admin-welcome-text">
+          <h1>User Management 👥</h1>
+          <p>View and manage all registered members on Labour Hub.</p>
         </div>
-        <div className="total-chip">
-          <Users size={14} /> {users.length} Total Users
-        </div>
-      </div>
+      </header>
 
-      {/* ── Toolbar: search + role filter ── */}
-      <div className="users-toolbar">
-        <div className="users-search">
-          <Search size={14} color="#94a3b8" />
+      {error && <div className="error-banner">{error}</div>}
+
+      {/* ── Toolbar ── */}
+      <div className="admin-toolbar-v2">
+        <div className="admin-search-box-v2">
+          <Search size={18} className="search-icon" />
           <input
-            type="text"
-            placeholder="Search by name or email..."
+            placeholder="Search by name or phone..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
         </div>
 
-        <div className="tabs-row" style={{ margin: 0 }}>
-          {["All", "Worker", "Employer", "Admin"].map(role => (
-            <button
-              key={role}
-              className={`tab-btn ${filterRole === role ? "active" : ""}`}
-              onClick={() => setFilterRole(role)}
-            >
-              {role}
-              <span className="tab-count">{roleCounts[role]}</span>
-            </button>
-          ))}
+        <div className="admin-segmented-control">
+          {FILTERS.map(tab => {
+            let count = nonAdminList.length;
+            if (tab !== "All") {
+              const mRole = tab.toLowerCase().replace("s", "");
+              count = nonAdminList.filter(u => u.role === mRole).length;
+            }
+
+            return (
+              <button
+                key={tab}
+                className={filter === tab ? "active" : ""}
+                onClick={() => setFilter(tab)}
+              >
+                {tab}
+                <span className="admin-tab-badge">{count}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* ── Table ── */}
-      <div className="table-card">
-        {filteredUsers.length === 0 ? (
-          <div className="table-empty">
-            <div style={{ fontSize: 28, marginBottom: 8 }}>🔍</div>
-            <div>No users found</div>
+      {/* ── Users List ── */}
+      <main className="main-panel">
+        {loading ? (
+          <div className="job-list-v2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="job-card-v2 skeleton-pulse">
+                <div className="job-card-info">
+                  <div className="job-icon-box skeleton-bg"></div>
+                  <div className="job-meta-box">
+                    <div className="skeleton-line-title" style={{ width: '150px' }}></div>
+                    <div className="skeleton-line-sub" style={{ width: '100px' }}></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredUsers.length === 0 ? (
+          <div className="admin-empty-state-v2">
+            <div className="admin-empty-icon-circle">🕵️‍♂️</div>
+            <h2>No users found</h2>
+            <p>Try adjusting your filters or search term to discover more members.</p>
+            <button className="btn-secondary-outline" onClick={() => { setFilter("All"); setSearch(""); }}>
+              Clear all filters
+            </button>
           </div>
         ) : (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Role</th>
-                <th>Joined</th>
-                <th>Status</th>
-                <th style={{ textAlign: "center" }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((u, i) => {
-                const roleKey   = u.role.toLowerCase();
-                const statusKey = u.status.toLowerCase();
-                return (
-                  <tr key={u.id} style={{ animationDelay: `${i * 35}ms` }}>
+          <div className="job-list-v2">
+            {paginatedUsers.map((u, i) => {
+              const roleKey = u.role || "worker";
+              let roleIcon = roleKey === 'employer' ? <Briefcase size={20} /> : <Users size={20} />;
 
-                    {/* User cell */}
-                    <td>
-                      <div className="user-cell">
-                        <div className={`user-avatar user-avatar--${roleKey}`}>
-                          {u.name[0].toUpperCase()}
-                        </div>
-                        <div>
-                          <div className="user-cell__name">{u.name}</div>
-                          <div className="user-cell__email">{u.email}</div>
-                        </div>
+              const joinedDate = u.createdAt
+                ? new Date(u.createdAt).toLocaleDateString(undefined, {
+                  month: 'short', day: 'numeric', year: 'numeric'
+                })
+                : "Unknown";
+
+              return (
+                <div key={u._id} className="job-card-v2" style={{ animationDelay: `${i * 30}ms` }}>
+                  <div className="job-card-info">
+                    <div className={`job-icon-box ${roleKey === 'employer' ? 'green' : 'blue'}`} style={{
+                      backgroundColor: roleKey === 'employer' ? '#dcfce7' : '#e0f2fe',
+                      color: roleKey === 'employer' ? 'var(--primary-green)' : 'var(--primary-blue)'
+                    }}>
+                      {u.name?.charAt(0).toUpperCase() || "?"}
+                    </div>
+                    <div className="job-meta-box">
+                      <h4>{u.name}</h4>
+                      <div className="job-tags">
+                        <span>📞 {u.phone}</span>
+                        <span>🏷️ ID: {u._id}</span>
+                        <span>📅 Joined: {joinedDate}</span>
                       </div>
-                    </td>
+                    </div>
+                  </div>
 
-                    {/* Role */}
-                    <td>
-                      <span className={`role-badge role-badge--${roleKey}`}>
-                        <span className="role-badge__dot" />
-                        {u.role}
-                      </span>
-                    </td>
-
-                    {/* Joined */}
-                    <td className="td-sub">{u.joined}</td>
-
-                    {/* Status */}
-                    <td>
-                      <span className={`badge badge--${statusKey}`}>
-                        {u.status}
-                      </span>
-                    </td>
-
-                    {/* Actions */}
-                    <td>
-                      <div className="actions-cell">
-                        <button
-                          className={`action-btn ${u.status === "Active" ? "action-btn--block" : "action-btn--unblock"}`}
-                          onClick={() => toggleStatus(u.id)}
-                          title={u.status === "Active" ? "Block user" : "Unblock user"}
-                        >
-                          {u.status === "Active" ? <ShieldOff size={13} /> : <Shield size={13} />}
-                        </button>
-
-                        {u.role !== "Admin" && (
-                          <button
-                            className="action-btn action-btn--delete"
-                            onClick={() => deleteUser(u.id)}
-                            title="Delete user"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                  <div className="job-card-right">
+                    <div className={`status-tag ${roleKey}`}>
+                      {roleKey}
+                    </div>
+                    <div className="card-actions">
+                      <button
+                        className="act-btn del"
+                        onClick={() => window.confirm("Delete this user?") && console.log("Deleted", u._id)}
+                        title="Delete User"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
-      </div>
 
+        {/* Pagination Controls */}
+        {totalPages > 1 && !loading && (
+          <div className="admin-toolbar-v2" style={{ marginTop: '24px', justifyContent: 'center' }}>
+            <div className="admin-segmented-control">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              {Array.from({ length: totalPages }).map((_, index) => {
+                const pageNum = index + 1;
+                if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
+                  return (
+                    <button
+                      key={pageNum}
+                      className={currentPage === pageNum ? "active" : ""}
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                }
+                return null;
+              })}
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 };

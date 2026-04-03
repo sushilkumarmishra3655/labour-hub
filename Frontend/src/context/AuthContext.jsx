@@ -11,8 +11,9 @@ const AuthProvider = ({ children }) => {
   // 🔁 Restore user on refresh
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
+    const token = localStorage.getItem("token");
 
-    if (storedUser) {
+    if (storedUser && token) {
       setUser({
         isLoggedIn: true,
         id: storedUser.id,
@@ -32,17 +33,18 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   // 🔑 Login
-  const login = (userData) => {
+  const login = (data) => {
     const authUser = {
       isLoggedIn: true,
-      id: userData.id,
-      name: userData.name,
-      role: userData.role
+      id: data.user.id,
+      name: data.user.name,
+      role: data.user.role
     };
 
     setUser(authUser);
 
-    localStorage.setItem("loggedUser", JSON.stringify(userData));
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("loggedUser", JSON.stringify(data.user));
   };
 
   // 🚪 Logout
@@ -54,6 +56,7 @@ const AuthProvider = ({ children }) => {
       role: null
     });
 
+    localStorage.removeItem("token");
     localStorage.removeItem("loggedUser");
   };
 

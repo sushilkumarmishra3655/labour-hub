@@ -1,0 +1,63 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	Backend/node_modules/.bin/mime
+	Backend/node_modules/.bin/mime.cmd
+	Backend/node_modules/.bin/mime.ps1
+	Backend/node_modules/array-flatten/
+	Backend/node_modules/body-parser/HISTORY.md
+	Backend/node_modules/body-parser/node_modules/
+	Backend/node_modules/bson/vendor/
+	Backend/node_modules/buffer-equal-constant-time/
+	Backend/node_modules/destroy/
+	Backend/node_modules/ecdsa-sig-formatter/
+	Backend/node_modules/express/History.md
+	Backend/node_modules/express/lib/middleware/
+	Backend/node_modules/express/lib/router/
+	Backend/node_modules/express/node_modules/
+	Backend/node_modules/finalhandler/SECURITY.md
+	Backend/node_modules/finalhandler/node_modules/
+	Backend/node_modules/iconv-lite/Changelog.md
+	Backend/node_modules/iconv-lite/lib/extend-node.js
+	Backend/node_modules/jsonwebtoken/
+	Backend/node_modules/jwa/
+	Backend/node_modules/jws/
+	Backend/node_modules/lodash.includes/
+	Backend/node_modules/lodash.isboolean/
+	Backend/node_modules/lodash.isinteger/
+	Backend/node_modules/lodash.isnumber/
+	Backend/node_modules/lodash.isplainobject/
+	Backend/node_modules/lodash.isstring/
+	Backend/node_modules/lodash.once/
+	Backend/node_modules/merge-descriptors/HISTORY.md
+	Backend/node_modules/methods/
+	Backend/node_modules/mime/
+	Backend/node_modules/mongodb/lib/beta.d.ts
+	Backend/node_modules/mongodb/lib/beta.js
+	Backend/node_modules/mongodb/lib/beta.js.map
+	Backend/node_modules/mongodb/lib/client-side-encryption/crypto_callbacks.js
+	Backend/node_modules/mongodb/lib/client-side-encryption/crypto_callbacks.js.map
+	Backend/node_modules/mongodb/lib/resource_management.js
+	Backend/node_modules/mongodb/lib/resource_management.js.map
+	Backend/node_modules/mongodb/src/beta.ts
+	Backend/node_modules/mongodb/src/client-side-encryption/crypto_callbacks.ts
+	Backend/node_modules/mongodb/src/resource_management.ts
+	Backend/node_modules/mongoose/browser.js
+	Backend/node_modules/mongoose/dist/
+	Backend/node_modules/mongoose/lib/browser.js
+	Backend/node_modules/mongoose/lib/browserDocument.js
+	Backend/node_modules/mongoose/lib/documentProvider.js
+	Backend/node_modules/mongoose/lib/drivers/browser/
+	Backend/node_modules/mongoose/lib/helpers/promiseOrCallback.js
+	Backend/node_modules/path-to-regexp/index.js
+	Backend/node_modules/safe-buffer/
+	Backend/node_modules/send/HISTORY.md
+	Backend/node_modules/send/SECURITY.md
+	Backend/node_modules/send/node_modules/
+	Backend/node_modules/serve-static/HISTORY.md
+	Backend/node_modules/utils-merge/
+	status2.txt
+
+nothing added to commit but untracked files present (use "git add" to track)

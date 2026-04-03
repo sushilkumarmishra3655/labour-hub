@@ -1,157 +1,216 @@
-import { useContext, useState, useMemo } from "react";
-import { ApplicationContext } from "../context/ApplicationContext";
+import { useContext, useState, useEffect, useMemo } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { Eye, IndianRupee, Clock, CheckCircle, XCircle, Search, ArrowRight } from "lucide-react";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
+import {
+  Eye, Clock, CheckCircle, XCircle, Search,
+  ArrowRight, Briefcase, MapPin, IndianRupee, Filter
+} from "lucide-react";
 import DashboardLayout from "../Layout/DashboardLayout";
-import "./Dashboard.css";
+import api from "../services/api";
+import "./WorkerDashboard.css";
 
 const FILTERS = ["All", "Pending", "Accepted", "Rejected"];
 
 const WorkerDashboard = () => {
-  const { applications } = useContext(ApplicationContext);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [stats, setStats] = useState({
+    totalApplied: 0,
+    pendingJobs: 0,
+    acceptedJobs: 0,
+    rejectedJobs: 0
+  });
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
 
-  if (!user) return null;
+  const isRoot = location.pathname === "/worker-dashboard" || location.pathname === "/worker-dashboard/";
 
-  const myApps = useMemo(() =>
-    applications.filter(app => app.workerId?.toString() === user.id?.toString()),
-    [applications, user.id]
-  );
+  useEffect(() => {
+    if (!user || !isRoot) return;
 
-  const earnings = useMemo(() =>
-    myApps.filter(a => a.status === "Accepted").reduce((sum, a) => sum + (Number(a.wage) || 0), 0),
-    [myApps]
-  );
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const [statsRes, appsRes] = await Promise.all([
+          api.get("/worker/stats"),
+          api.get("/worker/applications")
+        ]);
+        setStats(statsRes.data);
+        setApplications(appsRes.data);
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+        setError("Failed to load dashboard data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, [user, isRoot]);
 
   const filteredApps = useMemo(() => {
-    let list = filter === "All" ? myApps : myApps.filter(a => a.status === filter);
+    let list = applications;
+    if (filter !== "All") list = list.filter(a => a.status === filter);
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(a =>
         a.jobTitle?.toLowerCase().includes(q) ||
         a.location?.toLowerCase().includes(q) ||
-        a.employerName?.toLowerCase().includes(q)
+        a.company?.toLowerCase().includes(q)
       );
     }
     return list;
-  }, [myApps, filter, search]);
+  }, [applications, filter, search]);
 
-  const stats = [
-    { icon: <IndianRupee size={18} />, value: `₹${earnings.toLocaleString("en-IN")}`, label: "Total Earnings",   color: "blue" },
-    { icon: <CheckCircle  size={18} />, value: myApps.filter(a => a.status === "Accepted").length, label: "Jobs Accepted",  color: "green" },
-    { icon: <Clock        size={18} />, value: myApps.filter(a => a.status === "Pending").length,  label: "Pending",        color: "amber" },
-    { icon: <XCircle      size={18} />, value: myApps.filter(a => a.status === "Rejected").length, label: "Rejected",       color: "red" },
+  if (!user) return null;
+
+  const statCards = [
+    { icon: <Briefcase size={22} />, value: stats.totalApplied, label: "Total Applied", color: "blue" },
+    { icon: <CheckCircle size={22} />, value: stats.acceptedJobs, label: "Accepted", color: "green" },
+    { icon: <Clock size={22} />, value: stats.pendingJobs, label: "In Review", color: "amber" },
+    { icon: <XCircle size={22} />, value: stats.rejectedJobs, label: "Rejected", color: "purple" },
   ];
 
   return (
     <DashboardLayout>
-      <div className="db-page">
-
-        {/* ── Header ── */}
-        <div className="db-header">
-          <div>
-            <p className="db-eyebrow db-eyebrow--blue">Welcome back</p>
-            <h1 className="db-title">{user.name} 👋</h1>
-            <p className="db-subtitle">Track your applications and manage your work journey.</p>
-          </div>
-          <button className="btn btn--primary" onClick={() => navigate("/findwork")}>
-            Find Work <ArrowRight size={15} />
-          </button>
-        </div>
-
-        {/* ── Stats ── */}
-        <div className="stats-grid">
-          {stats.map((s, i) => (
-            <div key={i} className="stat-card" style={{ animationDelay: `${i * 60}ms` }}>
-              <div className={`stat-card__icon stat-card__icon--${s.color}`}>{s.icon}</div>
-              <div>
-                <div className="stat-card__value">{s.value}</div>
-                <div className="stat-card__label">{s.label}</div>
-              </div>
-              <div className={`stat-card__bar stat-card__bar--${s.color}`} />
+      {!isRoot ? (
+        <Outlet />
+      ) : (
+        <div className="worker-dashboard worker-dashboard-content-wrapper">
+          {/* ── Welcome Header ── */}
+          <header className="worker-welcome-section">
+            <div className="worker-welcome-text">
+              <h1>Welcome back, {user.name.split(' ')[0]} 👋</h1>
+              <p>Track your job applications and explore new opportunities.</p>
             </div>
-          ))}
-        </div>
+            <button className="btn-create" onClick={() => navigate("/findwork")}>
+              Find Work <ArrowRight size={18} />
+            </button>
+          </header>
 
-        {/* ── Section row: title + search ── */}
-        <div className="section-row">
-          <h2 className="section-title">
-            <Clock size={16} style={{ opacity: 0.6 }} /> Recent Applications
-          </h2>
-          <div className="search-wrap">
-            <Search size={14} color="#94a3b8" />
-            <input
-              placeholder="Search jobs, location..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-        </div>
+          {error && <div className="error-banner">{error}</div>}
 
-        {/* ── Filter tabs ── */}
-        <div className="tabs-row">
-          {FILTERS.map(tab => {
-            const count = tab === "All" ? myApps.length : myApps.filter(a => a.status === tab).length;
-            return (
-              <button
-                key={tab}
-                className={`tab-btn ${filter === tab ? "active" : ""}`}
-                onClick={() => setFilter(tab)}
-              >
-                {tab}
-                <span className="tab-count">{count}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* ── Application cards ── */}
-        {filteredApps.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state__icon">📋</div>
-            <div className="empty-state__title">No applications found</div>
-            <div className="empty-state__sub">Try a different filter or search term</div>
-          </div>
-        ) : (
-          <div className="app-grid">
-            {filteredApps.map((app, i) => {
-              const statusKey = app.status?.toLowerCase();
-              return (
-                <div key={app.id} className="app-card" style={{ animationDelay: `${i * 40}ms` }}>
-                  <div className="app-card__top">
-                    <span className={`badge badge--${statusKey}`}>
-                      <span className="badge__dot" />
-                      {app.status}
-                    </span>
-                    <span className="app-card__wage">
-                      ₹{app.wage}<span>/day</span>
-                    </span>
+          {/* ── Modern Stats Grid ── */}
+          <section className="worker-stat-grid-modern">
+            {loading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="worker-stat-card-v2 skeleton-pulse">
+                  <div className="worker-icon-v2 skeleton-bg"></div>
+                  <div className="worker-data-v2">
+                    <div className="skeleton-line-title"></div>
+                    <div className="skeleton-line-sub"></div>
                   </div>
-
-                  <h3 className="app-card__title">{app.jobTitle}</h3>
-
-                  <div className="app-card__meta">
-                    <span>📍 {app.location}</span>
-                    <span>🏢 {app.employerName || "Employer"}</span>
-                  </div>
-
-                  <button
-                    className="btn btn--ghost btn--sm"
-                    onClick={() => navigate(`/job/${app.jobId}`)}
-                  >
-                    <Eye size={14} /> View Details
-                  </button>
                 </div>
-              );
-            })}
-          </div>
-        )}
+              ))
+            ) : (
+              statCards.map((s, i) => (
+                <div key={i} className="worker-stat-card-v2">
+                  <div className={`worker-icon-v2 ${s.color}`}>{s.icon}</div>
+                  <div className="worker-data-v2">
+                    <h3>{s.value}</h3>
+                    <span>{s.label}</span>
+                  </div>
+                </div>
+              ))
+            )}
+          </section>
 
-      </div>
+          {/* ── Search & Filter Toolbar ── */}
+          <div className="worker-toolbar-v2">
+            <div className="worker-search-box-v2">
+              <Search size={18} className="search-icon" />
+              <input
+                placeholder="Search jobs, companies or location..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
+
+            <div className="worker-segmented-control">
+              {FILTERS.map(tab => (
+                <button
+                  key={tab}
+                  className={filter === tab ? "active" : ""}
+                  onClick={() => setFilter(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Applications Content ── */}
+          <main className="main-panel">
+            {loading ? (
+              <div className="job-list-v2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="job-card-v2 skeleton-pulse">
+                    <div className="job-card-info">
+                      <div className="job-icon-box skeleton-bg"></div>
+                      <div className="job-meta-box">
+                        <div className="skeleton-line-title" style={{ width: '150px' }}></div>
+                        <div className="skeleton-line-sub" style={{ width: '100px' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredApps.length === 0 ? (
+              <div className="worker-empty-state-v2">
+                <div className="worker-empty-icon-circle">📋</div>
+                <h2>No applications found</h2>
+                <p>Try adjusting your search or filters to see more results.</p>
+                <button className="btn-secondary-outline" onClick={() => { setFilter("All"); setSearch(""); }}>
+                  Clear all filters
+                </button>
+              </div>
+            ) : (
+              <div className="job-list-v2">
+                {filteredApps.map((app) => (
+                  <div key={app._id} className="job-card-v2">
+                    <div className="job-card-info">
+                      <div className="job-icon-box">
+                        <Briefcase size={20} />
+                      </div>
+                      <div className="job-meta-box">
+                        <h4>{app.jobTitle}</h4>
+                        <div className="job-tags">
+                          <span><MapPin size={14} /> {app.location}</span>
+                          <span>🏢 {app.company || "Direct Employer"}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="job-card-right">
+                      <div className="salary-badge">
+                        <IndianRupee size={14} /> <strong>{app.salary}</strong><span>/day</span>
+                      </div>
+                      <div className={`status-tag ${app.status?.toLowerCase()}`}>
+                        {app.status}
+                      </div>
+                      <div className="card-actions">
+                        <button
+                          className="act-btn worker-edit"
+                          onClick={() => navigate(`/job/${app.jobId}`)}
+                          title="View Details"
+                        >
+                          <Eye size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </main>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

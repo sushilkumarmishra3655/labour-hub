@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Auth.css";
-import { User, Phone, Lock, Key } from "lucide-react";
+import { User, Phone, Lock, Key, MapPin, Loader, Navigation } from "lucide-react";
+import useCurrentLocation from "../hooks/useCurrentLocation";
 
 const Register = () => {
 
@@ -12,12 +13,20 @@ const Register = () => {
     role: "",
     password: "",
     adminKey: "",
+    address: "",
   });
 
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const { fetchLocation, locLoading, locError } = useCurrentLocation();
 
   const ADMIN_SECRET = "ADMIN@123";
+
+  const handleUseCurrentLocation = () => {
+    fetchLocation((address) => {
+      setForm({ ...form, address });
+    });
+  };
 
   const validate = () => {
 
@@ -63,7 +72,9 @@ const Register = () => {
           phone: form.phone,
           gender: form.gender,
           role: form.role,
-          password: form.password
+          password: form.password,
+          address: form.address,
+          location: form.address
         })
       });
 
@@ -131,6 +142,39 @@ const Register = () => {
             </div>
 
             {errors.phone && <small>{errors.phone}</small>}
+          </div>
+
+          {/* ADDRESS / LOCATION */}
+          <div className="form-group">
+            <label>Address / Location</label>
+
+            <div className="input-box">
+              <MapPin className="auth-input-icon" size={18} />
+
+              <input
+                type="text"
+                placeholder="Enter your address"
+                value={form.address}
+                onChange={(e) =>
+                  setForm({ ...form, address: e.target.value })
+                }
+              />
+            </div>
+
+            <button
+              type="button"
+              className="loc-btn"
+              onClick={handleUseCurrentLocation}
+              disabled={locLoading}
+            >
+              {locLoading ? (
+                <><Loader size={15} className="spin-icon" /> Detecting location...</>
+              ) : (
+                <><Navigation size={15} /> Use Current Location</>
+              )}
+            </button>
+
+            {locError && <small>{locError}</small>}
           </div>
 
           {/* GENDER */}

@@ -1,34 +1,33 @@
 import React, { createContext, useState, useEffect } from "react";
+import api from "../services/api";
 
 export const JobContext = createContext();
 
 const JobProvider = ({ children }) => {
 
-  const [jobs,setJobs] = useState([]);
+  const [jobs, setJobs] = useState([]);
 
-  const fetchJobs = async ()=>{
+  const fetchJobs = async () => {
 
-    try{
+    try {
 
-      const res = await fetch("http://localhost:5000/api/jobs");
+      const res = await api.get("/jobs");
 
-      const data = await res.json();
+      setJobs(res.data);
 
-      setJobs(data);
+    } catch (err) {
 
-    }catch(err){
-
-      console.log("Error fetching jobs",err);
+      console.log("Error fetching jobs", err);
 
     }
 
   };
 
-  useEffect(()=>{
+  useEffect(() => {
 
     fetchJobs();
 
-  },[]);
+  }, []);
 
   return (
 
