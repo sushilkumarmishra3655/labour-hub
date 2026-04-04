@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { Briefcase, Search, CheckCircle, XCircle, Trash2, Eye, MapPin, Clock, IndianRupee, Building, X, Award, AlertTriangle, Layers, Users, Phone, Mail, Calendar } from "lucide-react";
+import { Briefcase, Search, CheckCircle, XCircle, Trash2, Eye, MapPin, Clock, IndianRupee, Building, X, Award, AlertTriangle, Layers, Users, Phone, Mail, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../services/api";
 import "./AdminDashboard.css";
 
 const FILTERS = ["All", "Pending", "Approved", "Rejected"];
+const ITEMS_PER_PAGE = 4;
 
 const AdminManageJobs = () => {
   const { user } = useContext(AuthContext);
@@ -16,6 +17,7 @@ const AdminManageJobs = () => {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [selectedJob, setSelectedJob] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isActionLoading, setIsActionLoading] = useState(false);
 
   const fetchJobs = async () => {
@@ -93,8 +95,17 @@ const AdminManageJobs = () => {
         j.location?.toLowerCase().includes(q)
       );
     }
+    // Reset page whenever filter or search changes
+    setCurrentPage(1);
+
     return list;
   }, [jobs, filter, search]);
+
+  const totalPages = Math.ceil(filteredJobs.length / ITEMS_PER_PAGE);
+  const paginatedJobs = filteredJobs.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   if (!user) return null;
 
@@ -111,8 +122,8 @@ const AdminManageJobs = () => {
 
       {/* ── Quick Stats ── */}
       <section className="admin-stat-grid-modern" style={{ marginBottom: '32px' }}>
-        <div 
-          className={`admin-stat-card-v2 interactive ${filter === "All" ? "active-stat" : ""}`} 
+        <div
+          className={`admin-stat-card-v2 interactive ${filter === "All" ? "active-stat" : ""}`}
           onClick={() => setFilter("All")}
         >
           <div className="admin-icon-v2 blue"><Briefcase size={22} /></div>
@@ -121,7 +132,7 @@ const AdminManageJobs = () => {
             <span>Total Posts</span>
           </div>
         </div>
-        <div 
+        <div
           className={`admin-stat-card-v2 interactive ${filter === "Pending" ? "active-stat" : ""}`}
           onClick={() => setFilter("Pending")}
         >
@@ -131,7 +142,7 @@ const AdminManageJobs = () => {
             <span>Pending Review</span>
           </div>
         </div>
-        <div 
+        <div
           className={`admin-stat-card-v2 interactive ${filter === "Approved" ? "active-stat" : ""}`}
           onClick={() => setFilter("Approved")}
         >
@@ -189,12 +200,12 @@ const AdminManageJobs = () => {
           </div>
         ) : (
           <div className="job-list-v2">
-            {filteredJobs.map((job, i) => {
+            {paginatedJobs.map((job, i) => {
               const statusKey = job.status?.toLowerCase() || "pending";
               return (
-                <div 
-                  key={job._id} 
-                  className="job-card-v2" 
+                <div
+                  key={job._id}
+                  className="job-card-v2"
                   style={{ animationDelay: `${i * 30}ms`, cursor: 'pointer' }}
                   onClick={() => setSelectedJob(job)}
                 >
@@ -262,6 +273,48 @@ const AdminManageJobs = () => {
             })}
           </div>
         )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && !loading && (
+          <div className="admin-pagination-container">
+            <div className="admin-segmented-control">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              {Array.from({ length: totalPages }).map((_, index) => {
+                const pageNum = index + 1;
+                // Show first, last, and pages around current
+                if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
+                  return (
+                    <button
+                      key={pageNum}
+                      className={currentPage === pageNum ? "active" : ""}
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                }
+                // Handle gaps
+                if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                  return <span key={pageNum} className="pagination-ellipsis">...</span>;
+                }
+                return null;
+              })}
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* ── Job Details Popup ── */}
@@ -320,8 +373,8 @@ const AdminManageJobs = () => {
                   <p>{selectedJob.email || "N/A"}</p>
                 </div>
                 <div className="admin-u-item-v3">
-                   <label><AlertTriangle size={14} /> Urgency</label>
-                   <p>{selectedJob.urgent ? "🚨 High Priority" : "Standard Hiring"}</p>
+                  <label><AlertTriangle size={14} /> Urgency</label>
+                  <p>{selectedJob.urgent ? "🚨 High Priority" : "Standard Hiring"}</p>
                 </div>
               </div>
 
@@ -335,19 +388,19 @@ const AdminManageJobs = () => {
 
             <div className="popup-footer">
               <button className="p-btn-cancel" onClick={() => setSelectedJob(null)}>Close</button>
-              
+
               {selectedJob.status === "Pending" ? (
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <button 
-                    className="p-btn-save" 
+                  <button
+                    className="p-btn-save"
                     style={{ background: 'var(--primary-green)' }}
                     onClick={() => handleApprove(selectedJob._id)}
                     disabled={isActionLoading}
                   >
                     {isActionLoading ? "..." : "Approve Job"}
                   </button>
-                  <button 
-                    className="p-btn-save" 
+                  <button
+                    className="p-btn-save"
                     style={{ background: 'var(--clr-pending)' }}
                     onClick={() => handleReject(selectedJob._id)}
                     disabled={isActionLoading}
@@ -356,8 +409,8 @@ const AdminManageJobs = () => {
                   </button>
                 </div>
               ) : (
-                <button 
-                  className="p-btn-save" 
+                <button
+                  className="p-btn-save"
                   onClick={() => handleDelete(selectedJob._id)}
                   disabled={isActionLoading}
                 >

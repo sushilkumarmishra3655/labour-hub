@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { FileText, Search, CheckCircle, XCircle, Trash2, Eye, MapPin, Clock, IndianRupee, Building, X, User, Phone, Mail, Calendar, MessageSquare } from "lucide-react";
+import { FileText, Search, CheckCircle, XCircle, Trash2, Eye, MapPin, Clock, IndianRupee, Building, X, User, Phone, Mail, Calendar, MessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../services/api";
 import "./AdminDashboard.css";
 
 const FILTERS = ["All", "Pending", "Accepted", "Rejected"];
+const ITEMS_PER_PAGE = 4;
 
 const AdminManageApplications = () => {
   const { user } = useContext(AuthContext);
@@ -16,6 +17,7 @@ const AdminManageApplications = () => {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [selectedApp, setSelectedApp] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isActionLoading, setIsActionLoading] = useState(false);
 
   const fetchApplications = async () => {
@@ -64,8 +66,17 @@ const AdminManageApplications = () => {
         a.location?.toLowerCase().includes(q)
       );
     }
+    // Reset page whenever filter or search changes
+    setCurrentPage(1);
+
     return list;
   }, [applications, filter, search]);
+
+  const totalPages = Math.ceil(filteredApps.length / ITEMS_PER_PAGE);
+  const paginatedApps = filteredApps.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   if (!user) return null;
 
@@ -82,8 +93,8 @@ const AdminManageApplications = () => {
 
       {/* ── Quick Stats ── */}
       <section className="admin-stat-grid-modern" style={{ marginBottom: '32px' }}>
-        <div 
-          className={`admin-stat-card-v2 interactive ${filter === "All" ? "active-stat" : ""}`} 
+        <div
+          className={`admin-stat-card-v2 interactive ${filter === "All" ? "active-stat" : ""}`}
           onClick={() => setFilter("All")}
         >
           <div className="admin-icon-v2 blue"><FileText size={22} /></div>
@@ -92,7 +103,7 @@ const AdminManageApplications = () => {
             <span>Total Apps</span>
           </div>
         </div>
-        <div 
+        <div
           className={`admin-stat-card-v2 interactive ${filter === "Pending" ? "active-stat" : ""}`}
           onClick={() => setFilter("Pending")}
         >
@@ -102,7 +113,7 @@ const AdminManageApplications = () => {
             <span>Pending</span>
           </div>
         </div>
-        <div 
+        <div
           className={`admin-stat-card-v2 interactive ${filter === "Accepted" ? "active-stat" : ""}`}
           onClick={() => setFilter("Accepted")}
         >
@@ -112,7 +123,7 @@ const AdminManageApplications = () => {
             <span>Accepted</span>
           </div>
         </div>
-        <div 
+        <div
           className={`admin-stat-card-v2 interactive ${filter === "Rejected" ? "active-stat" : ""}`}
           onClick={() => setFilter("Rejected")}
         >
@@ -170,12 +181,12 @@ const AdminManageApplications = () => {
           </div>
         ) : (
           <div className="job-list-v2">
-            {filteredApps.map((app, i) => {
+            {paginatedApps.map((app, i) => {
               const statusKey = app.status?.toLowerCase() || "pending";
               return (
-                <div 
-                  key={app._id} 
-                  className="job-card-v2" 
+                <div
+                  key={app._id}
+                  className="job-card-v2"
                   style={{ animationDelay: `${i * 30}ms`, cursor: 'pointer' }}
                   onClick={() => setSelectedApp(app)}
                 >
@@ -218,6 +229,47 @@ const AdminManageApplications = () => {
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && !loading && (
+          <div className="admin-pagination-container">
+            <div className="admin-segmented-control">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              {Array.from({ length: totalPages }).map((_, index) => {
+                const pageNum = index + 1;
+                if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
+                  return (
+                    <button
+                      key={pageNum}
+                      className={currentPage === pageNum ? "active" : ""}
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                }
+                // Handle gaps
+                if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                  return <span key={pageNum} className="pagination-ellipsis">...</span>;
+                }
+                return null;
+              })}
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
         )}
       </main>
@@ -289,8 +341,8 @@ const AdminManageApplications = () => {
 
             <div className="popup-footer">
               <button className="p-btn-cancel" onClick={() => setSelectedApp(null)}>Close</button>
-              <button 
-                className="p-btn-save" 
+              <button
+                className="p-btn-save"
                 onClick={() => handleDelete(selectedApp._id)}
                 disabled={isActionLoading}
               >

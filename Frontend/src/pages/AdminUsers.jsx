@@ -5,7 +5,7 @@ import api from "../services/api";
 import "./AdminDashboard.css";
 
 const FILTERS = ["All", "Workers", "Employers"];
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 4;
 
 const AdminUsers = () => {
   const { user } = useContext(AuthContext);
@@ -182,9 +182,9 @@ const AdminUsers = () => {
                 : "Unknown";
 
               return (
-                <div 
-                  key={u._id} 
-                  className="job-card-v2" 
+                <div
+                  key={u._id}
+                  className="job-card-v2"
                   style={{ animationDelay: `${i * 30}ms`, cursor: 'pointer' }}
                   onClick={() => setSelectedUser(u)}
                 >
@@ -228,7 +228,7 @@ const AdminUsers = () => {
 
         {/* Pagination Controls */}
         {totalPages > 1 && !loading && (
-          <div className="admin-toolbar-v2" style={{ marginTop: '24px', justifyContent: 'center' }}>
+          <div className="admin-pagination-container">
             <div className="admin-segmented-control">
               <button
                 disabled={currentPage === 1}
@@ -239,6 +239,7 @@ const AdminUsers = () => {
 
               {Array.from({ length: totalPages }).map((_, index) => {
                 const pageNum = index + 1;
+                // Show first, last, and pages around current
                 if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
                   return (
                     <button
@@ -249,6 +250,10 @@ const AdminUsers = () => {
                       {pageNum}
                     </button>
                   );
+                }
+                // Handle gaps
+                if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                  return <span key={pageNum} className="pagination-ellipsis">...</span>;
                 }
                 return null;
               })}
@@ -335,8 +340,8 @@ const AdminUsers = () => {
 
             <div className="popup-footer">
               <button className="p-btn-cancel" onClick={() => setSelectedUser(null)}>Close</button>
-              <button 
-                className="p-btn-save" 
+              <button
+                className="p-btn-save"
                 onClick={() => handleDeleteUser(selectedUser._id)}
                 disabled={isActionLoading}
               >
