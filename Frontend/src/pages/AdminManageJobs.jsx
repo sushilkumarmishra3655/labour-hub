@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { Briefcase, Search, CheckCircle, XCircle, Trash2, Eye, MapPin, Clock, IndianRupee, Building } from "lucide-react";
+import { Briefcase, Search, CheckCircle, XCircle, Trash2, Eye, MapPin, Clock, IndianRupee, Building, X, Award, AlertTriangle, Layers, Users, Phone, Mail, Calendar } from "lucide-react";
 import api from "../services/api";
 import "./AdminDashboard.css";
 
@@ -15,6 +15,8 @@ const AdminManageJobs = () => {
 
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [isActionLoading, setIsActionLoading] = useState(false);
 
   const fetchJobs = async () => {
     try {
@@ -35,34 +37,46 @@ const AdminManageJobs = () => {
   }, [user]);
 
   const handleApprove = async (id) => {
+    setIsActionLoading(true);
     try {
       await api.patch(`/admin/jobs/${id}/approve`);
       setJobs(prev => prev.map(job =>
         job._id === id ? { ...job, status: "Approved" } : job
       ));
+      if (selectedJob?._id === id) setSelectedJob(prev => ({ ...prev, status: "Approved" }));
     } catch (err) {
       alert("Failed to approve job");
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
   const handleReject = async (id) => {
+    setIsActionLoading(true);
     try {
       await api.patch(`/admin/jobs/${id}/reject`);
       setJobs(prev => prev.map(job =>
         job._id === id ? { ...job, status: "Rejected" } : job
       ));
+      if (selectedJob?._id === id) setSelectedJob(prev => ({ ...prev, status: "Rejected" }));
     } catch (err) {
       alert("Failed to reject job");
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this job?")) return;
+    if (!window.confirm("Are you sure you want to delete this job? This will remove all associated applications as well.")) return;
+    setIsActionLoading(true);
     try {
       await api.delete(`/admin/jobs/${id}`);
       setJobs(prev => prev.filter(job => job._id !== id));
+      setSelectedJob(null);
     } catch (err) {
       alert("Failed to delete job");
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
@@ -169,12 +183,14 @@ const AdminManageJobs = () => {
             {filteredJobs.map((job, i) => {
               const statusKey = job.status?.toLowerCase() || "pending";
               return (
-                <div key={job._id} className="job-card-v2" style={{ animationDelay: `${i * 30}ms` }}>
+                <div 
+                  key={job._id} 
+                  className="job-card-v2" 
+                  style={{ animationDelay: `${i * 30}ms`, cursor: 'pointer' }}
+                  onClick={() => setSelectedJob(job)}
+                >
                   <div className="job-card-info">
-                    <div className={`job-icon-box ${statusKey}`} style={{
-                      background: '#f1f5f9',
-                      color: 'var(--primary-blue)'
-                    }}>
+                    <div className={`job-icon-box ${statusKey}`}>
                       {job.title?.charAt(0).toUpperCase() || "?"}
                     </div>
                     <div className="job-meta-box">
@@ -193,7 +209,8 @@ const AdminManageJobs = () => {
                   </div>
 
                   <div className="job-card-right">
-                    <div className="salary-badge" style={{ marginRight: '32px' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--primary-blue)', fontWeight: '600', marginRight: '10px' }}>Details</span>
+                    <div className="salary-badge" style={{ marginRight: '16px' }}>
                       <IndianRupee size={14} /> <strong>{job.wage}</strong><span>/day</span>
                     </div>
 
@@ -202,17 +219,19 @@ const AdminManageJobs = () => {
                         <>
                           <button
                             className="act-btn"
-                            style={{ color: 'var(--primary-green)', borderColor: 'rgba(34, 197, 94, 0.2)' }}
-                            onClick={() => handleApprove(job._id)}
+                            style={{ color: 'var(--primary-green)', background: '#f0fdf4' }}
+                            onClick={(e) => { e.stopPropagation(); handleApprove(job._id); }}
                             title="Approve Listing"
+                            disabled={isActionLoading}
                           >
                             <CheckCircle size={18} />
                           </button>
                           <button
                             className="act-btn"
-                            style={{ color: 'var(--clr-pending)', borderColor: 'rgba(245, 158, 11, 0.2)' }}
-                            onClick={() => handleReject(job._id)}
+                            style={{ color: 'var(--clr-pending)', background: '#fffbeb' }}
+                            onClick={(e) => { e.stopPropagation(); handleReject(job._id); }}
                             title="Reject Listing"
+                            disabled={isActionLoading}
                           >
                             <XCircle size={18} />
                           </button>
@@ -221,8 +240,9 @@ const AdminManageJobs = () => {
 
                       <button
                         className="act-btn del"
-                        onClick={() => handleDelete(job._id)}
+                        onClick={(e) => { e.stopPropagation(); handleDelete(job._id); }}
                         title="Delete Permanently"
+                        disabled={isActionLoading}
                       >
                         <Trash2 size={18} />
                       </button>
@@ -234,6 +254,111 @@ const AdminManageJobs = () => {
           </div>
         )}
       </main>
+
+      {/* ── Job Details Popup ── */}
+      {selectedJob && (
+        <div className="popup-overlay" onClick={() => setSelectedJob(null)}>
+          <div className="inline-popup" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <div className="popup-title">
+                <Award size={20} color="var(--primary-blue)" />
+                <h3>Job Listing Details</h3>
+              </div>
+              <button className="popup-close" onClick={() => setSelectedJob(null)}><X size={18} /></button>
+            </div>
+
+            <div className="worker-details-content">
+              <div className="admin-u-header-v3">
+                <div className={`admin-u-avatar-v3 worker`}>
+                  {selectedJob.title?.charAt(0).toUpperCase()}
+                </div>
+                <div className="admin-u-title-v3">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <h2>{selectedJob.title}</h2>
+                    <span className={`status-tag ${selectedJob.status?.toLowerCase()}`}>{selectedJob.status}</span>
+                  </div>
+                  <p>Posted by {selectedJob.company || "Direct Employer"} • {new Date(selectedJob.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              <div className="admin-u-grid-v3">
+                <div className="admin-u-item-v3">
+                  <label><IndianRupee size={14} /> Daily Wage</label>
+                  <p>₹{selectedJob.wage} / day</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label><Layers size={14} /> Category</label>
+                  <p>{selectedJob.category || "Uncategorized"}</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label><MapPin size={14} /> Location</label>
+                  <p>{selectedJob.location}</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label><Clock size={14} /> Job Type / Shift</label>
+                  <p>{selectedJob.jobType} • {selectedJob.shift || "Day Shift"}</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label><Users size={14} /> Workers Needed</label>
+                  <p>{selectedJob.workersNeeded || 1} Person</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label><Phone size={14} /> Contact Phone</label>
+                  <p>{selectedJob.phone || "N/A"}</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label><Mail size={14} /> Business Email</label>
+                  <p>{selectedJob.email || "N/A"}</p>
+                </div>
+                <div className="admin-u-item-v3">
+                   <label><AlertTriangle size={14} /> Urgency</label>
+                   <p>{selectedJob.urgent ? "🚨 High Priority" : "Standard Hiring"}</p>
+                </div>
+              </div>
+
+              {selectedJob.description && (
+                <div className="u-exp-v3">
+                  <label>Job Description</label>
+                  <p style={{ lineHeight: '1.6', color: '#475569' }}>{selectedJob.description}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="popup-footer">
+              <button className="p-btn-cancel" onClick={() => setSelectedJob(null)}>Close</button>
+              
+              {selectedJob.status === "Pending" ? (
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button 
+                    className="p-btn-save" 
+                    style={{ background: 'var(--primary-green)' }}
+                    onClick={() => handleApprove(selectedJob._id)}
+                    disabled={isActionLoading}
+                  >
+                    {isActionLoading ? "..." : "Approve Job"}
+                  </button>
+                  <button 
+                    className="p-btn-save" 
+                    style={{ background: 'var(--clr-pending)' }}
+                    onClick={() => handleReject(selectedJob._id)}
+                    disabled={isActionLoading}
+                  >
+                    {isActionLoading ? "..." : "Reject Job"}
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  className="p-btn-save" 
+                  onClick={() => handleDelete(selectedJob._id)}
+                  disabled={isActionLoading}
+                >
+                  {isActionLoading ? "Deleting..." : "Delete Listing"}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

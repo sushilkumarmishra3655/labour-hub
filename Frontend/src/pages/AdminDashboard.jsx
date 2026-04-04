@@ -1,16 +1,32 @@
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState, useEffect } from "react";
 import { ApplicationContext } from "../context/ApplicationContext";
 import { JobContext } from "../context/JobContext";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Trash2, ShieldCheck, Database, TrendingUp, Briefcase, Users, AlertTriangle } from "lucide-react";
 import DashboardLayout from "../Layout/DashboardLayout";
+import api from "../services/api";
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
   const { applications } = useContext(ApplicationContext);
   const { jobs, deleteJob } = useContext(JobContext);
+  const [usersCount, setUsersCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await api.get("/admin/users");
+        // Exclude admins if needed, or just show total
+        const nonAdmins = res.data.filter(u => u.role !== "admin");
+        setUsersCount(nonAdmins.length);
+      } catch (err) {
+        console.error("Failed to fetch users count", err);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const isRoot = location.pathname === "/admin-dashboard" || location.pathname === "/admin-dashboard/";
 
@@ -23,10 +39,10 @@ const AdminDashboard = () => {
   const pendingApps = applications.filter(a => a.status === "Pending");
 
   const stats = [
-    { icon: <TrendingUp size={18} />, value: `₹${revenue.toFixed(0)}`, label: "Est. Revenue (10%)", color: "purple" },
-    { icon: <Briefcase size={18} />, value: jobs.length, label: "Total Jobs", color: "blue" },
-    { icon: <Users size={18} />, value: applications.length, label: "Total Applications", color: "green" },
-    { icon: <ShieldCheck size={18} />, value: acceptedApps.length, label: "Total Hired", color: "amber" },
+    { icon: <TrendingUp size={18} />, value: `₹${revenue.toFixed(0)}`, label: "Est. Revenue (10%)", color: "purple", path: null },
+    { icon: <Users size={18} />, value: usersCount, label: "Total Users", color: "blue", path: "/admin-dashboard/users" },
+    { icon: <Briefcase size={18} />, value: jobs.length, label: "Total Jobs", color: "green", path: "/admin-dashboard/jobs" },
+    { icon: <ShieldCheck size={18} />, value: acceptedApps.length, label: "Total Hired", color: "amber", path: "/admin-dashboard/jobs" },
   ];
 
   const acceptRate = applications.length
@@ -57,7 +73,12 @@ const AdminDashboard = () => {
           {/* ── Stats ── */}
           <section className="admin-stat-grid-modern">
             {stats.map((s, i) => (
-              <div key={i} className="admin-stat-card-v2">
+              <div 
+                key={i} 
+                className={`admin-stat-card-v2 ${s.path ? 'clickable' : ''}`}
+                onClick={() => s.path && navigate(s.path)}
+                style={{ cursor: s.path ? 'pointer' : 'default' }}
+              >
                 <div className={`admin-icon-v2 ${s.color}`}>{s.icon}</div>
                 <div className="admin-data-v2">
                   <h3>{s.value}</h3>

@@ -16,9 +16,7 @@ const AuthProvider = ({ children }) => {
     if (storedUser && token) {
       setUser({
         isLoggedIn: true,
-        id: storedUser.id,
-        name: storedUser.name,
-        role: storedUser.role
+        ...storedUser
       });
     } else {
       setUser({
@@ -36,9 +34,7 @@ const AuthProvider = ({ children }) => {
   const login = (data) => {
     const authUser = {
       isLoggedIn: true,
-      id: data.user.id,
-      name: data.user.name,
-      role: data.user.role
+      ...data.user
     };
 
     setUser(authUser);

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { Users, Search, Trash2, ShieldCheck, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
+import { Users, Search, Trash2, ShieldCheck, Briefcase, ChevronLeft, ChevronRight, X, Phone, Mail, MapPin, Calendar, Award } from "lucide-react";
 import api from "../services/api";
 import "./AdminDashboard.css";
 
@@ -17,6 +17,8 @@ const AdminUsers = () => {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isActionLoading, setIsActionLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -74,6 +76,22 @@ const AdminUsers = () => {
     if (role === "admin") return <ShieldCheck size={14} />;
     if (role === "employer") return <Briefcase size={14} />;
     return <Users size={14} />;
+  };
+
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm("Are you sure you want to permanently delete this user? This action cannot be undone.")) return;
+    setIsActionLoading(true);
+    try {
+      await api.delete(`/admin/users/${id}`);
+      setUsers(prev => prev.filter(u => u._id !== id));
+      setSelectedUser(null);
+      alert("User deleted successfully.");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete user.");
+    } finally {
+      setIsActionLoading(false);
+    }
   };
 
   if (!user) return null;
@@ -164,32 +182,38 @@ const AdminUsers = () => {
                 : "Unknown";
 
               return (
-                <div key={u._id} className="job-card-v2" style={{ animationDelay: `${i * 30}ms` }}>
+                <div 
+                  key={u._id} 
+                  className="job-card-v2" 
+                  style={{ animationDelay: `${i * 30}ms`, cursor: 'pointer' }}
+                  onClick={() => setSelectedUser(u)}
+                >
                   <div className="job-card-info">
-                    <div className={`job-icon-box ${roleKey === 'employer' ? 'green' : 'blue'}`} style={{
-                      backgroundColor: roleKey === 'employer' ? '#dcfce7' : '#e0f2fe',
-                      color: roleKey === 'employer' ? 'var(--primary-green)' : 'var(--primary-blue)'
-                    }}>
+                    <div className={`job-icon-box ${roleKey === 'employer' ? 'green' : 'blue'}`}>
                       {u.name?.charAt(0).toUpperCase() || "?"}
                     </div>
                     <div className="job-meta-box">
                       <h4>{u.name}</h4>
                       <div className="job-tags">
-                        <span>📞 {u.phone}</span>
-                        <span>🏷️ ID: {u._id}</span>
-                        <span>📅 Joined: {joinedDate}</span>
+                        <span><Phone size={14} style={{ opacity: 0.7 }} /> {u.phone}</span>
+                        <span>🏷️ {u._id.slice(-8)}</span>
+                        <span>📅 {joinedDate}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="job-card-right">
+                    <span style={{ fontSize: '12px', color: 'var(--primary-blue)', fontWeight: '600', marginRight: '10px' }}>View Profile</span>
                     <div className={`status-tag ${roleKey}`}>
                       {roleKey}
                     </div>
                     <div className="card-actions">
                       <button
                         className="act-btn del"
-                        onClick={() => window.confirm("Delete this user?") && console.log("Deleted", u._id)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevents opening the popup when clicking delete
+                          handleDeleteUser(u._id);
+                        }}
                         title="Delete User"
                       >
                         <Trash2 size={18} />
@@ -239,6 +263,89 @@ const AdminUsers = () => {
           </div>
         )}
       </main>
+
+      {/* ── User Details Popup ── */}
+      {selectedUser && (
+        <div className="popup-overlay" onClick={() => setSelectedUser(null)}>
+          <div className="inline-popup" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <div className="popup-title">
+                <Award size={20} color="var(--primary-blue)" />
+                <h3>Full User Profile</h3>
+              </div>
+              <button className="popup-close" onClick={() => setSelectedUser(null)}><X size={18} /></button>
+            </div>
+
+            <div className="worker-details-content">
+              <div className="admin-u-header-v3">
+                <div className={`admin-u-avatar-v3 ${selectedUser.role}`}>
+                  {selectedUser.name?.charAt(0).toUpperCase()}
+                </div>
+                <div className="admin-u-title-v3">
+                  <h2>{selectedUser.name}</h2>
+                  <p>{selectedUser.role?.charAt(0).toUpperCase() + selectedUser.role?.slice(1)} • Member since {new Date(selectedUser.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              <div className="admin-u-grid-v3">
+                <div className="admin-u-item-v3">
+                  <label><Phone size={14} /> Phone</label>
+                  <p>{selectedUser.phone || "N/A"}</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label><Mail size={14} /> Email</label>
+                  <p>{selectedUser.email || "No email linked"}</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label><MapPin size={14} /> Location / Address</label>
+                  <p>{selectedUser.address || selectedUser.location || "N/A"}</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label><Calendar size={14} /> Date of Birth</label>
+                  <p>{selectedUser.dob ? new Date(selectedUser.dob).toLocaleDateString() : "N/A"}</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label>🔑 User ID</label>
+                  <p style={{ fontSize: '12px', fontFamily: 'monospace' }}>{selectedUser._id}</p>
+                </div>
+                <div className="admin-u-item-v3">
+                  <label>🛡️ Membership</label>
+                  <p>{selectedUser.role === 'employer' ? "Employer Tier" : "Active Worker"}</p>
+                </div>
+              </div>
+
+              {selectedUser.skills?.length > 0 && (
+                <div className="u-skills-v3">
+                  <label>Skills & Expertise</label>
+                  <div className="admin-u-skills-pills">
+                    {selectedUser.skills.map((s, i) => (
+                      <span key={i} className="admin-skill-pill-v3">{s}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedUser.experience && (
+                <div className="u-exp-v3">
+                  <label>Experience Background</label>
+                  <p>{selectedUser.experience}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="popup-footer">
+              <button className="p-btn-cancel" onClick={() => setSelectedUser(null)}>Close</button>
+              <button 
+                className="p-btn-save" 
+                onClick={() => handleDeleteUser(selectedUser._id)}
+                disabled={isActionLoading}
+              >
+                {isActionLoading ? "Deleting..." : "Delete User"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
