@@ -42,7 +42,7 @@ const AdminDashboard = () => {
     { icon: <TrendingUp size={18} />, value: `₹${revenue.toFixed(0)}`, label: "Est. Revenue (10%)", color: "purple", path: null },
     { icon: <Users size={18} />, value: usersCount, label: "Total Users", color: "blue", path: "/admin-dashboard/users" },
     { icon: <Briefcase size={18} />, value: jobs.length, label: "Total Jobs", color: "green", path: "/admin-dashboard/jobs" },
-    { icon: <ShieldCheck size={18} />, value: acceptedApps.length, label: "Total Hired", color: "amber", path: "/admin-dashboard/jobs" },
+    { icon: <Database size={18} />, value: applications.length, label: "Total Apps", color: "amber", path: "/admin-dashboard/applications" },
   ];
 
   const acceptRate = applications.length

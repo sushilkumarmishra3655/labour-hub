@@ -6,7 +6,9 @@ const {
   getAllJobs, 
   approveJob, 
   rejectJob, 
-  deleteJob 
+  deleteJob,
+  getAllApplications,
+  deleteApplication
 } = require("../controllers/adminController");
 
 // Protected Admin Routes
@@ -15,5 +17,9 @@ router.get("/jobs", authMiddleware, getAllJobs);
 router.patch("/jobs/:id/approve", authMiddleware, approveJob);
 router.patch("/jobs/:id/reject", authMiddleware, rejectJob);
 router.delete("/jobs/:id", authMiddleware, deleteJob);
+
+// Application Management
+router.get("/applications", authMiddleware, getAllApplications);
+router.delete("/applications/:id", authMiddleware, deleteApplication);
 
 module.exports = router;

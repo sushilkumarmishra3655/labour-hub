@@ -22,6 +22,7 @@ import DashboardLayout from "./Layout/DashboardLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminManageJobs from "./pages/AdminManageJobs";
+import AdminManageApplications from "./pages/AdminManageApplications";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -87,6 +88,7 @@ const App = () => {
         >
           <Route path="users" element={<AdminUsers />} />
           <Route path="jobs" element={<AdminManageJobs />} />
+          <Route path="applications" element={<AdminManageApplications />} />
         </Route>
 
         {/* REDIRECTS FOR OLD LINKS */}

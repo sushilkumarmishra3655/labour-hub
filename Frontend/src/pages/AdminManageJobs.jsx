@@ -111,21 +111,30 @@ const AdminManageJobs = () => {
 
       {/* ── Quick Stats ── */}
       <section className="admin-stat-grid-modern" style={{ marginBottom: '32px' }}>
-        <div className="admin-stat-card-v2">
+        <div 
+          className={`admin-stat-card-v2 interactive ${filter === "All" ? "active-stat" : ""}`} 
+          onClick={() => setFilter("All")}
+        >
           <div className="admin-icon-v2 blue"><Briefcase size={22} /></div>
           <div className="admin-data-v2">
             <h3>{jobs.length}</h3>
             <span>Total Posts</span>
           </div>
         </div>
-        <div className="admin-stat-card-v2">
+        <div 
+          className={`admin-stat-card-v2 interactive ${filter === "Pending" ? "active-stat" : ""}`}
+          onClick={() => setFilter("Pending")}
+        >
           <div className="admin-icon-v2 amber"><Clock size={22} /></div>
           <div className="admin-data-v2">
             <h3>{jobs.filter(j => j.status === "Pending").length}</h3>
             <span>Pending Review</span>
           </div>
         </div>
-        <div className="admin-stat-card-v2">
+        <div 
+          className={`admin-stat-card-v2 interactive ${filter === "Approved" ? "active-stat" : ""}`}
+          onClick={() => setFilter("Approved")}
+        >
           <div className="admin-icon-v2 green"><CheckCircle size={22} /></div>
           <div className="admin-data-v2">
             <h3>{jobs.filter(j => j.status === "Approved").length}</h3>

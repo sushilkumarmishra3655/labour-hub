@@ -1,5 +1,6 @@
 const Job = require("../models/job");
 const User = require("../models/User");
+const Application = require("../models/Application");
 
 // @desc    Get all users (excluding admins, typically)
 // @route   GET /api/admin/users
@@ -79,10 +80,38 @@ const deleteJob = async (req, res) => {
   }
 };
 
+// @desc    Get all applications (admin view)
+// @route   GET /api/admin/applications
+// @access  Private/Admin
+const getAllApplications = async (req, res) => {
+  try {
+    const applications = await Application.find({}).sort({ createdAt: -1 });
+    res.status(200).json(applications);
+  } catch (error) {
+    console.error("Error fetching admin applications:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// @desc    Delete an application (admin only)
+// @route   DELETE /api/admin/applications/:id
+// @access  Private/Admin
+const deleteApplication = async (req, res) => {
+  try {
+    const application = await Application.findByIdAndDelete(req.params.id);
+    if (!application) return res.status(404).json({ message: "Application not found" });
+    res.status(200).json({ message: "Application deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting application" });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getAllJobs,
   approveJob,
   rejectJob,
-  deleteJob
+  deleteJob,
+  getAllApplications,
+  deleteApplication
 };

@@ -14,7 +14,8 @@ const Sidebar = () => {
     admin: [
       { name: "Dashboard", path: "/admin-dashboard", icon: <LayoutDashboard size={20} /> },
       { name: "Users", path: "/admin-dashboard/users", icon: <Users size={20} /> },
-      { name: "Manage Jobs", path: "/admin-dashboard/jobs", icon: <Briefcase size={20} /> }
+      { name: "Manage Jobs", path: "/admin-dashboard/jobs", icon: <Briefcase size={20} /> },
+      { name: "Applications", path: "/admin-dashboard/applications", icon: <FileText size={20} /> }
     ],
     employer: [
       { name: "Dashboard", path: "/employer-dashboard", icon: <LayoutDashboard size={20} /> },
