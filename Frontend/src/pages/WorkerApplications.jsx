@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { Eye, Search, Briefcase, MapPin, IndianRupee, Calendar } from "lucide-react";
+import { 
+  Eye, Search, Briefcase, MapPin, IndianRupee, 
+  Calendar, Zap, Clock, CheckCircle, XCircle 
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "./WorkerDashboard.css";
@@ -17,6 +20,11 @@ const WorkerApplications = () => {
 
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
+  const [selectedApp, setSelectedApp] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editedMessage, setEditedMessage] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -25,27 +33,55 @@ const WorkerApplications = () => {
       try {
         setLoading(true);
         setError(null);
-        
         const res = await api.get("/worker/applications");
         setApplications(res.data);
       } catch (err) {
         console.error("Applications fetch error:", err);
-        setError("Failed to load your applications. Please try again later.");
+        setError("Failed to load your applications.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchApplications();
   }, [user]);
 
+  const handleCancelApplication = async (id) => {
+    if (!window.confirm("Are you sure you want to cancel this application?")) return;
+    try {
+      setIsDeleting(true);
+      const res = await api.delete(`/applications/${id}`);
+      if (res.data.success) {
+        setApplications(prev => prev.filter(app => app._id !== id));
+        setSelectedApp(null);
+      }
+    } catch (err) {
+      console.error("Cancel error:", err);
+      alert("Failed to cancel application.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleUpdateApplication = async (id) => {
+    try {
+      setIsSaving(true);
+      const res = await api.patch(`/applications/${id}`, { message: editedMessage });
+      if (res.data.success) {
+        setApplications(prev => prev.map(app => app._id === id ? { ...app, message: editedMessage } : app));
+        setSelectedApp(prev => ({ ...prev, message: editedMessage }));
+        setIsEditing(false);
+      }
+    } catch (err) {
+      console.error("Update error:", err);
+      alert("Failed to update application.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const filteredApps = useMemo(() => {
     let list = applications;
-    
-    if (filter !== "All") {
-      list = list.filter(a => a.status === filter);
-    }
-    
+    if (filter !== "All") list = list.filter(a => a.status === filter);
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(a =>
@@ -60,26 +96,20 @@ const WorkerApplications = () => {
   if (!user) return null;
 
   return (
-    <div className="worker-dashboard worker-dashboard-content-wrapper">
-      {/* ── Header ── */}
+    <div className="worker-dashboard-content-wrapper">
       <header className="worker-welcome-section">
         <div className="worker-welcome-text">
           <h1>My Applications 📋</h1>
-          <p>View and manage all the jobs you've applied for.</p>
+          <p>Manage all your job requests and track their status.</p>
         </div>
-        <button className="btn-create" onClick={() => navigate("/findwork")}>
-          Find More Work <Briefcase size={18} />
-        </button>
       </header>
-
-      {error && <div className="error-banner">{error}</div>}
 
       {/* ── Toolbar: Search & Filters ── */}
       <div className="worker-toolbar-v2">
         <div className="worker-search-box-v2">
           <Search size={18} className="search-icon" />
           <input
-            placeholder="Search jobs, location, or company..."
+            placeholder="Search applications..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -93,90 +123,180 @@ const WorkerApplications = () => {
               onClick={() => setFilter(tab)}
             >
               {tab}
-              <span className="worker-tab-badge">
-                {tab === "All" 
-                  ? applications.length 
-                  : applications.filter(a => a.status === tab).length}
-              </span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* ── Application cards ── */}
       {loading ? (
-        <div className="job-list-v2">
+        <div className="worker-app-grid-v3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="job-card-v2 skeleton-pulse">
-              <div className="job-card-info">
-                <div className="job-icon-box skeleton-bg"></div>
-                <div className="job-meta-box">
-                  <div className="skeleton-line-title" style={{ width: '180px' }}></div>
-                  <div className="skeleton-line-sub" style={{ width: '120px' }}></div>
-                </div>
-              </div>
+            <div key={i} className="worker-premium-card-v3 skeleton-pulse">
+               <div style={{ height: '220px' }}></div>
             </div>
           ))}
         </div>
       ) : filteredApps.length === 0 ? (
         <div className="worker-empty-state-v2">
-          <div className="worker-empty-icon-circle">📋</div>
+          <div className="worker-empty-icon-circle">🔍</div>
           <h2>No applications found</h2>
-          <p>Try adjusting your search or filters to see more results.</p>
-          <button className="btn-secondary-outline" onClick={() => { setFilter("All"); setSearch(""); }}>
-            Clear all filters
-          </button>
+          <p>Try adjusting your search or filters.</p>
         </div>
       ) : (
-        <div className="job-list-v2">
-          {filteredApps.map((app) => {
-            const dateStr = app.appliedAt 
-              ? new Date(app.appliedAt).toLocaleDateString(undefined, { 
-                  month: 'short', 
-                  day: 'numeric',
-                  year: 'numeric'
-                })
-              : "Unknown date";
-
-            return (
-              <div key={app._id} className="job-card-v2">
-                <div className="job-card-info">
-                  <div className="job-icon-box">
-                    <Briefcase size={20} />
-                  </div>
-                  <div className="job-meta-box">
-                    <h4>{app.jobTitle}</h4>
-                    <div className="job-tags">
-                      <span><MapPin size={14} /> {app.location}</span>
-                      <span>🏢 {app.company || "Direct Employer"}</span>
-                      <span><Calendar size={14} /> Applied: {dateStr}</span>
-                    </div>
-                  </div>
+        <div className="worker-app-grid-v3">
+          {filteredApps.map((app) => (
+            <div key={app._id} className="worker-premium-card-v3">
+              <div className="w-card-status-indicator">
+                <div className={`status-tag ${app.status?.toLowerCase()}`}>
+                  {app.status === 'Pending' ? '⌛ Pending' : 
+                   app.status === 'Accepted' ? '✅ Accepted' : '❌ Rejected'}
                 </div>
+              </div>
 
-                <div className="job-card-right">
-                  <div className="salary-badge">
-                    <IndianRupee size={14} /> <strong>{app.salary}</strong><span>/day</span>
-                  </div>
-                  <div className={`status-tag ${app.status?.toLowerCase()}`}>
-                    {app.status}
-                  </div>
-                  <div className="card-actions">
-                    <button
-                      className="act-btn worker-edit"
-                      onClick={() => navigate(`/job/${app.jobId}`)}
-                      title="View Details"
-                    >
-                      <Eye size={18} />
-                    </button>
+              <div className="w-card-body-v3">
+                <div className="w-icon-bg">
+                  {user.name?.[0]}
+                </div>
+                <div className="w-details-v3">
+                  <h3>{app.jobTitle}</h3>
+                  <div className="w-meta-v3">
+                    🏢 <span>{app.company || "Direct Employer"}</span>
                   </div>
                 </div>
               </div>
-            );
-          })}
+
+              <div className="w-stats-row-v3">
+                <div className="w-c-stat">
+                  <label>Location</label>
+                  <span>{app.location || "N/A"}</span>
+                </div>
+                <div className="w-c-stat">
+                  <label>Applied</label>
+                  <span>{new Date(app.appliedAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              <div className="w-card-footer-v3">
+                <button className="w-act-btn-v3 w-view" onClick={() => setSelectedApp(app)}>
+                  <Eye size={18} /> Details
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
+      {/* ── Details Modal ── */}
+      {selectedApp && (
+        <div className="popup-overlay" onClick={() => { setSelectedApp(null); setIsEditing(false); }}>
+           <div className="inline-popup worker-detail-modal" onClick={e => e.stopPropagation()}>
+              <div className="popup-header-v3">
+                 <div className="popup-p-icon"><Briefcase size={20} /></div>
+                 <div className="popup-p-title">
+                    <h3>Job Details</h3>
+                    <span>Ref ID: #{selectedApp._id.slice(-6).toUpperCase()}</span>
+                 </div>
+                 <button className="popup-close-v3" onClick={() => { setSelectedApp(null); setIsEditing(false); }}>×</button>
+              </div>
+
+              <div className="worker-details-scroller">
+                 <div className="worker-details-content-v3">
+                    <div className="w-modal-header">
+                       <h2 className="modal-job-title-v3">{selectedApp.jobTitle}</h2>
+                       <div className="modal-meta-row-v3">
+                          <span className="m-meta-item">🏢 {selectedApp.company || "Direct Employer"}</span>
+                          <span className="m-divider">•</span>
+                          <span className="m-meta-item">🗓️ Applied on {new Date(selectedApp.appliedAt).toLocaleDateString()}</span>
+                       </div>
+                    </div>
+
+                    <div className="modal-stats-grid-v3">
+                       <div className="m-stat-box-v3">
+                          <label>Expected Wage</label>
+                          <p><IndianRupee size={16} /> {selectedApp.salary} <span>/ day</span></p>
+                       </div>
+                       <div className="m-stat-box-v3">
+                          <label>Job Location</label>
+                          <p><MapPin size={16} /> {selectedApp.location}</p>
+                       </div>
+                    </div>
+
+                    <div className="modal-section-v3">
+                       <label className="m-section-label">Job Description</label>
+                       <p className="m-section-text">{selectedApp.description || "The employer hasn't provided a detailed description."}</p>
+                    </div>
+
+                    <div className="modal-section-v3">
+                       <div className="m-section-header-row">
+                          <label className="m-section-label">Your Application Message</label>
+                          {selectedApp.status === "Pending" && !isEditing && (
+                             <button className="m-edit-btn" onClick={() => { setIsEditing(true); setEditedMessage(selectedApp.message || ""); }}>
+                                ✏️ Edit Message
+                             </button>
+                          )}
+                       </div>
+                       {isEditing ? (
+                          <textarea 
+                             className="m-edit-textarea"
+                             value={editedMessage}
+                             onChange={(e) => setEditedMessage(e.target.value)}
+                             rows={4}
+                          />
+                       ) : (
+                          <div className="m-message-bubble">
+                             {selectedApp.message || "I am ready for the job!"}
+                          </div>
+                       )}
+                    </div>
+
+                    <div className="modal-status-v3">
+                       <label className="m-section-label">Status History</label>
+                       <div className="m-status-timeline">
+                          <div className="m-timeline-item active">
+                             <div className="m-timeline-icon"><Clock size={14} /></div>
+                             <div className="m-timeline-info">
+                                <strong>Application Submitted</strong>
+                                <span>{new Date(selectedApp.appliedAt).toLocaleTimeString()}</span>
+                             </div>
+                          </div>
+                          <div className={`m-timeline-item ${selectedApp.status !== "Pending" ? "active" : ""}`}>
+                             <div className={`m-timeline-icon ${selectedApp.status === 'Accepted' ? 'success' : selectedApp.status === 'Rejected' ? 'danger' : ''}`}>
+                                {selectedApp.status === 'Accepted' ? <CheckCircle size={14} /> : 
+                                 selectedApp.status === 'Rejected' ? <XCircle size={14} /> : <Zap size={14} />}
+                             </div>
+                             <div className="m-timeline-info">
+                                <strong>Application {selectedApp.status}</strong>
+                                <span>Status updated by Employer</span>
+                             </div>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="popup-footer-v3">
+                 <button className="p-btn-close-v3" onClick={() => { setSelectedApp(null); setIsEditing(false); }}>Close</button>
+                 <div className="p-footer-actions">
+                    {isEditing ? (
+                       <button className="p-btn-save-v3" onClick={() => handleUpdateApplication(selectedApp._id)} disabled={isSaving}>
+                          {isSaving ? "Saving..." : "Save Changes"}
+                       </button>
+                    ) : (
+                       selectedApp.status === "Pending" && (
+                          <button 
+                             className="p-btn-cancel-v3" 
+                             onClick={() => handleCancelApplication(selectedApp._id)}
+                             disabled={isDeleting}
+                          >
+                             {isDeleting ? "Cancelling..." : "Cancel Application"}
+                          </button>
+                       )
+                    )}
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 };

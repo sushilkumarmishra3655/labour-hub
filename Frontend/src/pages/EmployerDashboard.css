@@ -743,6 +743,160 @@
   gap: 24px;
 }
 
+.employer-modern-list-card {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+}
+
+.employer-modern-list-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.employer-card-status-indicator {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+}
+
+.status-tag {
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-tag.pending { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+.status-tag.accepted { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.status-tag.rejected { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+.employer-card-body-v3 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.employer-list-icon-bg {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.employer-list-details-v3 h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.employer-list-meta-v3 {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.employer-card-stats-row {
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.employer-c-stat label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.employer-c-stat span {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.employer-card-footer-v3 {
+  display: flex;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+  align-items: center;
+}
+
+.employer-list-actions-v3 {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+}
+
+.employer-act-btn-v3 {
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.employer-act-btn-v3.employer-view {
+  flex: 1;
+  background: white;
+  border-color: #e2e8f0;
+  color: #0ea5e9;
+  font-weight: 700;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.employer-act-btn-v3.employer-check {
+  width: 44px;
+  background: #f0fdf4;
+  color: #22c55e;
+  border-color: #dcfce7;
+}
+
+.employer-act-btn-v3.employer-delete {
+  width: 44px;
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fee2e2;
+}
+
+.employer-act-btn-v3:hover { transform: scale(1.05); }
+
 /* ── Responsiveness ── */
 @media (max-width: 768px) {
   .employer-dashboard-content-wrapper {

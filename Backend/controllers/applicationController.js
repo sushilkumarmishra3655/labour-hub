@@ -43,9 +43,9 @@ exports.updateApplicationStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    
+
     if (!["Accepted", "Rejected", "Pending"].includes(status)) {
-        return res.status(400).json({ message: "Invalid status" });
+      return res.status(400).json({ message: "Invalid status" });
     }
 
     const application = await Application.findByIdAndUpdate(id, { status }, { new: true });
@@ -61,11 +61,11 @@ exports.updateApplicationStatus = async (req, res) => {
 exports.getEmployerStats = async (req, res) => {
   try {
     const employerId = req.user.id;
-    
+
     // Total jobs posted by this employer
-    const activeJobs = await Job.countDocuments({ 
-        employerId, 
-        status: { $in: ["Approved", "Pending"] } 
+    const activeJobs = await Job.countDocuments({
+      employerId,
+      status: { $in: ["Approved", "Pending"] }
     });
 
     const applications = await Application.find({ employerId });
@@ -80,5 +80,45 @@ exports.getEmployerStats = async (req, res) => {
     res.status(200).json(stats);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+// DELETE APPLICATION (Cancel)
+exports.deleteApplication = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const workerId = req.user.id;
+
+    const application = await Application.findOneAndDelete({ _id: id, workerId });
+    if (!application) {
+      return res.status(404).json({ success: false, message: "Application not found or unauthorized" });
+    }
+
+    res.json({ success: true, message: "Application cancelled successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// UPDATE APPLICATION (For Worker to edit message)
+exports.updateApplication = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message } = req.body;
+    const workerId = req.user.id;
+
+    const application = await Application.findOneAndUpdate(
+      { _id: id, workerId, status: "Pending" }, // Only edit if pending
+      { message },
+      { new: true }
+    );
+
+    if (!application) {
+      return res.status(404).json({ success: false, message: "Application not found, status not pending, or unauthorized" });
+    }
+
+    res.json({ success: true, application });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };

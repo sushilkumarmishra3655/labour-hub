@@ -127,22 +127,23 @@ const EmployerApplications = () => {
             <div key={app._id} className="employer-modern-list-card">
               <div className="employer-card-status-indicator">
                 <div className={`status-tag ${app.status?.toLowerCase()}`}>
-                  {app.status}
+                  {app.status === 'Pending' ? '⌛ Pending' : 
+                   app.status === 'Accepted' ? '✅ Accepted' : '❌ Rejected'}
                 </div>
               </div>
 
               <div className="employer-card-body-v3">
                 <div className="employer-list-icon-bg">
                   {app.workerDetails?.profileImage ? (
-                    <img src={app.workerDetails.profileImage} alt={app.workerName} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                    <img src={app.workerDetails.profileImage} alt={app.workerName} style={{ width: '100%', height: '100%', borderRadius: '14px', objectFit: 'cover' }} />
                   ) : (
-                    app.workerName?.[0] || <User size={20} />
+                    app.workerName?.[0]
                   )}
                 </div>
                 <div className="employer-list-details-v3">
                   <h3>{app.workerName}</h3>
                   <div className="employer-list-meta-v3">
-                    <span><Briefcase size={14} /> Applied for: <strong>{app.jobTitle}</strong></span>
+                    <Briefcase size={14} /> <span>{app.jobTitle}</span>
                   </div>
                 </div>
               </div>
@@ -153,25 +154,22 @@ const EmployerApplications = () => {
                   <span>{app.workerDetails?.location || "N/A"}</span>
                 </div>
                 <div className="employer-c-stat">
-                  <label>Phone</label>
-                  <span>{app.workerPhone || app.workerDetails?.phone || "N/A"}</span>
+                  <label>Applied</label>
+                  <span>{new Date(app.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
 
               <div className="employer-card-footer-v3">
-                <div className="employer-post-date-mini">
-                  Applied on {new Date(app.createdAt).toLocaleDateString()}
-                </div>
                 <div className="employer-list-actions-v3">
-                  <button className="employer-act-btn-v3 employer-view" onClick={() => setSelectedApp(app)} title="View Details">
-                    <Eye size={18} />
+                  <button className="employer-act-btn-v3 employer-view" onClick={() => setSelectedApp(app)}>
+                    <Eye size={18} /> Details
                   </button>
                   {app.status === "Pending" && (
                     <>
-                      <button className="employer-act-btn-v3 employer-check" onClick={() => handleStatusUpdate(app._id, "Accepted")} title="Accept Application">
+                      <button className="employer-act-btn-v3 employer-check" onClick={() => handleStatusUpdate(app._id, "Accepted")} title="Accept">
                         <Check size={18} />
                       </button>
-                      <button className="employer-act-btn-v3 employer-delete" onClick={() => handleStatusUpdate(app._id, "Rejected")} title="Reject Application">
+                      <button className="employer-act-btn-v3 employer-delete" onClick={() => handleStatusUpdate(app._id, "Rejected")} title="Reject">
                         <X size={18} />
                       </button>
                     </>
