@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Plus, MapPin, IndianRupee, Clock, Trash2, Edit3, X, Check, Save, Search, Users, AlertCircle, Briefcase, Filter, ChevronLeft, ChevronRight, Navigation, Loader
 } from "lucide-react";
@@ -8,13 +8,23 @@ import api from "../services/api";
 import useCurrentLocation from "../hooks/useCurrentLocation";
 import "./EmployerDashboard.css";
 
+const ITEMS_PER_PAGE = 6;
+
 const ManageListings = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [myPostedJobs, setMyPostedJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("All");
+  const [selectedFilter, setSelectedFilter] = useState(location.state?.filter || "All");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    if (location.state?.filter) {
+      setSelectedFilter(location.state.filter);
+    }
+  }, [location.state]);
 
   const [editingJob, setEditingJob] = useState(null);
   const [editForm, setEditForm] = useState({
@@ -91,12 +101,22 @@ const ManageListings = () => {
   };
 
   // FILTER LOGIC
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedFilter]);
+
   const filteredJobs = myPostedJobs.filter(job => {
     const matchesSearch = job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.location?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = selectedFilter === "All" || job.status === selectedFilter;
     return matchesSearch && matchesFilter;
   });
+
+  const totalPages = Math.ceil(filteredJobs.length / ITEMS_PER_PAGE);
+  const paginatedJobs = filteredJobs.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   if (loading) return <div className="employer-dashboard employer-dashboard-content-wrapper">Loading your listings...</div>;
 
@@ -140,14 +160,14 @@ const ManageListings = () => {
 
       {/* 🟢 MAIN LIST AREA */}
       <div className="employer-listing-grid-v3">
-        {filteredJobs.length === 0 ? (
+        {paginatedJobs.length === 0 ? (
           <div className="employer-empty-state-v2" style={{ gridColumn: '1 / -1' }}>
             <div className="employer-empty-icon-circle"><Briefcase size={32} /></div>
             <h2>No listings found</h2>
             <p>Try changing your search or filter settings.</p>
           </div>
         ) : (
-          filteredJobs.map((job) => (
+          paginatedJobs.map((job) => (
             <div key={job._id} className="employer-modern-list-card">
               <div className="employer-card-status-indicator">
                 <div className={`status-tag ${job.status?.toLowerCase()}`}>
@@ -197,6 +217,46 @@ const ManageListings = () => {
           ))
         )}
       </div>
+
+      {/* 🟢 PAGINATION CONTROLS */}
+      {totalPages > 1 && (
+        <div className="admin-pagination-container">
+          <div className="employer-segmented-control">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+            >
+              <ChevronLeft size={16} />
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, idx) => {
+              const pageNum = idx + 1;
+              if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
+                return (
+                  <button
+                    key={pageNum}
+                    className={currentPage === pageNum ? "active" : ""}
+                    onClick={() => setCurrentPage(pageNum)}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              }
+              if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                return <span key={pageNum} className="pagination-ellipsis">...</span>;
+              }
+              return null;
+            })}
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── HIGH-END EDIT MODAL ── */}
       {editingJob && (
@@ -301,7 +361,7 @@ const ManageListings = () => {
               <div className="p-form-group">
                 <label>Tell Workers About the Job</label>
                 <textarea
-                  rows="3"
+                  rows="2"
                   value={editForm.description}
                   placeholder="Explain exactly what the worker needs to do..."
                   onChange={e => setEditForm({ ...editForm, description: e.target.value })}

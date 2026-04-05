@@ -63,10 +63,10 @@ const EmployerDashboard = () => {
   };
 
   const statCards = [
-    { icon: <Briefcase />, val: stats.activeJobs, label: "Active Jobs", color: "blue" },
-    { icon: <Clock />, val: stats.pendingReview, label: "Pending Review", color: "amber" },
-    { icon: <Users />, val: stats.totalHired, label: "Total Hired", color: "green" },
-    { icon: <TrendingUp />, val: stats.totalApplications, label: "Applications", color: "purple" },
+    { icon: <Briefcase />, val: stats.activeJobs, label: "Active Jobs", color: "blue", path: "/employer-dashboard/manage-listings", filter: "Approved" },
+    { icon: <Clock />, val: stats.pendingReview, label: "Pending Review", color: "amber", path: "/employer-dashboard/applications", filter: "Pending" },
+    { icon: <Users />, val: stats.totalHired, label: "Total Hired", color: "green", path: "/employer-dashboard/applications", filter: "Accepted" },
+    { icon: <TrendingUp />, val: stats.totalApplications, label: "Applications", color: "purple", path: "/employer-dashboard/applications", filter: "All" },
   ];
 
   if (loading) return <div className="employer-dashboard employer-dashboard-content-wrapper">Loading Employer Dashboard...</div>;
@@ -92,7 +92,11 @@ const EmployerDashboard = () => {
       {/* STATS AREA */}
       <div className="employer-stat-grid-modern">
         {statCards.map((card, idx) => (
-          <div key={idx} className="employer-stat-card-v2">
+          <div
+            key={idx}
+            className="employer-stat-card-v2"
+            onClick={() => navigate(card.path, { state: { filter: card.filter } })}
+          >
             <div className={`employer-icon-v2 ${card.color}`}>{card.icon}</div>
             <div className="employer-data-v2">
               <h3>{card.val}</h3>
@@ -109,7 +113,7 @@ const EmployerDashboard = () => {
           <span className="total-badge">{applications.length} TOTAL</span>
         </div>
 
-        <div className="employer-listing-grid-v3" style={{ marginTop: '20px' }}>
+        <div className="employer-listing-grid-v3 auto-height" style={{ marginTop: '20px' }}>
           {applications.length === 0 ? (
             <div className="employer-empty-state-v2" style={{ gridColumn: '1 / -1' }}>
               <div className="employer-empty-icon-circle"><Users size={32} /></div>
