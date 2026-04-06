@@ -1,10 +1,12 @@
 import { Bell, UserCircle, Search } from "lucide-react";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import "../Layout/DashboardLayout.css";
 
 const Topbar = () => {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   return (
     <header className="topbar">
@@ -19,7 +21,7 @@ const Topbar = () => {
           <span className="notification-dot"></span>
         </div>
 
-        <div className="user-profile-trigger">
+        <div className="user-profile-trigger" onClick={() => navigate(`/${user.role}-dashboard/profile`)} style={{ cursor: 'pointer' }}>
           <div className="user-avatar-circle">
             {user?.name?.charAt(0).toUpperCase()}
           </div>

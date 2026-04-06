@@ -119,6 +119,9 @@ const Navbar = () => {
 
               <div className="profile-dropdown">
 
+                <div onClick={() => { navigate(`/${user.role}-dashboard/profile`); setOpen(false); }}>
+                  Profile
+                </div>
                 <div onClick={goDashboard}>
                   Dashboard
                 </div>

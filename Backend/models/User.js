@@ -41,6 +41,9 @@ const userSchema = new mongoose.Schema({
   },
   profileImage: {
     type: String
+  },
+  companyName: {
+    type: String
   }
 }, { timestamps: true });
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { AuthContext } from "./context/AuthContext";
 
 import Navbar from "./component/Navbar";
 import Footer from "./component/Footer";
@@ -24,8 +25,16 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminManageJobs from "./pages/AdminManageJobs";
 import AdminManageApplications from "./pages/AdminManageApplications";
+import Profile from "./pages/Profile";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
+
+const ProfileRedirect = () => {
+  const { user } = React.useContext(AuthContext);
+  if (!user || !user.isLoggedIn) return <Navigate to="/login" replace />;
+  // Fallback to worker if role not found somehow
+  return <Navigate to={`/${user.role || 'worker'}-dashboard/profile`} replace />;
+};
 
 const App = () => {
   const location = useLocation();
@@ -63,6 +72,7 @@ const App = () => {
           }
         >
           <Route path="applications" element={<WorkerApplications />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         {/* EMPLOYER */}
@@ -77,6 +87,7 @@ const App = () => {
           <Route index element={<EmployerDashboard />} />
           <Route path="manage-listings" element={<ManageListings />} />
           <Route path="applications" element={<EmployerApplications />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         {/* ADMIN */}
@@ -91,11 +102,12 @@ const App = () => {
           <Route path="users" element={<AdminUsers />} />
           <Route path="jobs" element={<AdminManageJobs />} />
           <Route path="applications" element={<AdminManageApplications />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         {/* REDIRECTS FOR OLD LINKS */}
         <Route path="/employer-jobs" element={<Navigate to="/employer-dashboard/manage-listings" replace />} />
-
+        <Route path="/profile" element={<ProfileRedirect />} />
       </Routes>
 
       {/* Only show Footer on public pages */}
