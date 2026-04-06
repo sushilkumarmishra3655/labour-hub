@@ -22,8 +22,12 @@ const Topbar = () => {
         </div>
 
         <div className="user-profile-trigger" onClick={() => navigate(`/${user.role}-dashboard/profile`)} style={{ cursor: 'pointer' }}>
-          <div className="user-avatar-circle">
-            {user?.name?.charAt(0).toUpperCase()}
+          <div className="user-avatar-circle" style={user?.profileImage ? { padding: 0, overflow: 'hidden' } : {}}>
+            {user?.profileImage ? (
+              <img src={user.profileImage} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ) : (
+              user?.name?.charAt(0).toUpperCase()
+            )}
           </div>
           <div className="user-info-text">
             <span className="user-name">{user?.name}</span>

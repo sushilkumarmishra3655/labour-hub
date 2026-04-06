@@ -101,8 +101,12 @@ const Navbar = () => {
               onClick={() => setOpen(!open)}
             >
 
-              <div className="profile-avatar-letter">
-                {user?.name?.charAt(0).toUpperCase()}
+              <div className="profile-avatar-letter" style={user?.profileImage ? { padding: 0, overflow: 'hidden' } : {}}>
+                {user?.profileImage ? (
+                  <img src={user.profileImage} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                ) : (
+                  user?.name?.charAt(0).toUpperCase()
+                )}
               </div>
 
               <span className="profile-name">
