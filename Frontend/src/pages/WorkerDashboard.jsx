@@ -179,7 +179,13 @@ const WorkerDashboard = () => {
                 <div 
                   key={i} 
                   className="worker-stat-card-v2"
-                  onClick={() => navigate("/worker-dashboard/applications")}
+                  onClick={() => {
+                    let filterStatus = "All";
+                    if (s.label === "Accepted") filterStatus = "Accepted";
+                    else if (s.label === "In Review") filterStatus = "Pending";
+                    else if (s.label === "Rejected") filterStatus = "Rejected";
+                    navigate("/worker-dashboard/applications", { state: { filter: filterStatus } });
+                  }}
                   style={{ cursor: 'pointer' }}
                 >
                   <div className={`worker-icon-v2 ${s.color}`}>{s.icon}</div>

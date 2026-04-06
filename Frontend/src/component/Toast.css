@@ -1,0 +1,125 @@
+/* ── Toast Container ── */
+.toast-container {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+/* ── Base Toast ── */
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  min-width: 280px;
+  max-width: 380px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #fff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
+  pointer-events: all;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer bar at bottom */
+.toast::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 0 0 14px 14px;
+  animation: toast-progress 3.5s linear forwards;
+}
+
+@keyframes toast-progress {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* ── Types ── */
+.toast-success { background: linear-gradient(135deg, #16a34a, #15803d); }
+.toast-error   { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+.toast-info    { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+.toast-warning { background: linear-gradient(135deg, #d97706, #b45309); }
+
+/* ── Icon ── */
+.toast-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* ── Message ── */
+.toast-message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+/* ── Close Button ── */
+.toast-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+.toast-close:hover { color: #fff; }
+
+/* ── Animations ── */
+.toast-enter {
+  animation: slideInUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.toast-exit {
+  animation: slideOutDown 0.35s ease-in forwards;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.93);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px) scale(0.93);
+  }
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+  .toast {
+    min-width: 0;
+    max-width: 100%;
+  }
+}

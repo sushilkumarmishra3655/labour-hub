@@ -4,7 +4,7 @@ import {
   Eye, Search, Briefcase, MapPin, IndianRupee, 
   Calendar, Zap, Clock, CheckCircle, XCircle 
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
 import "./WorkerDashboard.css";
 
@@ -13,12 +13,13 @@ const FILTERS = ["All", "Pending", "Accepted", "Rejected"];
 const WorkerApplications = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState(location.state?.filter || "All");
   const [search, setSearch] = useState("");
   const [selectedApp, setSelectedApp] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
