@@ -13,23 +13,23 @@ const Sidebar = () => {
   const menuItems = {
     admin: [
       { name: "Dashboard", path: "/admin-dashboard", icon: <LayoutDashboard size={20} /> },
+      { name: "My Profile", path: "/admin-dashboard/profile", icon: <User size={20} /> },
       { name: "Users", path: "/admin-dashboard/users", icon: <Users size={20} /> },
       { name: "Manage Jobs", path: "/admin-dashboard/jobs", icon: <Briefcase size={20} /> },
-      { name: "Applications", path: "/admin-dashboard/applications", icon: <FileText size={20} /> },
-      { name: "My Profile", path: "/admin-dashboard/profile", icon: <User size={20} /> }
+      { name: "Applications", path: "/admin-dashboard/applications", icon: <FileText size={20} /> }
     ],
     employer: [
       { name: "Dashboard", path: "/employer-dashboard", icon: <LayoutDashboard size={20} /> },
+      { name: "My Profile", path: "/employer-dashboard/profile", icon: <User size={20} /> },
       { name: "Post New Job", path: "/postjob", icon: <PlusCircle size={20} /> },
       { name: "Manage Listings", path: "/employer-dashboard/manage-listings", icon: <FileText size={20} /> },
-      { name: "Applications", path: "/employer-dashboard/applications", icon: <Users size={20} /> },
-      { name: "My Profile", path: "/employer-dashboard/profile", icon: <User size={20} /> }
+      { name: "Applications", path: "/employer-dashboard/applications", icon: <Users size={20} /> }
     ],
     worker: [
       { name: "Dashboard", path: "/worker-dashboard", icon: <LayoutDashboard size={20} /> },
+      { name: "My Profile", path: "/worker-dashboard/profile", icon: <User size={20} /> },
       { name: "Find Work", path: "/findwork", icon: <Briefcase size={20} /> },
-      { name: "My Applications", path: "/worker-dashboard/applications", icon: <FileText size={20} /> },
-      { name: "My Profile", path: "/worker-dashboard/profile", icon: <User size={20} /> }
+      { name: "My Applications", path: "/worker-dashboard/applications", icon: <FileText size={20} /> }
     ]
   };
 
@@ -57,8 +57,8 @@ const Sidebar = () => {
         ))}
       </nav>
 
-      <div className="sidebar-footer">
-        <button className="logout-btn" onClick={logout}>
+      <div className="sidebar-footer" style={{ marginTop: 'auto' }}>
+        <button className="logout-btn" onClick={logout} style={{ width: '100%', marginTop: '0' }}>
           <LogOut size={18} />
           <span>Logout Session</span>
         </button>

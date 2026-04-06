@@ -189,8 +189,12 @@ const AdminUsers = () => {
                   onClick={() => setSelectedUser(u)}
                 >
                   <div className="job-card-info">
-                    <div className={`job-icon-box ${roleKey === 'employer' ? 'green' : 'blue'}`}>
-                      {u.name?.charAt(0).toUpperCase() || "?"}
+                    <div className={`job-icon-box ${roleKey === 'employer' ? 'green' : 'blue'}`} style={u.profileImage ? { padding: 0, overflow: 'hidden' } : {}}>
+                      {u.profileImage ? (
+                        <img src={u.profileImage} alt={u.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                      ) : (
+                        u.name?.charAt(0).toUpperCase() || "?"
+                      )}
                     </div>
                     <div className="job-meta-box">
                       <h4>{u.name}</h4>
@@ -283,8 +287,12 @@ const AdminUsers = () => {
 
             <div className="worker-details-content">
               <div className="admin-u-header-v3">
-                <div className={`admin-u-avatar-v3 ${selectedUser.role}`}>
-                  {selectedUser.name?.charAt(0).toUpperCase()}
+                <div className={`admin-u-avatar-v3 ${selectedUser.role}`} style={selectedUser.profileImage ? { padding: 0, overflow: 'hidden' } : {}}>
+                  {selectedUser.profileImage ? (
+                    <img src={selectedUser.profileImage} alt={selectedUser.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                  ) : (
+                    selectedUser.name?.charAt(0).toUpperCase()
+                  )}
                 </div>
                 <div className="admin-u-title-v3">
                   <h2>{selectedUser.name}</h2>
