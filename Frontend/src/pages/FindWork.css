@@ -26,6 +26,7 @@
 }
 
 .find-work-header h1 {
+  margin-top: 80px;
   font-size: 2.5rem;
   color: var(--text-dark);
   margin-bottom: 10px;
@@ -444,13 +445,13 @@
     flex-direction: row;
     min-height: 500px;
   }
-  
+
   .detail-image-section {
     width: 40%;
     height: auto;
   }
-  
+
   .detail-info-section {
     width: 60%;
   }
-}
+}
