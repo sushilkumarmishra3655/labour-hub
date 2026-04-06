@@ -3,6 +3,7 @@ import { JobContext } from "../context/JobContext";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
+import toast from "react-hot-toast";
 import { 
   Briefcase as BriefcaseIcon, 
   MapPin as MapPinIcon, 
@@ -87,7 +88,7 @@ const PostJob = () => {
     }
 
     if (user.role !== "employer") {
-      alert("Only employers can post jobs");
+      toast.error("Only employers can post jobs");
       navigate("/findwork");
       return;
     }
@@ -102,15 +103,16 @@ const PostJob = () => {
       if (res.status === 201) {
         await fetchJobs();
         setSuccess("🎉 Job posted successfully! Redirecting...");
+        toast.success("Job posted successfully!");
         setTimeout(() => {
           navigate("/employer-dashboard");
         }, 1500);
       } else {
-        alert("Failed to post job");
+        toast.error("Failed to post job");
       }
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Server error occurred");
+      toast.error(err.response?.data?.message || "Server error occurred");
     } finally {
       setLoading(false);
     }

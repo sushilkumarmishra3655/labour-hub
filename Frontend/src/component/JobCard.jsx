@@ -3,6 +3,7 @@ import { getJobImage } from "../utils/jobImages";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
+import toast from "react-hot-toast";
 import JobDetailsModal from "./JobDetailsModal"; // 🔥 NEW MODAL
 import { MapPin, Banknote, Briefcase, Zap, Eye } from "lucide-react";
 
@@ -16,7 +17,7 @@ const JobCard = ({ job }) => {
 
   // 🔥 ONE-CLICK APPLY LOGIC
   const handleApplyClick = async (e) => {
-    e.stopPropagation(); // Stop from opening details
+    if (e) e.stopPropagation(); // Stop from opening details
 
     // ❌ Not logged in → go to login
     if (!user || !user.isLoggedIn) {
@@ -28,7 +29,7 @@ const JobCard = ({ job }) => {
 
     // ❌ Wrong role
     if (user.role !== "worker") {
-      alert("Only workers can apply for jobs");
+      toast.error("Only workers can apply for jobs");
       return;
     }
 
@@ -54,11 +55,11 @@ const JobCard = ({ job }) => {
       const res = await api.post("/applications", newApplication);
 
       if (res.status === 201) {
-        alert("✅ Applied successfully!");
+        toast.success("Applied successfully!");
       }
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to apply. You might have already applied.");
+      toast.error(err.response?.data?.message || "Failed to apply. You might have already applied.");
     } finally {
       setIsApplying(false);
     }

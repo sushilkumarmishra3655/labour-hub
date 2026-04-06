@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import Navbar from "./component/Navbar";
 import Footer from "./component/Footer";
@@ -35,6 +36,7 @@ const App = () => {
 
   return (
     <>
+      <Toaster position="bottom-right" />
       {/* Only show Navbar on public pages */}
       {!isDashboardRoute && <Navbar />}
 

@@ -5,6 +5,7 @@ import {
   Calendar, Zap, Clock, CheckCircle, XCircle 
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 import api from "../services/api";
 import "./WorkerDashboard.css";
 
@@ -54,10 +55,11 @@ const WorkerApplications = () => {
       if (res.data.success) {
         setApplications(prev => prev.filter(app => app._id !== id));
         setSelectedApp(null);
+        toast.success("Application cancelled successfully!");
       }
     } catch (err) {
       console.error("Cancel error:", err);
-      alert("Failed to cancel application.");
+      toast.error("Failed to cancel application.");
     } finally {
       setIsDeleting(false);
     }
@@ -71,10 +73,11 @@ const WorkerApplications = () => {
         setApplications(prev => prev.map(app => app._id === id ? { ...app, message: editedMessage } : app));
         setSelectedApp(prev => ({ ...prev, message: editedMessage }));
         setIsEditing(false);
+        toast.success("Application updated successfully!");
       }
     } catch (err) {
       console.error("Update error:", err);
-      alert("Failed to update application.");
+      toast.error("Failed to update application.");
     } finally {
       setIsSaving(false);
     }

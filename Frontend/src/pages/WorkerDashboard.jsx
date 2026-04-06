@@ -7,6 +7,7 @@ import {
   ShieldCheck
 } from "lucide-react";
 import DashboardLayout from "../Layout/DashboardLayout";
+import toast from "react-hot-toast";
 import api from "../services/api";
 import "./WorkerDashboard.css";
 
@@ -92,10 +93,11 @@ const WorkerDashboard = () => {
         // Refresh stats
         const statsRes = await api.get("/worker/stats");
         setStats(statsRes.data);
+        toast.success("Application cancelled successfully!");
       }
     } catch (err) {
       console.error("Cancel error:", err);
-      alert("Failed to cancel application.");
+      toast.error("Failed to cancel application.");
     } finally {
       setIsDeleting(false);
     }
@@ -109,10 +111,11 @@ const WorkerDashboard = () => {
         setApplications(prev => prev.map(app => app._id === id ? { ...app, message: editedMessage } : app));
         setSelectedApp(prev => ({ ...prev, message: editedMessage }));
         setIsEditing(false);
+        toast.success("Application updated successfully!");
       }
     } catch (err) {
       console.error("Update error:", err);
-      alert("Failed to update application.");
+      toast.error("Failed to update application.");
     } finally {
       setIsSaving(false);
     }

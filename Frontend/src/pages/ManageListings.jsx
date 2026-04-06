@@ -5,6 +5,7 @@ import {
   Plus, MapPin, IndianRupee, Clock, Trash2, Edit3, X, Check, Save, Search, Users, AlertCircle, Briefcase, Filter, ChevronLeft, ChevronRight, Navigation, Loader
 } from "lucide-react";
 import api from "../services/api";
+import toast from "react-hot-toast";
 import useCurrentLocation from "../hooks/useCurrentLocation";
 import "./EmployerDashboard.css";
 
@@ -60,8 +61,10 @@ const ManageListings = () => {
     try {
       setMyPostedJobs(myPostedJobs.filter(j => j._id !== id));
       await api.delete(`/jobs/${id}`);
+      toast.success("Job deleted successfully!");
     } catch (err) {
       console.error("Delete Error:", err);
+      toast.error("Failed to delete job.");
       fetchJobs();
     }
   };
@@ -91,10 +94,10 @@ const ManageListings = () => {
       const res = await api.put(`/jobs/${editingJob._id}`, editForm);
       setMyPostedJobs(myPostedJobs.map(j => j._id === editingJob._id ? res.data.job : j));
       setEditingJob(null);
-      alert("✅ Listing updated successfully!");
+      toast.success("Listing updated successfully!");
     } catch (err) {
       console.error("Update Error:", err);
-      alert("Failed to update job.");
+      toast.error("Failed to update job.");
     } finally {
       setIsUpdating(false);
     }

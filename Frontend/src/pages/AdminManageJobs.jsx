@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Briefcase, Search, CheckCircle, XCircle, Trash2, Eye, MapPin, Clock, IndianRupee, Building, X, Award, AlertTriangle, Layers, Users, Phone, Mail, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "../services/api";
+import toast from "react-hot-toast";
 import "./AdminDashboard.css";
 
 const FILTERS = ["All", "Pending", "Approved", "Rejected"];
@@ -46,8 +47,9 @@ const AdminManageJobs = () => {
         job._id === id ? { ...job, status: "Approved" } : job
       ));
       if (selectedJob?._id === id) setSelectedJob(prev => ({ ...prev, status: "Approved" }));
+      toast.success("Job approved successfully!");
     } catch (err) {
-      alert("Failed to approve job");
+      toast.error("Failed to approve job");
     } finally {
       setIsActionLoading(false);
     }
@@ -61,8 +63,9 @@ const AdminManageJobs = () => {
         job._id === id ? { ...job, status: "Rejected" } : job
       ));
       if (selectedJob?._id === id) setSelectedJob(prev => ({ ...prev, status: "Rejected" }));
+      toast.success("Job rejected.");
     } catch (err) {
-      alert("Failed to reject job");
+      toast.error("Failed to reject job");
     } finally {
       setIsActionLoading(false);
     }
@@ -75,8 +78,9 @@ const AdminManageJobs = () => {
       await api.delete(`/admin/jobs/${id}`);
       setJobs(prev => prev.filter(job => job._id !== id));
       setSelectedJob(null);
+      toast.success("Job deleted successfully!");
     } catch (err) {
-      alert("Failed to delete job");
+      toast.error("Failed to delete job");
     } finally {
       setIsActionLoading(false);
     }

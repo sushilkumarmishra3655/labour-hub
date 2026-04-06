@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import "./ApplyJobModal.css";
 
 const ApplyJobModal = ({ show, onClose, job }) => {
@@ -22,7 +23,7 @@ const ApplyJobModal = ({ show, onClose, job }) => {
 
     // 🔐 login check
     if (!user || !user.isLoggedIn) {
-      alert("Please login first to apply");
+      toast.error("Please login first to apply");
       navigate("/login", {
         state: { from: window.location.pathname },
       });
@@ -31,7 +32,7 @@ const ApplyJobModal = ({ show, onClose, job }) => {
 
     // 🔐 role check
     if (user.role !== "worker") {
-      alert("Only workers can apply");
+      toast.error("Only workers can apply");
       return;
     }
 
@@ -71,11 +72,11 @@ const ApplyJobModal = ({ show, onClose, job }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Application failed");
+        toast.error(data.message || "Application failed");
         return;
       }
 
-      alert("✅ Applied successfully!");
+      toast.success("Applied successfully!");
 
       // reset form
       setForm({
@@ -89,7 +90,7 @@ const ApplyJobModal = ({ show, onClose, job }) => {
     } catch (error) {
 
       console.log(error);
-      alert("Server error");
+      toast.error("Server error");
 
     }
   };
