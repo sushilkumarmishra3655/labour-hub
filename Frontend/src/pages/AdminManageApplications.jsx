@@ -4,7 +4,7 @@ import { FileText, Search, CheckCircle, XCircle, Trash2, Eye, MapPin, Clock, Ind
 import api from "../services/api";
 import "./AdminDashboard.css";
 
-const FILTERS = ["All", "Pending", "Accepted", "Rejected"];
+const FILTERS = ["All", "Pending", "Accepted", "Rejected", "Cancelled"];
 const ITEMS_PER_PAGE = 4;
 
 const AdminManageApplications = () => {

@@ -304,6 +304,11 @@
   color: #b91c1c;
 }
 
+.status-tag.cancelled {
+  background: #f1f5f9;
+  color: #475569;
+}
+
 .employer-urgent-mini {
   color: var(--clr-danger);
   font-size: 12px;
@@ -784,6 +789,7 @@
 .status-tag.pending { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
 .status-tag.accepted { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
 .status-tag.rejected { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+.status-tag.cancelled { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
 .employer-card-body-v3 {
   display: flex;
@@ -813,12 +819,20 @@
   color: #0f172a;
 }
 
+.employer-list-details-v3 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
 .employer-list-meta-v3 {
   margin-top: 4px;
   font-size: 14px;
   color: #64748b;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 6px;
 }
 
@@ -841,9 +855,12 @@
 }
 
 .employer-c-stat span {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: #1e293b;
+  display: block;
+  line-height: 1.4;
+  word-wrap: break-word;
 }
 
 .employer-card-footer-v3 {
@@ -889,10 +906,15 @@
 }
 
 .employer-act-btn-v3.employer-delete {
-  width: 44px;
+  padding: 0 12px;
+  min-width: 44px;
+  width: auto;
+  gap: 6px;
   background: #fef2f2;
   color: #ef4444;
   border-color: #fee2e2;
+  font-weight: 600;
+  font-size: 13px;
 }
 
 .employer-act-btn-v3:hover { transform: scale(1.05); }

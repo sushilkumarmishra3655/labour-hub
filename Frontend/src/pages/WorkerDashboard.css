@@ -462,6 +462,7 @@
 .status-tag.pending { background: #fffdf0; color: #b45309; border: 1px solid #fde68a; }
 .status-tag.accepted { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
 .status-tag.rejected { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+.status-tag.cancelled { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
 /* Purple for Worker rejected */
 

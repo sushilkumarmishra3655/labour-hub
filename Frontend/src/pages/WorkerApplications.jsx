@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import api from "../services/api";
 import "./WorkerDashboard.css";
 
-const FILTERS = ["All", "Pending", "Accepted", "Rejected"];
+const FILTERS = ["All", "Pending", "Accepted", "Rejected", "Cancelled"];
 
 const WorkerApplications = () => {
   const { user } = useContext(AuthContext);
@@ -153,7 +153,8 @@ const WorkerApplications = () => {
               <div className="w-card-status-indicator">
                 <div className={`status-tag ${app.status?.toLowerCase()}`}>
                   {app.status === 'Pending' ? '⌛ Pending' : 
-                   app.status === 'Accepted' ? '✅ Accepted' : '❌ Rejected'}
+                   app.status === 'Accepted' ? '✅ Accepted' : 
+                   app.status === 'Cancelled' ? '🚫 Cancelled' : '❌ Rejected'}
                 </div>
               </div>
 
@@ -264,10 +265,10 @@ const WorkerApplications = () => {
                              </div>
                           </div>
                           <div className={`m-timeline-item ${selectedApp.status !== "Pending" ? "active" : ""}`}>
-                             <div className={`m-timeline-icon ${selectedApp.status === 'Accepted' ? 'success' : selectedApp.status === 'Rejected' ? 'danger' : ''}`}>
-                                {selectedApp.status === 'Accepted' ? <CheckCircle size={14} /> : 
-                                 selectedApp.status === 'Rejected' ? <XCircle size={14} /> : <Zap size={14} />}
-                             </div>
+                              <div className={`m-timeline-icon ${selectedApp.status === 'Accepted' ? 'success' : (selectedApp.status === 'Rejected' || selectedApp.status === 'Cancelled') ? 'danger' : ''}`}>
+                                 {selectedApp.status === 'Accepted' ? <CheckCircle size={14} /> : 
+                                  (selectedApp.status === 'Rejected' || selectedApp.status === 'Cancelled') ? <XCircle size={14} /> : <Zap size={14} />}
+                              </div>
                              <div className="m-timeline-info">
                                 <strong>Application {selectedApp.status}</strong>
                                 <span>Status updated by Employer</span>

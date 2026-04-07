@@ -102,7 +102,7 @@ const EmployerApplications = () => {
         </div>
 
         <div className="employer-segmented-control">
-          {["All", "Pending", "Accepted", "Rejected"].map((f) => (
+          {["All", "Pending", "Accepted", "Rejected", "Cancelled"].map((f) => (
             <button
               key={f}
               className={selectedFilter === f ? "active" : ""}
@@ -127,8 +127,9 @@ const EmployerApplications = () => {
             <div key={app._id} className="employer-modern-list-card">
               <div className="employer-card-status-indicator">
                 <div className={`status-tag ${app.status?.toLowerCase()}`}>
-                  {app.status === 'Pending' ? '⌛ Pending' : 
-                   app.status === 'Accepted' ? '✅ Accepted' : '❌ Rejected'}
+                  {app.status === 'Pending' ? 'Pending' :
+                    app.status === 'Accepted' ? 'Accepted' : 
+                    app.status === 'Cancelled' ? 'Cancelled' : 'Rejected'}
                 </div>
               </div>
 
@@ -173,6 +174,16 @@ const EmployerApplications = () => {
                         <X size={18} />
                       </button>
                     </>
+                  )}
+                  {app.status === "Accepted" && (
+                    <button className="employer-act-btn-v3 employer-delete" onClick={() => handleStatusUpdate(app._id, "Cancelled")} title="Cancel Hire">
+                      <X size={18} /> Cancel
+                    </button>
+                  )}
+                  {(app.status === "Cancelled" || app.status === "Rejected") && (
+                    <button className="employer-act-btn-v3 employer-check" style={{ width: 'auto', minWidth: '44px', padding: '0 12px', gap: '6px', fontWeight: '600', fontSize: '13px' }} onClick={() => handleStatusUpdate(app._id, "Accepted")} title="Hire">
+                      <Check size={18} /> {app.status === "Cancelled" ? "Re-Hire" : "Hire"}
+                    </button>
                   )}
                 </div>
               </div>
@@ -302,6 +313,26 @@ const EmployerApplications = () => {
                   disabled={isActionLoading}
                 >
                   Hire Now
+                </button>
+              )}
+              {selectedApp.status === "Accepted" && (
+                <button
+                  className="p-btn-cancel"
+                  style={{ backgroundColor: "#ff4d4f", color: "white", marginLeft: "10px", border: "none" }}
+                  onClick={() => { handleStatusUpdate(selectedApp._id, "Cancelled"); setSelectedApp(null); }}
+                  disabled={isActionLoading}
+                >
+                  Cancel Hire
+                </button>
+              )}
+              {(selectedApp.status === "Cancelled" || selectedApp.status === "Rejected") && (
+                <button
+                  className="p-btn-save"
+                  style={{ marginLeft: "10px" }}
+                  onClick={() => { handleStatusUpdate(selectedApp._id, "Accepted"); setSelectedApp(null); }}
+                  disabled={isActionLoading}
+                >
+                  {selectedApp.status === "Cancelled" ? "Re-Hire" : "Hire Now"}
                 </button>
               )}
             </div>

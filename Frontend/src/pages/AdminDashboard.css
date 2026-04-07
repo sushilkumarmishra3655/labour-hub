@@ -84,9 +84,15 @@
 }
 
 .status-tag.rejected {
-    background-color: #fef2f2;
-    color: #dc2626;
-    border: 1px solid #fee2e2;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fee2e2;
+}
+
+.status-tag.cancelled {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
 }
 
 /* Job Icon Boxes (for statuses) */
