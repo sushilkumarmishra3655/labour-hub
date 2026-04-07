@@ -48,12 +48,12 @@ const Login = () => {
           <p>Login to manage your profile and job listings.</p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="form-group">
             <label>Phone Number</label>
             <div className="input-wrapper">
               <Phone size={18} />
-              <input type="text" placeholder="Enter phone" onChange={e => setForm({...form, phone: e.target.value})} />
+              <input type="text" placeholder="Enter phone" onChange={e => setForm({ ...form, phone: e.target.value })} />
             </div>
           </div>
 
@@ -61,12 +61,12 @@ const Login = () => {
             <label>Password</label>
             <div className="input-wrapper">
               <Lock size={18} />
-              <input type="password" placeholder="Enter password" onChange={e => setForm({...form, password: e.target.value})} />
+              <input type="password" placeholder="Enter password" onChange={e => setForm({ ...form, password: e.target.value })} />
             </div>
           </div>
 
           <button className="auth-btn-main" disabled={loading}>
-            {loading ? "Verifying..." : "Login Account"} 
+            {loading ? "Verifying..." : "Login Account"}
             {!loading && <ArrowRight size={18} />}
           </button>
         </form>

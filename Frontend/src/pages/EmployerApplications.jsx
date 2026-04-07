@@ -128,8 +128,8 @@ const EmployerApplications = () => {
               <div className="employer-card-status-indicator">
                 <div className={`status-tag ${app.status?.toLowerCase()}`}>
                   {app.status === 'Pending' ? 'Pending' :
-                    app.status === 'Accepted' ? 'Accepted' : 
-                    app.status === 'Cancelled' ? 'Cancelled' : 'Rejected'}
+                    app.status === 'Accepted' ? 'Accepted' :
+                      app.status === 'Cancelled' ? 'Cancelled' : 'Rejected'}
                 </div>
               </div>
 

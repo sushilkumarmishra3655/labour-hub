@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Auth.css";
-import { 
-  User, Phone, Lock, Key, MapPin, Loader, 
-  Navigation, Mail, Calendar, ShieldCheck 
+import {
+  User, Phone, Lock, Key, MapPin, Loader,
+  Navigation, Mail, Calendar, ShieldCheck
 } from "lucide-react";
 import useCurrentLocation from "../hooks/useCurrentLocation";
 
@@ -77,7 +77,7 @@ const Register = () => {
             <label>Full Name</label>
             <div className={`input-wrapper ${errors.name ? 'error-border' : ''}`}>
               <User size={18} />
-              <input type="text" placeholder="John Doe" onChange={e => setForm({...form, name: e.target.value})} />
+              <input type="text" placeholder="John Doe" onChange={e => setForm({ ...form, name: e.target.value })} />
             </div>
             {errors.name && <small className="error-text">{errors.name}</small>}
           </div>
@@ -86,7 +86,7 @@ const Register = () => {
             <label>Email Address</label>
             <div className={`input-wrapper ${errors.email ? 'error-border' : ''}`}>
               <Mail size={18} />
-              <input type="email" placeholder="john@example.com" onChange={e => setForm({...form, email: e.target.value})} />
+              <input type="email" placeholder="john@example.com" onChange={e => setForm({ ...form, email: e.target.value })} />
             </div>
             {errors.email && <small className="error-text">{errors.email}</small>}
           </div>
@@ -95,7 +95,7 @@ const Register = () => {
             <label>Phone Number</label>
             <div className={`input-wrapper ${errors.phone ? 'error-border' : ''}`}>
               <Phone size={18} />
-              <input type="text" placeholder="10-digit number" onChange={e => setForm({...form, phone: e.target.value})} />
+              <input type="text" placeholder="10-digit number" onChange={e => setForm({ ...form, phone: e.target.value })} />
             </div>
             {errors.phone && <small className="error-text">{errors.phone}</small>}
           </div>
@@ -104,7 +104,7 @@ const Register = () => {
             <label>Date of Birth (18+)</label>
             <div className={`input-wrapper ${errors.dob ? 'error-border' : ''}`}>
               <Calendar size={18} />
-              <input type="date" onChange={e => setForm({...form, dob: e.target.value})} />
+              <input type="date" onChange={e => setForm({ ...form, dob: e.target.value })} />
             </div>
             {errors.dob && <small className="error-text">{errors.dob}</small>}
           </div>
@@ -112,7 +112,7 @@ const Register = () => {
           <div className="form-group">
             <label>Gender</label>
             <div className="input-wrapper">
-              <select onChange={e => setForm({...form, gender: e.target.value})}>
+              <select onChange={e => setForm({ ...form, gender: e.target.value })}>
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -123,7 +123,7 @@ const Register = () => {
           <div className="form-group">
             <label>Select Role</label>
             <div className="input-wrapper">
-              <select onChange={e => setForm({...form, role: e.target.value})}>
+              <select onChange={e => setForm({ ...form, role: e.target.value })}>
                 <option value="">Choose Role</option>
                 <option value="worker">Worker</option>
                 <option value="employer">Employer</option>
@@ -135,9 +135,9 @@ const Register = () => {
           <div className="form-group full-width">
             <label>Your Location</label>
             <div className="address-row">
-              <div className="input-wrapper" style={{flex: 1}}>
+              <div className="input-wrapper" style={{ flex: 1 }}>
                 <MapPin size={18} />
-                <input type="text" placeholder="Area, City" value={form.address} onChange={e => setForm({...form, address: e.target.value})} />
+                <input type="text" placeholder="Area, City" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} />
               </div>
               <button type="button" className="detect-btn" onClick={handleUseCurrentLocation} disabled={locLoading}>
                 {locLoading ? <Loader className="spin" size={16} /> : <Navigation size={16} />} <span>Detect</span>
@@ -151,7 +151,7 @@ const Register = () => {
               <label>Admin Key</label>
               <div className="input-wrapper">
                 <Key size={18} />
-                <input type="password" placeholder="Enter key" onChange={e => setForm({...form, adminKey: e.target.value})} />
+                <input type="password" placeholder="Enter key" onChange={e => setForm({ ...form, adminKey: e.target.value })} />
               </div>
             </div>
           )}
@@ -160,7 +160,7 @@ const Register = () => {
             <label>Password</label>
             <div className={`input-wrapper ${errors.password ? 'error-border' : ''}`}>
               <Lock size={18} />
-              <input type="password" placeholder="Min 6 characters" onChange={e => setForm({...form, password: e.target.value})} />
+              <input type="password" placeholder="Min 6 characters" onChange={e => setForm({ ...form, password: e.target.value })} />
             </div>
             {errors.password && <small className="error-text">{errors.password}</small>}
           </div>
@@ -169,7 +169,7 @@ const Register = () => {
             <label>Confirm Password</label>
             <div className={`input-wrapper ${errors.confirmPassword ? 'error-border' : ''}`}>
               <ShieldCheck size={18} />
-              <input type="password" placeholder="Repeat password" onChange={e => setForm({...form, confirmPassword: e.target.value})} />
+              <input type="password" placeholder="Repeat password" onChange={e => setForm({ ...form, confirmPassword: e.target.value })} />
             </div>
             {errors.confirmPassword && <small className="error-text">{errors.confirmPassword}</small>}
           </div>

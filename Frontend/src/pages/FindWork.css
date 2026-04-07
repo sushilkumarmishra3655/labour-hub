@@ -101,6 +101,65 @@
   width: 100%;
 }
 
+/* ===== PAGINATION ===== */
+.findwork-pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  width: 100%;
+}
+
+.findwork-segmented-control {
+  display: flex;
+  background: white;
+  padding: 6px;
+  border-radius: 14px;
+  gap: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.findwork-segmented-control button {
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.findwork-segmented-control button:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.findwork-segmented-control button.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 2px 4px rgba(30, 101, 109, 0.2);
+}
+
+.findwork-segmented-control button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  color: #64748b;
+  font-weight: 700;
+}
+
 /* ===== CARD ===== */
 .job-card-modern {
   background: var(--card-bg);

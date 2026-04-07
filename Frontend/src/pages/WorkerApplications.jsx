@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { 
-  Eye, Search, Briefcase, MapPin, IndianRupee, 
-  Calendar, Zap, Clock, CheckCircle, XCircle 
+import {
+  Eye, Search, Briefcase, MapPin, IndianRupee,
+  Calendar, Zap, Clock, CheckCircle, XCircle
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -136,7 +136,7 @@ const WorkerApplications = () => {
         <div className="worker-app-grid-v3">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="worker-premium-card-v3 skeleton-pulse">
-               <div style={{ height: '220px' }}></div>
+              <div style={{ height: '220px' }}></div>
             </div>
           ))}
         </div>
@@ -152,9 +152,9 @@ const WorkerApplications = () => {
             <div key={app._id} className="worker-premium-card-v3">
               <div className="w-card-status-indicator">
                 <div className={`status-tag ${app.status?.toLowerCase()}`}>
-                  {app.status === 'Pending' ? '⌛ Pending' : 
-                   app.status === 'Accepted' ? '✅ Accepted' : 
-                   app.status === 'Cancelled' ? '🚫 Cancelled' : '❌ Rejected'}
+                  {app.status === 'Pending' ? '⌛ Pending' :
+                    app.status === 'Accepted' ? '✅ Accepted' :
+                      app.status === 'Cancelled' ? '🚫 Cancelled' : '❌ Rejected'}
                 </div>
               </div>
 
@@ -194,112 +194,112 @@ const WorkerApplications = () => {
       {/* ── Details Modal ── */}
       {selectedApp && (
         <div className="popup-overlay" onClick={() => { setSelectedApp(null); setIsEditing(false); }}>
-           <div className="inline-popup worker-detail-modal" onClick={e => e.stopPropagation()}>
-              <div className="popup-header-v3">
-                 <div className="popup-p-icon"><Briefcase size={20} /></div>
-                 <div className="popup-p-title">
-                    <h3>Job Details</h3>
-                    <span>Ref ID: #{selectedApp._id.slice(-6).toUpperCase()}</span>
-                 </div>
-                 <button className="popup-close-v3" onClick={() => { setSelectedApp(null); setIsEditing(false); }}>×</button>
+          <div className="inline-popup worker-detail-modal" onClick={e => e.stopPropagation()}>
+            <div className="popup-header-v3">
+              <div className="popup-p-icon"><Briefcase size={20} /></div>
+              <div className="popup-p-title">
+                <h3>Job Details</h3>
+                <span>Ref ID: #{selectedApp._id.slice(-6).toUpperCase()}</span>
               </div>
+              <button className="popup-close-v3" onClick={() => { setSelectedApp(null); setIsEditing(false); }}>×</button>
+            </div>
 
-              <div className="worker-details-scroller">
-                 <div className="worker-details-content-v3">
-                    <div className="w-modal-header">
-                       <h2 className="modal-job-title-v3">{selectedApp.jobTitle}</h2>
-                       <div className="modal-meta-row-v3">
-                          <span className="m-meta-item">🏢 {selectedApp.company || "Direct Employer"}</span>
-                          <span className="m-divider">•</span>
-                          <span className="m-meta-item">🗓️ Applied on {new Date(selectedApp.appliedAt).toLocaleDateString()}</span>
-                       </div>
-                    </div>
+            <div className="worker-details-scroller">
+              <div className="worker-details-content-v3">
+                <div className="w-modal-header">
+                  <h2 className="modal-job-title-v3">{selectedApp.jobTitle}</h2>
+                  <div className="modal-meta-row-v3">
+                    <span className="m-meta-item">🏢 {selectedApp.company || "Direct Employer"}</span>
+                    <span className="m-divider">•</span>
+                    <span className="m-meta-item">🗓️ Applied on {new Date(selectedApp.appliedAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
 
-                    <div className="modal-stats-grid-v3">
-                       <div className="m-stat-box-v3">
-                          <label>Expected Wage</label>
-                          <p><IndianRupee size={16} /> {selectedApp.salary} <span>/ day</span></p>
-                       </div>
-                       <div className="m-stat-box-v3">
-                          <label>Job Location</label>
-                          <p><MapPin size={16} /> {selectedApp.location}</p>
-                       </div>
-                    </div>
+                <div className="modal-stats-grid-v3">
+                  <div className="m-stat-box-v3">
+                    <label>Expected Wage</label>
+                    <p><IndianRupee size={16} /> {selectedApp.salary} <span>/ day</span></p>
+                  </div>
+                  <div className="m-stat-box-v3">
+                    <label>Job Location</label>
+                    <p><MapPin size={16} /> {selectedApp.location}</p>
+                  </div>
+                </div>
 
-                    <div className="modal-section-v3">
-                       <label className="m-section-label">Job Description</label>
-                       <p className="m-section-text">{selectedApp.description || "The employer hasn't provided a detailed description."}</p>
-                    </div>
+                <div className="modal-section-v3">
+                  <label className="m-section-label">Job Description</label>
+                  <p className="m-section-text">{selectedApp.description || "The employer hasn't provided a detailed description."}</p>
+                </div>
 
-                    <div className="modal-section-v3">
-                       <div className="m-section-header-row">
-                          <label className="m-section-label">Your Application Message</label>
-                          {selectedApp.status === "Pending" && !isEditing && (
-                             <button className="m-edit-btn" onClick={() => { setIsEditing(true); setEditedMessage(selectedApp.message || ""); }}>
-                                ✏️ Edit Message
-                             </button>
-                          )}
-                       </div>
-                       {isEditing ? (
-                          <textarea 
-                             className="m-edit-textarea"
-                             value={editedMessage}
-                             onChange={(e) => setEditedMessage(e.target.value)}
-                             rows={4}
-                          />
-                       ) : (
-                          <div className="m-message-bubble">
-                             {selectedApp.message || "I am ready for the job!"}
-                          </div>
-                       )}
-                    </div>
-
-                    <div className="modal-status-v3">
-                       <label className="m-section-label">Status History</label>
-                       <div className="m-status-timeline">
-                          <div className="m-timeline-item active">
-                             <div className="m-timeline-icon"><Clock size={14} /></div>
-                             <div className="m-timeline-info">
-                                <strong>Application Submitted</strong>
-                                <span>{new Date(selectedApp.appliedAt).toLocaleTimeString()}</span>
-                             </div>
-                          </div>
-                          <div className={`m-timeline-item ${selectedApp.status !== "Pending" ? "active" : ""}`}>
-                              <div className={`m-timeline-icon ${selectedApp.status === 'Accepted' ? 'success' : (selectedApp.status === 'Rejected' || selectedApp.status === 'Cancelled') ? 'danger' : ''}`}>
-                                 {selectedApp.status === 'Accepted' ? <CheckCircle size={14} /> : 
-                                  (selectedApp.status === 'Rejected' || selectedApp.status === 'Cancelled') ? <XCircle size={14} /> : <Zap size={14} />}
-                              </div>
-                             <div className="m-timeline-info">
-                                <strong>Application {selectedApp.status}</strong>
-                                <span>Status updated by Employer</span>
-                             </div>
-                          </div>
-                       </div>
-                    </div>
-                 </div>
-              </div>
-
-              <div className="popup-footer-v3">
-                 <button className="p-btn-close-v3" onClick={() => { setSelectedApp(null); setIsEditing(false); }}>Close</button>
-                 <div className="p-footer-actions">
-                    {isEditing ? (
-                       <button className="p-btn-save-v3" onClick={() => handleUpdateApplication(selectedApp._id)} disabled={isSaving}>
-                          {isSaving ? "Saving..." : "Save Changes"}
-                       </button>
-                    ) : (
-                       selectedApp.status === "Pending" && (
-                          <button 
-                             className="p-btn-cancel-v3" 
-                             onClick={() => handleCancelApplication(selectedApp._id)}
-                             disabled={isDeleting}
-                          >
-                             {isDeleting ? "Cancelling..." : "Cancel Application"}
-                          </button>
-                       )
+                <div className="modal-section-v3">
+                  <div className="m-section-header-row">
+                    <label className="m-section-label">Your Application Message</label>
+                    {selectedApp.status === "Pending" && !isEditing && (
+                      <button className="m-edit-btn" onClick={() => { setIsEditing(true); setEditedMessage(selectedApp.message || ""); }}>
+                        ✏️ Edit Message
+                      </button>
                     )}
-                 </div>
+                  </div>
+                  {isEditing ? (
+                    <textarea
+                      className="m-edit-textarea"
+                      value={editedMessage}
+                      onChange={(e) => setEditedMessage(e.target.value)}
+                      rows={4}
+                    />
+                  ) : (
+                    <div className="m-message-bubble">
+                      {selectedApp.message || "I am ready for the job!"}
+                    </div>
+                  )}
+                </div>
+
+                <div className="modal-status-v3">
+                  <label className="m-section-label">Status History</label>
+                  <div className="m-status-timeline">
+                    <div className="m-timeline-item active">
+                      <div className="m-timeline-icon"><Clock size={14} /></div>
+                      <div className="m-timeline-info">
+                        <strong>Application Submitted</strong>
+                        <span>{new Date(selectedApp.appliedAt).toLocaleTimeString()}</span>
+                      </div>
+                    </div>
+                    <div className={`m-timeline-item ${selectedApp.status !== "Pending" ? "active" : ""}`}>
+                      <div className={`m-timeline-icon ${selectedApp.status === 'Accepted' ? 'success' : (selectedApp.status === 'Rejected' || selectedApp.status === 'Cancelled') ? 'danger' : ''}`}>
+                        {selectedApp.status === 'Accepted' ? <CheckCircle size={14} /> :
+                          (selectedApp.status === 'Rejected' || selectedApp.status === 'Cancelled') ? <XCircle size={14} /> : <Zap size={14} />}
+                      </div>
+                      <div className="m-timeline-info">
+                        <strong>Application {selectedApp.status}</strong>
+                        <span>Status updated by Employer</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-           </div>
+            </div>
+
+            <div className="popup-footer-v3">
+              <button className="p-btn-close-v3" onClick={() => { setSelectedApp(null); setIsEditing(false); }}>Close</button>
+              <div className="p-footer-actions">
+                {isEditing ? (
+                  <button className="p-btn-save-v3" onClick={() => handleUpdateApplication(selectedApp._id)} disabled={isSaving}>
+                    {isSaving ? "Saving..." : "Save Changes"}
+                  </button>
+                ) : (
+                  selectedApp.status === "Pending" && (
+                    <button
+                      className="p-btn-cancel-v3"
+                      onClick={() => handleCancelApplication(selectedApp._id)}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? "Cancelling..." : "Cancel Application"}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

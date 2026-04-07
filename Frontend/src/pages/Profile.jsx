@@ -86,6 +86,10 @@ const Profile = () => {
         skills: skillsArray
       };
 
+      if (payload.dob === "") {
+        payload.dob = null;
+      }
+
       const res = await api.put("/users/update-profile", payload);
       if (res.data.success) {
         const updatedUser = { ...user, ...res.data.user };
@@ -95,7 +99,7 @@ const Profile = () => {
       }
     } catch (err) {
       console.error("Profile update error:", err);
-      toast.error(err.response?.data?.message || "Failed to update profile.");
+      toast.error(err.response?.data?.message || err.response?.data?.error || "Failed to update profile.");
     } finally {
       setLoading(false);
     }

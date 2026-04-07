@@ -3,7 +3,8 @@ import { JobContext } from "../context/JobContext";
 import JobCard from "../component/JobCard";
 import {
   Search, LayoutGrid, HardHat, Paintbrush,
-  Zap, Droplets, Hammer, Users, Factory, Pickaxe
+  Zap, Droplets, Hammer, Users, Factory, Pickaxe,
+  ChevronLeft, ChevronRight
 } from "lucide-react";
 import "./FindWork.css";
 
@@ -11,6 +12,12 @@ const FindWork = () => {
   const { jobs } = useContext(JobContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, activeCategory]);
 
   // 1. Added all your fields here with matching icons
   const categories = [
@@ -42,6 +49,12 @@ const FindWork = () => {
 
     return matchesSearch && matchesCategory;
   });
+
+  const totalPages = Math.ceil(filteredJobs.length / ITEMS_PER_PAGE);
+  const paginatedJobs = filteredJobs.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
     <div className="find-work-page">
@@ -84,11 +97,52 @@ const FindWork = () => {
             <p>Try searching in a different city or category.</p>
           </div>
         ) : (
-          <div className="job-list">
-            {filteredJobs.map((job) => (
-              <JobCard key={job._id || job.id} job={job} />
-            ))}
-          </div>
+          <>
+            <div className="job-list">
+              {paginatedJobs.map((job) => (
+                <JobCard key={job._id || job.id} job={job} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="findwork-pagination-container">
+                <div className="findwork-segmented-control">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+
+                  {Array.from({ length: totalPages }).map((_, index) => {
+                    const pageNum = index + 1;
+                    if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
+                      return (
+                        <button
+                          key={pageNum}
+                          className={currentPage === pageNum ? "active" : ""}
+                          onClick={() => setCurrentPage(pageNum)}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    }
+                    if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                      return <span key={pageNum} className="pagination-ellipsis">...</span>;
+                    }
+                    return null;
+                  })}
+
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

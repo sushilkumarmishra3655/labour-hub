@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard, Users, Briefcase, FileText, LogOut,
-  PlusCircle, ShieldCheck, HardHat, User
+  PlusCircle, ShieldCheck, HardHat, User, Home
 } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
@@ -12,6 +12,7 @@ const Sidebar = () => {
 
   const menuItems = {
     admin: [
+      { name: "Home", path: "/", icon: <Home size={20} /> },
       { name: "Dashboard", path: "/admin-dashboard", icon: <LayoutDashboard size={20} /> },
       { name: "My Profile", path: "/admin-dashboard/profile", icon: <User size={20} /> },
       { name: "Users", path: "/admin-dashboard/users", icon: <Users size={20} /> },
@@ -19,6 +20,7 @@ const Sidebar = () => {
       { name: "Applications", path: "/admin-dashboard/applications", icon: <FileText size={20} /> }
     ],
     employer: [
+      { name: "Home", path: "/", icon: <Home size={20} /> },
       { name: "Dashboard", path: "/employer-dashboard", icon: <LayoutDashboard size={20} /> },
       { name: "My Profile", path: "/employer-dashboard/profile", icon: <User size={20} /> },
       { name: "Post New Job", path: "/postjob", icon: <PlusCircle size={20} /> },
@@ -26,6 +28,7 @@ const Sidebar = () => {
       { name: "Applications", path: "/employer-dashboard/applications", icon: <Users size={20} /> }
     ],
     worker: [
+      { name: "Home", path: "/", icon: <Home size={20} /> },
       { name: "Dashboard", path: "/worker-dashboard", icon: <LayoutDashboard size={20} /> },
       { name: "My Profile", path: "/worker-dashboard/profile", icon: <User size={20} /> },
       { name: "Find Work", path: "/findwork", icon: <Briefcase size={20} /> },
