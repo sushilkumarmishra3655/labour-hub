@@ -47,10 +47,13 @@
 .custom-lang-switcher-container.profile-dropdown-item {
   width: 100%;
   margin: 0;
-  display: flex;
-  justify-content: center;
-  padding: 8px 0;
-  border-top: 1px solid #eee;
+  padding: 0; /* Override Navbar padding to delegate to button */
+  border-top: none; 
+  display: block;   /* Need to take full width */
+}
+
+.custom-lang-switcher-container.profile-dropdown-item:hover {
+  background: transparent; /* Reset navbar hover on wrapper */
 }
 
 /* base */
@@ -69,15 +72,20 @@
 
 /* profile style */
 .custom-lang-switcher-container.profile-dropdown-item .lang-toggle-btn {
-  background: #f9f9f9;
-  border-radius: 6px;
-  color: #333;
-  width: 90%;
-  justify-content: center;
+  background: transparent;
+  border-radius: 0;
+  color: #4b5563;
+  width: 100%;
+  padding: 12px 20px;
+  justify-content: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  transition: all 0.2s ease;
 }
 
 .custom-lang-switcher-container.profile-dropdown-item .lang-toggle-btn:hover {
-  background: #f0f0f0;
+  background: #f8fafc;
+  color: #1E656D; /* Theme color */
 }
 
 /* ================= DROPDOWN ================= */

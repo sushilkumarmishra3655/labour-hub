@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import Logo from "./Logo";
 import { AuthContext } from "../context/AuthContext";
-import { Menu } from "lucide-react";
+import { Menu, User, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
 import CustomLanguageSwitcher from "./CustomLanguageSwitcher";
 
 const Navbar = () => {
@@ -115,7 +115,7 @@ const Navbar = () => {
               </span>
 
               <span className={`caret ${open ? "open" : ""}`}>
-                ▾
+                <ChevronDown size={18} />
               </span>
 
             </button>
@@ -124,22 +124,25 @@ const Navbar = () => {
 
               <div className="profile-dropdown">
 
-                <div onClick={() => { navigate(`/${user.role}-dashboard/profile`); setOpen(false); }}>
-                  Profile
+                <div className="profile-dropdown-item" onClick={() => { navigate(`/${user.role}-dashboard/profile`); setOpen(false); }}>
+                  <User size={18} />
+                  <span>Profile</span>
                 </div>
-                <div onClick={goDashboard}>
-                  Dashboard
+                
+                <div className="profile-dropdown-item" onClick={goDashboard}>
+                  <LayoutDashboard size={18} />
+                  <span>Dashboard</span>
                 </div>
+
+                <div className="dropdown-divider"></div>
 
                 <div
-                  className="logout-option"
+                  className="profile-dropdown-item logout-option"
                   onClick={handleLogout}
                 >
-                  Logout
+                  <LogOut size={18} />
+                  <span>Logout</span>
                 </div>
-
-                {/* LANGUAGE SWITCHER - LOGGED IN */}
-                <CustomLanguageSwitcher variant="profile-dropdown-item" />
 
               </div>
 

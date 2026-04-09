@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Globe } from 'lucide-react';
+import { Globe, ChevronDown } from 'lucide-react';
 import './CustomLanguageSwitcher.css';
 
 const CustomLanguageSwitcher = ({ variant = 'navbar' }) => {
@@ -31,7 +31,7 @@ const CustomLanguageSwitcher = ({ variant = 'navbar' }) => {
   const changeLanguage = (langCode) => {
     setCurrentLang(langCode);
     setIsOpen(false);
-    
+
     // Find the hidden Google Translate select dropdown
     const selectEl = document.querySelector('.goog-te-combo');
     if (selectEl) {
@@ -41,7 +41,7 @@ const CustomLanguageSwitcher = ({ variant = 'navbar' }) => {
       } else {
         selectEl.value = langCode;
       }
-      selectEl.dispatchEvent(new Event('change', { bubbles: true })); 
+      selectEl.dispatchEvent(new Event('change', { bubbles: true }));
     } else {
       // Fallback if Google Translate hasn't fully loaded yet
       const domain = window.location.hostname;
@@ -68,20 +68,20 @@ const CustomLanguageSwitcher = ({ variant = 'navbar' }) => {
 
   return (
     <div className={`custom-lang-switcher-container ${variant}`}>
-      <button 
+      <button
         className="lang-toggle-btn"
         onClick={() => setIsOpen(!isOpen)}
         title="Change Language"
       >
         <Globe size={18} className="lang-icon" />
         <span className="lang-text">{selectedLangObj.short}</span>
-        <span className="lang-caret">▾</span>
+        <ChevronDown size={16} className={`lang-caret ${isOpen ? 'open' : ''}`} />
       </button>
 
       {isOpen && (
         <div className="lang-dropdown-menu">
           {languages.map(lang => (
-            <div 
+            <div
               key={lang.code}
               className={`lang-option ${currentLang === lang.code ? 'active' : ''}`}
               onClick={() => changeLanguage(lang.code)}
