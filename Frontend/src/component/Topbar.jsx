@@ -1,18 +1,23 @@
-import { Bell, UserCircle, Search } from "lucide-react";
+import { Bell, UserCircle, Search, Menu } from "lucide-react";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import "../Layout/DashboardLayout.css";
 
-const Topbar = () => {
+const Topbar = ({ toggleSidebar }) => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <h3 className="page-title">Overview</h3>
-        <div className="topbar-breadcrumb">Dashboard / {user?.role}</div>
+        <div className="hamburger-menu" onClick={toggleSidebar}>
+          <Menu size={24} />
+        </div>
+        <div>
+          <h3 className="page-title">Overview</h3>
+          <div className="topbar-breadcrumb">Dashboard / {user?.role}</div>
+        </div>
       </div>
 
       <div className="topbar-right">

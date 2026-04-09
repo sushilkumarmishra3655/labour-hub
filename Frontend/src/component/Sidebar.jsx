@@ -7,7 +7,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import "../Layout/DashboardLayout.css";
 
-const Sidebar = () => {
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { user, logout } = useContext(AuthContext);
 
   const menuItems = {
@@ -37,7 +37,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
       <div className="sidebar-brand">
         <div className="brand-logo-bg">
           <HardHat size={22} color="white" strokeWidth={2.5} />
@@ -53,6 +53,7 @@ const Sidebar = () => {
             to={item.path}
             end
             className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+            onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)}
           >
             <span className="nav-icon">{item.icon}</span>
             <span className="nav-text">{item.name}</span>
