@@ -1,0 +1,114 @@
+/* ================= REMOVE OUTER BOX ================= */
+.lang-item.no-bg {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* ================= CONTAINER ================= */
+.custom-lang-switcher-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin: 0 4px;
+  padding: 0;
+  background: transparent !important;
+  /* IMPORTANT */
+  box-shadow: none !important;
+}
+
+/* ================= BUTTON (LIKE SMALL CTA) ================= */
+.custom-lang-switcher-container.navbar .lang-toggle-btn {
+  background: linear-gradient(45deg, #3b82f6, #22c55e);
+  color: white;
+
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: none;
+
+  font-weight: 600;
+  font-size: 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* hover */
+.custom-lang-switcher-container.navbar .lang-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ================= PROFILE DROPDOWN ================= */
+.custom-lang-switcher-container.profile-dropdown-item {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+  border-top: 1px solid #eee;
+}
+
+/* base */
+.lang-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  padding: 6px 12px;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* profile style */
+.custom-lang-switcher-container.profile-dropdown-item .lang-toggle-btn {
+  background: #f9f9f9;
+  border-radius: 6px;
+  color: #333;
+  width: 90%;
+  justify-content: center;
+}
+
+.custom-lang-switcher-container.profile-dropdown-item .lang-toggle-btn:hover {
+  background: #f0f0f0;
+}
+
+/* ================= DROPDOWN ================= */
+.lang-dropdown-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  z-index: 1000;
+}
+
+/* ================= OPTIONS ================= */
+.lang-option {
+  padding: 10px 15px;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.lang-option:hover {
+  background: #f4f6f8;
+}
+
+.lang-option.active {
+  background: #eef2ff;
+  color: #4f46e5;
+  font-weight: 700;
+}

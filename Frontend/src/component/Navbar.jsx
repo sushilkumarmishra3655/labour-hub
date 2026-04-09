@@ -4,6 +4,7 @@ import "./Navbar.css";
 import Logo from "./Logo";
 import { AuthContext } from "../context/AuthContext";
 import { Menu } from "lucide-react";
+import CustomLanguageSwitcher from "./CustomLanguageSwitcher";
 
 const Navbar = () => {
 
@@ -42,7 +43,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
+    <nav className="navbar notranslate">
 
       <div className="logos">
         <Logo />
@@ -137,6 +138,9 @@ const Navbar = () => {
                   Logout
                 </div>
 
+                {/* LANGUAGE SWITCHER - LOGGED IN */}
+                <CustomLanguageSwitcher variant="profile-dropdown-item" />
+
               </div>
 
             )}
@@ -144,17 +148,23 @@ const Navbar = () => {
           </li>
 
         ) : (
+          <>
+            {/* LANGUAGE SWITCHER - LOGGED OUT */}
+            <li className="lang-item no-bg">
+              <CustomLanguageSwitcher variant="navbar" />
+            </li>
 
-          <li>
-            <Link
-              to="/login"
-              state={{ from: window.location.pathname }}
-              className="login-btn"
-            >
-              <span className="top-text">JOIN US</span>
-              <span className="bottom-text">Click to Sign Up</span>
-            </Link>
-          </li>
+            <li>
+              <Link
+                to="/login"
+                state={{ from: window.location.pathname }}
+                className="login-btn"
+              >
+                <span className="top-text">JOIN US</span>
+                <span className="bottom-text">Click to Sign Up</span>
+              </Link>
+            </li>
+          </>
 
         )}
 
