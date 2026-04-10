@@ -1,0 +1,188 @@
+.sub-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.sub-modal-container {
+  background: white;
+  width: 100%;
+  max-width: 1100px;
+  border-radius: 30px;
+  position: relative;
+  overflow: hidden;
+  padding: 60px 40px;
+  animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.sub-modal-close {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  background: #f1f5f9;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.3s ease;
+}
+
+.sub-modal-close:hover {
+  background: #ef4444;
+  color: white;
+  transform: rotate(90deg);
+}
+
+.sub-modal-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.sub-modal-header h2 {
+  font-size: 42px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+.sub-modal-header p {
+  color: #64748b;
+  font-size: 18px;
+}
+
+/* PLANS GRID */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.plan-card {
+  background: white;
+  border: 2px solid #f1f5f9;
+  border-radius: 24px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.plan-card:hover {
+  transform: translateY(-10px);
+  border-color: #cbd5e1;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+}
+
+.plan-card.popular {
+  border-color: #34d399;
+  box-shadow: 0 15px 30px -10px rgba(52, 211, 153, 0.2);
+}
+
+.popular-badge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #34d399;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(52, 211, 153, 0.3);
+}
+
+.plan-header {
+  margin: -30px -30px 30px -30px;
+  padding: 40px 30px;
+  color: white;
+  text-align: center;
+  border-radius: 0 0 40px 40px;
+}
+
+.plan-header h3 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 15px;
+}
+
+.price-tag {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.price-tag .currency { font-size: 20px; font-weight: 600; }
+.price-tag .amount { font-size: 48px; font-weight: 800; margin: 0 4px; }
+.price-tag .period { font-size: 16px; opacity: 0.9; }
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 40px 0;
+  flex-grow: 1;
+}
+
+.plan-features li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: #475569;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.check-icon {
+  color: #34d399;
+  flex-shrink: 0;
+}
+
+.buy-btn {
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.plan-card:nth-child(1) .buy-btn:hover { background: #2563eb; color: white; }
+.plan-card:nth-child(2) .buy-btn { background: #059669; color: white; }
+.plan-card:nth-child(2) .buy-btn:hover { background: #047857; }
+.plan-card:nth-child(3) .buy-btn:hover { background: #d97706; color: white; }
+
+.buy-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .plans-grid { grid-template-columns: 1fr; }
+  .sub-modal-container { max-height: 90vh; overflow-y: auto; }
+}

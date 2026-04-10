@@ -84,7 +84,8 @@ exports.loginUser = async (req, res) => {
         location: user.location,
         skills: user.skills,
         experience: user.experience,
-        profileImage: user.profileImage
+        profileImage: user.profileImage,
+        isPremium: user.isPremium
       }
     });
 

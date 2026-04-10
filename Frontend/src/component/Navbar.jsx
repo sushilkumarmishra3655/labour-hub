@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import Logo from "./Logo";
 import { AuthContext } from "../context/AuthContext";
-import { Menu, User, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
+import { Menu, User, LayoutDashboard, LogOut, ChevronDown, Crown } from "lucide-react";
 import CustomLanguageSwitcher from "./CustomLanguageSwitcher";
 
 const Navbar = () => {
@@ -113,6 +113,7 @@ const Navbar = () => {
 
               <span className="profile-name">
                 {user.name}
+                {user.isPremium && <Crown size={14} className="premium-nav-crown" fill="#f59e0b" />}
               </span>
 
               <span className={`caret ${open ? "open" : ""}`}>

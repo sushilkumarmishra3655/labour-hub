@@ -44,6 +44,10 @@ const userSchema = new mongoose.Schema({
   },
   companyName: {
     type: String
+  },
+  isPremium: {
+    type: Boolean,
+    default: false
   }
 }, { timestamps: true });
 

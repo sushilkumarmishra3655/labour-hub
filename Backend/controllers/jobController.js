@@ -1,32 +1,43 @@
 const Job = require("../models/job");
+const User = require("../models/User");
 
 // POST JOB
 exports.postJob = async (req, res) => {
-
   try {
+    const employerId = req.user.id || req.body.employerId;
+
+    // Check for subscription limits
+    const user = await User.findById(employerId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (!user.isPremium) {
+      const jobCount = await Job.countDocuments({ employerId });
+      if (jobCount >= 1) {
+        return res.status(403).json({ 
+          message: "Free users can only post 1 job. Please upgrade to Premium for unlimited job posts.",
+          limitReached: true
+        });
+      }
+    }
+
     const jobData = {
       ...req.body,
-      employerId: req.body.employerId || (req.user ? req.user.id : undefined),
+      employerId: employerId,
       employerName: req.body.employerName || (req.user ? req.user.name : "Employer")
     };
 
     const job = new Job(jobData);
-
     await job.save();
 
     res.status(201).json({
       message: "Job posted successfully",
       job
     });
-
   } catch (error) {
-
     res.status(500).json({
       error: error.message
     });
-
   }
-
 };
 
 

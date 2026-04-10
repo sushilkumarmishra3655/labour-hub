@@ -7,12 +7,17 @@ import {
 import toast from "react-hot-toast";
 import api from "../services/api";
 import useCurrentLocation from "../hooks/useCurrentLocation";
+import SubscriptionModal from "../component/SubscriptionModal";
+import { CreditCard, Crown, Sparkles } from "lucide-react";
 import "./Profile.css";
 
 const Profile = () => {
   const { user, login } = useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [subModalOpen, setSubModalOpen] = useState(false);
+  const [subscription, setSubscription] = useState(null);
+  const [subLoading, setSubLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -49,8 +54,27 @@ const Profile = () => {
         experience: user.experience || "",
         profileImage: user.profileImage || ""
       });
+      fetchSubscription();
     }
   }, [user]);
+
+  const fetchSubscription = async () => {
+    try {
+      setSubLoading(true);
+      const res = await api.get("/subscription/my-subscription");
+      setSubscription(res.data);
+      
+      // If subscription is now active, refresh global user state to show Crown etc.
+      if (res.data?.status === "Active") {
+          const userRes = await api.get("/users/profile");
+          login({ user: userRes.data, token: localStorage.getItem("token") });
+      }
+    } catch (err) {
+      console.error("Error fetching subscription:", err);
+    } finally {
+      setSubLoading(false);
+    }
+  };
 
   if (!user) return <div className="profile-loading">Loading Profile...</div>;
 
@@ -177,10 +201,45 @@ const Profile = () => {
               )}
             </div>
             <h2 className="identity-name">{formData.name || "Unknown User"}</h2>
-            <span className={`role-badge ${user.role}`}>{user.role}</span>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', marginBottom: '15px' }}>
+              <span className={`role-badge ${user.role}`}>{user.role}</span>
+              {user.isPremium && (
+                <span className="premium-badge-tag">
+                  <Crown size={12} fill="currentColor" /> Premium
+                </span>
+              )}
+            </div>
             <div className="identity-meta">
               <span>Member since {new Date(user.createdAt || Date.now()).getFullYear()}</span>
             </div>
+          </div>
+
+          <div className="subscription-card-mini">
+             <div className="s-header">
+                <Sparkles size={16} color="#f59e0b" />
+                <h4>My Subscription</h4>
+             </div>
+             {subLoading ? (
+               <div className="sub-skeleton"></div>
+             ) : subscription ? (
+               <div className="active-sub-info">
+                  <p className="plan-name">{subscription.planName} Plan</p>
+                  <p className="expiry">Expires: {new Date(subscription.expiryDate).toLocaleDateString()}</p>
+                  <span className={`status-pill ${subscription.status.toLowerCase()}`}>{subscription.status}</span>
+               </div>
+             ) : (
+               <div className="no-sub-info">
+                  <p>No Active Plan</p>
+                  <button className="btn-get-sub" onClick={() => setSubModalOpen(true)}>
+                    Upgrade Now
+                  </button>
+               </div>
+             )}
+             {subscription && (
+               <button className="btn-upgrade-mini" onClick={() => setSubModalOpen(true)}>
+                 Manage Plan
+               </button>
+             )}
           </div>
 
           <div className="completion-card">
@@ -312,6 +371,12 @@ const Profile = () => {
 
         </div>
       </div>
+      <SubscriptionModal 
+        isOpen={subModalOpen} 
+        onClose={() => setSubModalOpen(false)} 
+        user={user}
+        onSubscriptionSuccess={fetchSubscription}
+      />
     </div>
   );
 };

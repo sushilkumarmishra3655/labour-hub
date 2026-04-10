@@ -5,6 +5,22 @@ const User = require("../models/User");
 // APPLY JOB
 exports.applyJob = async (req, res) => {
   try {
+    const { workerId } = req.body;
+
+    // Check for subscription limits
+    const user = await User.findById(workerId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (!user.isPremium) {
+      const appCount = await Application.countDocuments({ workerId });
+      if (appCount >= 3) {
+        return res.status(403).json({ 
+          message: "Free users can only apply for 3 jobs. Please upgrade to Premium for unlimited applications.",
+          limitReached: true
+        });
+      }
+    }
+
     const application = new Application(req.body);
     await application.save();
 

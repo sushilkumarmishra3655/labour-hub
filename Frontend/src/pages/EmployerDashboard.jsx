@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import {
-  Plus, Users, Briefcase, Clock, TrendingUp, Check, X, Eye, Phone, MapPin, Mail, Award, Calendar
+  Plus, Users, Briefcase, Clock, TrendingUp, Check, X, Eye, Phone, MapPin, Mail, Award, Calendar, Crown
 } from "lucide-react";
 import api from "../services/api";
 import "./EmployerDashboard.css";
@@ -77,7 +77,14 @@ const EmployerDashboard = () => {
       <div className="employer-welcome-section">
         <div className="employer-welcome-text">
           <h1>Welcome back, {user?.name?.split(' ')[0]} 👋</h1>
-          <p>You have {stats.pendingReview} applications waiting for review.</p>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '5px' }}>
+            <p style={{ margin: 0 }}>You have {stats.pendingReview} applications waiting for review.</p>
+            {user.isPremium ? (
+               <span className="premium-badge-v3"><Crown size={12} fill="currentColor" /> Premium</span>
+            ) : (
+               <span className="free-badge-v3">Free Plan</span>
+            )}
+          </div>
         </div>
         <div className="action-buttons">
           <button className="btn-create" onClick={() => navigate("/postjob")}>

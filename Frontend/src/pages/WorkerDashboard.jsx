@@ -4,7 +4,7 @@ import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import {
   Eye, Clock, CheckCircle, XCircle, Search,
   ArrowRight, Briefcase, MapPin, IndianRupee, Filter, Zap,
-  ShieldCheck
+  ShieldCheck, Crown
 } from "lucide-react";
 import DashboardLayout from "../Layout/DashboardLayout";
 import toast from "react-hot-toast";
@@ -280,9 +280,33 @@ const WorkerDashboard = () => {
               <div className="sidebar-card-v3 career-insights">
                 <div className="s-card-header">
                   <ShieldCheck size={18} color="var(--primary-blue)" />
-                  <h4>Profile Strength</h4>
+                  <h4>Account Status</h4>
                 </div>
-                <div className="profile-progress-container">
+
+                <div className="dashboard-sub-card">
+                  <div className="sub-status-header">
+                    {user.isPremium ? (
+                      <div className="premium-active-tag">
+                        <Crown size={14} fill="currentColor" /> Premium Member
+                      </div>
+                    ) : (
+                      <div className="free-plan-tag">Free Plan</div>
+                    )}
+                  </div>
+                  <p className="sub-tagline">
+                    {user.isPremium 
+                      ? "You have unlimited access to all features." 
+                      : "Upgrade to unlock unlimited applications and top placement."}
+                  </p>
+                  <button 
+                    className={user.isPremium ? "btn-manage-sub" : "btn-upgrade-glow"}
+                    onClick={() => navigate('/worker-dashboard/profile')}
+                  >
+                    {user.isPremium ? "Manage Plan" : "Upgrade to Premium"}
+                  </button>
+                </div>
+
+                <div className="profile-progress-container" style={{ marginTop: '20px' }}>
                   <div className="progress-label">
                     <span>{profileCompletion}% Complete</span>
                     <button onClick={() => navigate('/worker-dashboard/profile')}>Edit Profile</button>
