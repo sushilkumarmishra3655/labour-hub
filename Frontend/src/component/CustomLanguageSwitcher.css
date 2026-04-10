@@ -88,6 +88,27 @@
   color: #1E656D; /* Theme color */
 }
 
+/* ================= TOPBAR ================= */
+.custom-lang-switcher-container.topbar .lang-toggle-btn {
+  background: #f1f5f9;
+  color: #4b5563;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-lang-switcher-container.topbar .lang-toggle-btn:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
 /* ================= DROPDOWN ================= */
 .lang-dropdown-menu {
   position: absolute;

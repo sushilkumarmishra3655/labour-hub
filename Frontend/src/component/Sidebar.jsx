@@ -37,7 +37,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   };
 
   return (
-    <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+    <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} notranslate`}>
       <div className="sidebar-brand">
         <div className="brand-logo-bg">
           <HardHat size={22} color="white" strokeWidth={2.5} />

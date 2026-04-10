@@ -67,7 +67,7 @@ const CustomLanguageSwitcher = ({ variant = 'navbar' }) => {
   const selectedLangObj = languages.find(l => l.code === currentLang) || languages[0];
 
   return (
-    <div className={`custom-lang-switcher-container ${variant}`}>
+    <div className={`custom-lang-switcher-container ${variant} notranslate`}>
       <button
         className="lang-toggle-btn"
         onClick={() => setIsOpen(!isOpen)}

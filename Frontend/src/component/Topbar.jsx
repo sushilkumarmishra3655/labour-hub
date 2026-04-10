@@ -1,15 +1,16 @@
-import { Bell, UserCircle, Search, Menu } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import "../Layout/DashboardLayout.css";
+import CustomLanguageSwitcher from "./CustomLanguageSwitcher";
 
 const Topbar = ({ toggleSidebar }) => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return (
-    <header className="topbar">
+    <header className="topbar notranslate">
       <div className="topbar-left">
         <div className="hamburger-menu" onClick={toggleSidebar}>
           <Menu size={24} />
@@ -39,6 +40,9 @@ const Topbar = ({ toggleSidebar }) => {
             <span className="user-role-label">{user?.role}</span>
           </div>
         </div>
+
+        {/* Language Switcher moved to right */}
+        <CustomLanguageSwitcher variant="topbar" />
       </div>
     </header>
   );

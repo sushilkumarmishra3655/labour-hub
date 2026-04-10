@@ -92,9 +92,9 @@ const Navbar = () => {
 
         <li><Link to="/contact">Contact</Link></li>
 
+
         {/* PROFILE / LOGIN */}
         {user?.isLoggedIn ? (
-
           <li className="profile-menu" ref={dropdownRef}>
 
             <button
@@ -128,11 +128,12 @@ const Navbar = () => {
                   <User size={18} />
                   <span>Profile</span>
                 </div>
-                
+
                 <div className="profile-dropdown-item" onClick={goDashboard}>
                   <LayoutDashboard size={18} />
                   <span>Dashboard</span>
                 </div>
+
 
                 <div className="dropdown-divider"></div>
 
@@ -152,11 +153,6 @@ const Navbar = () => {
 
         ) : (
           <>
-            {/* LANGUAGE SWITCHER - LOGGED OUT */}
-            <li className="lang-item no-bg">
-              <CustomLanguageSwitcher variant="navbar" />
-            </li>
-
             <li>
               <Link
                 to="/login"
@@ -170,6 +166,11 @@ const Navbar = () => {
           </>
 
         )}
+
+        {/* LANGUAGE SWITCHER - MOVED TO RIGHT */}
+        <li className="lang-item no-bg">
+          <CustomLanguageSwitcher variant="navbar" />
+        </li>
 
       </ul>
     </nav>
