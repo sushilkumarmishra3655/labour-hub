@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard, Users, Briefcase, FileText, LogOut,
-  PlusCircle, ShieldCheck, HardHat, User, Home
+  PlusCircle, ShieldCheck, HardHat, User, Home, MessageSquare
 } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
@@ -17,7 +17,8 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       { name: "My Profile", path: "/admin-dashboard/profile", icon: <User size={20} /> },
       { name: "Users", path: "/admin-dashboard/users", icon: <Users size={20} /> },
       { name: "Manage Jobs", path: "/admin-dashboard/jobs", icon: <Briefcase size={20} /> },
-      { name: "Applications", path: "/admin-dashboard/applications", icon: <FileText size={20} /> }
+      { name: "Applications", path: "/admin-dashboard/applications", icon: <FileText size={20} /> },
+      { name: "Contact Queries", path: "/admin-dashboard/queries", icon: <MessageSquare size={20} /> }
     ],
     employer: [
       { name: "Home", path: "/", icon: <Home size={20} /> },

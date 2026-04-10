@@ -95,6 +95,7 @@ const Navbar = () => {
 
         {/* PROFILE / LOGIN */}
         {user?.isLoggedIn ? (
+          <>
           <li className="profile-menu" ref={dropdownRef}>
 
             <button
@@ -150,9 +151,16 @@ const Navbar = () => {
             )}
 
           </li>
+          <li className="lang-item no-bg">
+            <CustomLanguageSwitcher variant="navbar" />
+          </li>
+          </>
 
         ) : (
           <>
+            <li className="lang-item no-bg">
+              <CustomLanguageSwitcher variant="navbar" />
+            </li>
             <li>
               <Link
                 to="/login"
@@ -167,10 +175,6 @@ const Navbar = () => {
 
         )}
 
-        {/* LANGUAGE SWITCHER - MOVED TO RIGHT */}
-        <li className="lang-item no-bg">
-          <CustomLanguageSwitcher variant="navbar" />
-        </li>
 
       </ul>
     </nav>

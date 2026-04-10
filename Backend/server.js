@@ -24,6 +24,7 @@ app.use("/api/applications", require("./routes/applicationRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 
 app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/contact", require("./routes/contactRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Labour Hub API Running");
