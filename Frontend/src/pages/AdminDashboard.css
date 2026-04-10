@@ -63,6 +63,17 @@
     text-transform: uppercase;
 }
 
+.admin-responded-badge {
+    background: #f0f9ff;
+    color: #0284c7;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 10px;
+    border: 1px solid #bae6fd;
+}
+
 .status-tag.approved {
     background-color: #f0fdf4;
     color: #16a34a;

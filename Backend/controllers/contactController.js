@@ -81,9 +81,42 @@ const deleteContact = async (req, res) => {
   }
 };
 
+// @desc    Respond to a contact query
+// @route   PATCH /api/contact/:id/respond
+// @access  Private/Admin
+const respondToContact = async (req, res) => {
+  try {
+    const { adminResponse, status } = req.body;
+
+    if (!adminResponse) {
+      return res.status(400).json({ message: "Please provide a response" });
+    }
+
+    const contact = await Contact.findByIdAndUpdate(
+      req.params.id,
+      {
+        adminResponse,
+        respondedAt: Date.now(),
+        status: status || "Resolved",
+      },
+      { new: true }
+    );
+
+    if (!contact) {
+      return res.status(404).json({ message: "Query not found" });
+    }
+
+    res.status(200).json(contact);
+  } catch (error) {
+    console.error("Error responding to contact query:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 module.exports = {
   submitContact,
   getContacts,
   updateContactStatus,
+  respondToContact,
   deleteContact,
 };

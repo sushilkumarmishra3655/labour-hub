@@ -5,6 +5,7 @@ const {
   submitContact,
   getContacts,
   updateContactStatus,
+  respondToContact,
   deleteContact,
 } = require("../controllers/contactController");
 
@@ -15,6 +16,7 @@ router.post("/", submitContact);
 // For now, following the adminController pattern where they check user.role
 router.get("/", authMiddleware, getContacts);
 router.patch("/:id", authMiddleware, updateContactStatus);
+router.patch("/:id/respond", authMiddleware, respondToContact);
 router.delete("/:id", authMiddleware, deleteContact);
 
 module.exports = router;

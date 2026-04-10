@@ -3,7 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import { 
   MessageSquare, Search, Trash2, CheckCircle, Clock, 
   ChevronLeft, ChevronRight, X, Phone, User, Calendar, 
-  FileText, Mail, Info
+  FileText, Mail, Info, Send, ExternalLink
 } from "lucide-react";
 import api from "../services/api";
 import Swal from "sweetalert2";
@@ -24,6 +24,7 @@ const AdminContactQueries = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedQuery, setSelectedQuery] = useState(null);
   const [isActionLoading, setIsActionLoading] = useState(false);
+  const [adminResponseText, setAdminResponseText] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -44,6 +45,12 @@ const AdminContactQueries = () => {
 
     fetchQueries();
   }, [user]);
+
+  useEffect(() => {
+    if (selectedQuery) {
+      setAdminResponseText(selectedQuery.adminResponse || "");
+    }
+  }, [selectedQuery]);
 
   const filteredQueries = useMemo(() => {
     let list = [...queries];
@@ -93,6 +100,41 @@ const AdminContactQueries = () => {
     } finally {
       setIsActionLoading(false);
     }
+  };
+
+  const handleSubmitResponse = async () => {
+    if (!adminResponseText.trim()) {
+      Swal.fire("Oops", "Please enter a response message", "warning");
+      return;
+    }
+
+    setIsActionLoading(true);
+    try {
+      const res = await api.patch(`/contact/${selectedQuery._id}/respond`, { 
+        adminResponse: adminResponseText,
+        status: "Resolved"
+      });
+      setQueries(prev => prev.map(q => q._id === selectedQuery._id ? res.data : q));
+      setSelectedQuery(res.data);
+      
+      Swal.fire({
+        title: "Response Saved",
+        text: "The solution has been stored and query marked as Resolved.",
+        icon: "success"
+      });
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Failed to save response", "error");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const openWhatsApp = () => {
+    if (!selectedQuery?.phone) return;
+    const phone = selectedQuery.phone.replace(/\D/g, "");
+    const text = encodeURIComponent(`Hello ${selectedQuery.name}, this is regarding your query on Labour Hub: "${selectedQuery.subject}". \n\nSolution: ${adminResponseText}`);
+    window.open(`https://wa.me/${phone.startsWith('91') ? phone : '91'+phone}?text=${text}`, "_blank");
   };
 
   const handleDeleteQuery = async (id) => {
@@ -194,6 +236,7 @@ const AdminContactQueries = () => {
                         <span><User size={14} /> {q.name}</span>
                         <span><Phone size={14} /> {q.phone}</span>
                         <span>📅 {date}</span>
+                        {q.adminResponse && <span className="admin-responded-badge">✅ Responded</span>}
                       </div>
                     </div>
                   </div>
@@ -241,7 +284,7 @@ const AdminContactQueries = () => {
             <div className="popup-header">
               <div className="popup-title">
                 <MessageSquare size={20} color="var(--primary-blue)" />
-                <h3>Message Details</h3>
+                <h3>Query & Response</h3>
               </div>
               <button className="popup-close" onClick={() => setSelectedQuery(null)}><X size={18} /></button>
             </div>
@@ -260,7 +303,7 @@ const AdminContactQueries = () => {
                    <p style={{ fontWeight: '700', fontSize: '18px' }}>{selectedQuery.subject || "No Subject provided"}</p>
                 </div>
                 <div className="admin-u-item-v3">
-                   <label><FileText size={14} /> Message Content</label>
+                   <label><FileText size={14} /> User Message</label>
                    <div style={{ 
                      background: '#f8fafc', 
                      padding: '20px', 
@@ -273,42 +316,54 @@ const AdminContactQueries = () => {
                      {selectedQuery.message}
                    </div>
                 </div>
+
+                <div className="admin-u-item-v3" style={{ marginTop: '20px' }}>
+                   <label><Send size={14} style={{ color: 'var(--primary-blue)' }} /> Admin Solution / Response</label>
+                   <textarea 
+                      className="admin-response-textarea"
+                      placeholder="Type your response or solution here..."
+                      value={adminResponseText}
+                      onChange={(e) => setAdminResponseText(e.target.value)}
+                      style={{
+                        width: '100%',
+                        minHeight: '120px',
+                        padding: '15px',
+                        borderRadius: '12px',
+                        border: '2px solid #e2e8f0',
+                        marginTop: '10px',
+                        fontFamily: 'inherit',
+                        fontSize: '15px'
+                      }}
+                   />
+                </div>
               </div>
 
-              <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-                   <span className={`status-tag ${selectedQuery.status.toLowerCase()}`}>
-                     Current Status: {selectedQuery.status}
-                   </span>
-              </div>
+              {selectedQuery.respondedAt && (
+                <p style={{ fontSize: '12px', color: '#64748b', marginTop: '10px' }}>
+                   Last responded on: {new Date(selectedQuery.respondedAt).toLocaleString()}
+                </p>
+              )}
             </div>
 
             <div className="popup-footer">
               <button className="p-btn-cancel" onClick={() => setSelectedQuery(null)}>Close</button>
               
               <div style={{ display: 'flex', gap: '10px' }}>
-                {selectedQuery.status === "Pending" && (
-                  <button 
-                    className="p-btn-save" 
-                    onClick={() => handleUpdateStatus(selectedQuery._id, "Reviewed")}
-                    style={{ background: 'var(--primary-blue)' }}
-                  >
-                    Mark Reviewed
-                  </button>
-                )}
-                {(selectedQuery.status === "Pending" || selectedQuery.status === "Reviewed") && (
-                  <button 
-                    className="p-btn-save" 
-                    onClick={() => handleUpdateStatus(selectedQuery._id, "Resolved")}
-                  >
-                    Mark Resolved
-                  </button>
-                )}
                 <button 
-                  className="p-btn-cancel" 
-                  style={{ color: '#ef4444' }}
-                  onClick={() => handleDeleteQuery(selectedQuery._id)}
+                  className="p-btn-save" 
+                  onClick={openWhatsApp}
+                  style={{ background: '#25D366', color: 'white' }}
                 >
-                  Delete
+                  <ExternalLink size={16} style={{ marginRight: '8px' }} />
+                  Message on WhatsApp
+                </button>
+
+                <button 
+                  className="p-btn-save" 
+                  onClick={handleSubmitResponse}
+                  disabled={isActionLoading}
+                >
+                  {isActionLoading ? "Saving..." : "Save & Resolve"}
                 </button>
               </div>
             </div>

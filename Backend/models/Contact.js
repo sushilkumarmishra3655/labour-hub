@@ -22,6 +22,12 @@ const contactSchema = new mongoose.Schema(
       enum: ["Pending", "Reviewed", "Resolved"],
       default: "Pending",
     },
+    adminResponse: {
+      type: String,
+    },
+    respondedAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
