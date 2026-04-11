@@ -80,9 +80,9 @@ const EmployerDashboard = () => {
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '5px' }}>
             <p style={{ margin: 0 }}>You have {stats.pendingReview} applications waiting for review.</p>
             {user.isPremium ? (
-               <span className="premium-badge-v3"><Crown size={12} fill="currentColor" /> Premium</span>
+              <span className="premium-badge-v3"><Crown size={12} fill="currentColor" /> Premium</span>
             ) : (
-               <span className="free-badge-v3">Free Plan</span>
+              <span className="free-badge-v3">Free Plan</span>
             )}
           </div>
         </div>

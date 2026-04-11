@@ -52,20 +52,37 @@ const SUBSCRIPTION_PLANS = [
 
 const SubscriptionModal = ({ isOpen, onClose, user, onSubscriptionSuccess }) => {
   const [loading, setLoading] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(SUBSCRIPTION_PLANS[1]); // Default to Standard
+  const [formData, setFormData] = useState({
+    name: user?.name || "",
+    phone: user?.phone || "",
+    email: user?.email || ""
+  });
 
   if (!isOpen) return null;
 
-  const handlePayment = async (plan) => {
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handlePayment = async (e) => {
+    if (e) e.preventDefault();
+    
+    if (!formData.name || !formData.phone) {
+      Swal.fire("Required", "Please fill Name and Phone number", "warning");
+      return;
+    }
+
     setLoading(true);
     try {
       // 1. Create order on backend
-      const { data: order } = await api.post("/subscription/create-order", { planName: plan.id });
+      const { data: order } = await api.post("/subscription/create-order", { planName: selectedPlan.id });
 
       // --- HANDLE DEMO MODE ---
       if (order.demo) {
           Swal.fire({
-            title: "Demo Mode Active",
-            text: "No real keys found. Simulating successful payment...",
+            title: "Simulated Payment",
+            text: "Setting up your premium features...",
             icon: "info",
             timer: 2000,
             showConfirmButton: false
@@ -77,11 +94,11 @@ const SubscriptionModal = ({ isOpen, onClose, user, onSubscriptionSuccess }) => 
                 razorpay_order_id: order.id,
                 razorpay_payment_id: "pay_demo_" + Date.now(),
                 razorpay_signature: "demo_signature",
-                planName: plan.id
+                planName: selectedPlan.id
               });
 
               if (verifyRes.data.success) {
-                Swal.fire("Success!", "Demo Subscription Active!", "success");
+                Swal.fire("Success!", "Premium Subscription Active!", "success");
                 onSubscriptionSuccess();
                 onClose();
               }
@@ -93,11 +110,11 @@ const SubscriptionModal = ({ isOpen, onClose, user, onSubscriptionSuccess }) => 
       }
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_placeholder", // Enter the Key ID generated from the Dashboard
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, 
         amount: order.amount,
         currency: order.currency,
         name: "Labour Hub",
-        description: `${plan.name} Subscription`,
+        description: `${selectedPlan.name} Subscription`,
         order_id: order.id,
         handler: async (response) => {
           try {
@@ -106,7 +123,7 @@ const SubscriptionModal = ({ isOpen, onClose, user, onSubscriptionSuccess }) => 
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              planName: plan.id
+              planName: selectedPlan.id
             });
 
             if (verifyRes.data.success) {
@@ -125,8 +142,9 @@ const SubscriptionModal = ({ isOpen, onClose, user, onSubscriptionSuccess }) => 
           }
         },
         prefill: {
-          name: user?.name,
-          contact: user?.phone
+          name: formData.name,
+          contact: formData.phone,
+          email: formData.email
         },
         theme: {
           color: "#1E656D"
@@ -145,49 +163,80 @@ const SubscriptionModal = ({ isOpen, onClose, user, onSubscriptionSuccess }) => 
 
   return (
     <div className="sub-modal-overlay" onClick={onClose}>
-      <div className="sub-modal-container" onClick={(e) => e.stopPropagation()}>
+      <div className="sub-modal-container compact" onClick={(e) => e.stopPropagation()}>
         <button className="sub-modal-close" onClick={onClose}>
-          <X size={24} />
+          <X size={20} />
         </button>
 
-        <div className="sub-modal-header">
+        <div className="sub-modal-header compact">
           <h2>Upgrade to Premium</h2>
-          <p>Choose a plan that fits your needs and unlock all features.</p>
+          <p>Get unlimited access and premium features.</p>
         </div>
 
-        <div className="plans-grid">
+        <div className="plans-grid-compact">
           {SUBSCRIPTION_PLANS.map((plan) => (
-            <div key={plan.id} className={`plan-card ${plan.popular ? 'popular' : ''}`}>
-              {plan.popular && <div className="popular-badge">Most Popular</div>}
-              <div className="plan-header" style={{ background: plan.bg }}>
-                <h3>{plan.name}</h3>
-                <div className="price-tag">
-                  <span className="currency">₹</span>
-                  <span className="amount">{plan.price}</span>
-                  <span className="period">/ {plan.duration}</span>
-                </div>
-              </div>
-              <ul className="plan-features">
-                {plan.features.map((feature, idx) => (
-                  <li key={idx}>
-                    <Check size={16} className="check-icon" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <button 
-                className="buy-btn" 
-                onClick={() => handlePayment(plan)}
-                disabled={loading}
-              >
-                {loading ? "Processing..." : "Get Started Now"}
-              </button>
+            <div 
+              key={plan.id} 
+              className={`plan-card-mini ${selectedPlan.id === plan.id ? 'active' : ''}`}
+              onClick={() => setSelectedPlan(plan)}
+            >
+              <div className="plan-name-v3">{plan.name}</div>
+              <div className="plan-price-v3">₹{plan.price}</div>
+              <div className="plan-dur-v3">{plan.duration}</div>
+              {selectedPlan.id === plan.id && <Check className="selected-icon" size={16} />}
             </div>
           ))}
         </div>
+
+        <form className="billing-form-compact" onSubmit={handlePayment}>
+          <div className="form-group-compact">
+            <label>Full Name</label>
+            <input 
+              type="text" 
+              name="name" 
+              value={formData.name} 
+              onChange={handleInputChange} 
+              placeholder="Your Name"
+              required
+            />
+          </div>
+
+          <div className="form-row-compact">
+            <div className="form-group-compact">
+              <label>Phone Number</label>
+              <input 
+                type="tel" 
+                name="phone" 
+                value={formData.phone} 
+                onChange={handleInputChange} 
+                placeholder="Phone Number"
+                required
+              />
+            </div>
+            <div className="form-group-compact">
+              <label>Email Address</label>
+              <input 
+                type="email" 
+                name="email" 
+                value={formData.email} 
+                onChange={handleInputChange} 
+                placeholder="Email (Optional)"
+              />
+            </div>
+          </div>
+
+          <div className="billing-summary-compact">
+             <p>Final Price: <strong>₹{selectedPlan.price}</strong> <span>({selectedPlan.duration})</span></p>
+          </div>
+
+          <button type="submit" className="pay-btn-compact" disabled={loading}>
+            {loading ? "Processing..." : `Subscribe to ${selectedPlan.name}`}
+          </button>
+        </form>
       </div>
     </div>
   );
 };
+
 
 export default SubscriptionModal;

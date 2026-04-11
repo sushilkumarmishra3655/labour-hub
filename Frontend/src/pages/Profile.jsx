@@ -54,7 +54,9 @@ const Profile = () => {
         experience: user.experience || "",
         profileImage: user.profileImage || ""
       });
-      fetchSubscription();
+      if (user.role !== "admin") {
+        fetchSubscription();
+      }
     }
   }, [user]);
 
@@ -147,6 +149,7 @@ const Profile = () => {
 
   const isWorker = user.role === "worker";
   const isEmployer = user.role === "employer";
+  const isAdmin = user.role === "admin";
 
   return (
     <div className="profile-dashboard-wrapper">
@@ -214,33 +217,35 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="subscription-card-mini">
-             <div className="s-header">
-                <Sparkles size={16} color="#f59e0b" />
-                <h4>My Subscription</h4>
-             </div>
-             {subLoading ? (
-               <div className="sub-skeleton"></div>
-             ) : subscription ? (
-               <div className="active-sub-info">
-                  <p className="plan-name">{subscription.planName} Plan</p>
-                  <p className="expiry">Expires: {new Date(subscription.expiryDate).toLocaleDateString()}</p>
-                  <span className={`status-pill ${subscription.status.toLowerCase()}`}>{subscription.status}</span>
+          {!isAdmin && (
+            <div className="subscription-card-mini">
+               <div className="s-header">
+                  <Sparkles size={16} color="#f59e0b" />
+                  <h4>My Subscription</h4>
                </div>
-             ) : (
-               <div className="no-sub-info">
-                  <p>No Active Plan</p>
-                  <button className="btn-get-sub" onClick={() => setSubModalOpen(true)}>
-                    Upgrade Now
-                  </button>
-               </div>
-             )}
-             {subscription && (
-               <button className="btn-upgrade-mini" onClick={() => setSubModalOpen(true)}>
-                 Manage Plan
-               </button>
-             )}
-          </div>
+               {subLoading ? (
+                 <div className="sub-skeleton"></div>
+               ) : subscription ? (
+                 <div className="active-sub-info">
+                    <p className="plan-name">{subscription.planName} Plan</p>
+                    <p className="expiry">Expires: {new Date(subscription.expiryDate).toLocaleDateString()}</p>
+                    <span className={`status-pill ${subscription.status.toLowerCase()}`}>{subscription.status}</span>
+                 </div>
+               ) : (
+                 <div className="no-sub-info">
+                    <p>No Active Plan</p>
+                    <button className="btn-get-sub" onClick={() => setSubModalOpen(true)}>
+                      Upgrade Now
+                    </button>
+                 </div>
+               )}
+               {subscription && (
+                 <button className="btn-upgrade-mini" onClick={() => setSubModalOpen(true)}>
+                   Manage Plan
+                 </button>
+               )}
+            </div>
+          )}
 
           <div className="completion-card">
              <div className="c-header">
@@ -371,12 +376,14 @@ const Profile = () => {
 
         </div>
       </div>
-      <SubscriptionModal 
-        isOpen={subModalOpen} 
-        onClose={() => setSubModalOpen(false)} 
-        user={user}
-        onSubscriptionSuccess={fetchSubscription}
-      />
+      {!isAdmin && (
+        <SubscriptionModal 
+          isOpen={subModalOpen} 
+          onClose={() => setSubModalOpen(false)} 
+          user={user}
+          onSubscriptionSuccess={fetchSubscription}
+        />
+      )}
     </div>
   );
 };

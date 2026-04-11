@@ -24,9 +24,12 @@ const createOrder = async (req, res) => {
     const key_id = process.env.RAZORPAY_KEY_ID;
     const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
+    console.log("Checking Razorpay Keys...");
+    console.log("KEY_ID found:", key_id ? "Yes (starts with " + key_id.substring(0, 8) + ")" : "No");
+
     // CHECK FOR MISSING KEYS - ENABLE DEMO MODE IF MISSING
     if (!key_id || !key_secret || key_id.includes("YOUR_KEY_HERE")) {
-      console.log("Demo Mode: Generating mock order as Razorpay keys are missing.");
+      console.log("Demo Mode triggered because:", !key_id ? "Key ID missing" : !key_secret ? "Key Secret missing" : "Placeholder detected");
       return res.status(200).json({
         id: `order_demo_${Date.now()}`,
         amount: plan.price * 100,
