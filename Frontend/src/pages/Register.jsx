@@ -10,14 +10,12 @@ import useCurrentLocation from "../hooks/useCurrentLocation";
 const Register = () => {
   const [form, setForm] = useState({
     name: "", email: "", phone: "", dob: "", gender: "",
-    role: "", password: "", confirmPassword: "", adminKey: "", address: "",
+    role: "", password: "", confirmPassword: "", address: "",
   });
 
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const { fetchLocation, locLoading, locError } = useCurrentLocation();
-
-  const ADMIN_SECRET = "ADMIN@123";
 
   // Logic to verify age >= 18
   const checkAge = (dob) => {
@@ -40,7 +38,6 @@ const Register = () => {
     if (!form.role) e.role = "Select role";
     if (form.password.length < 6) e.password = "Min 6 characters";
     if (form.password !== form.confirmPassword) e.confirmPassword = "Passwords mismatch";
-    if (form.role === "admin" && form.adminKey !== ADMIN_SECRET) e.adminKey = "Invalid Admin Key";
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -127,7 +124,6 @@ const Register = () => {
                 <option value="">Choose Role</option>
                 <option value="worker">Worker</option>
                 <option value="employer">Employer</option>
-                <option value="admin">Admin</option>
               </select>
             </div>
           </div>
@@ -145,16 +141,6 @@ const Register = () => {
             </div>
             {locError && <small className="error-text">{locError}</small>}
           </div>
-
-          {form.role === "admin" && (
-            <div className="form-group full-width">
-              <label>Admin Key</label>
-              <div className="input-wrapper">
-                <Key size={18} />
-                <input type="password" placeholder="Enter key" onChange={e => setForm({ ...form, adminKey: e.target.value })} />
-              </div>
-            </div>
-          )}
 
           <div className="form-group">
             <label>Password</label>
