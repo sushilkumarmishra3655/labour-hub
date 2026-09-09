@@ -19,9 +19,9 @@
   min-height: 100vh;
   width: 100%;
   /* Background with dark overlay for better text contrast */
-  background: 
-  /* linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)),  */
-              url("../assets/Worker.jpeg");
+  background:
+    /* linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)),  */
+    url("../assets/Worker.jpeg");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -44,8 +44,13 @@
   animation: cardEntrance 0.5s ease-out;
 }
 
-.auth-card.wide { max-width: 850px; }
-.auth-card.narrow { max-width: 450px; }
+.auth-card.wide {
+  max-width: 850px;
+}
+
+.auth-card.narrow {
+  max-width: 450px;
+}
 
 .auth-header {
   text-align: center;
@@ -72,7 +77,9 @@
   gap: 20px 24px;
 }
 
-.full-width { grid-column: span 2; }
+.full-width {
+  grid-column: span 2;
+}
 
 /* --- Input Styling --- */
 .form-group {
@@ -111,7 +118,8 @@
   flex-shrink: 0;
 }
 
-.input-wrapper input, .input-wrapper select {
+.input-wrapper input,
+.input-wrapper select {
   border: none;
   background: transparent;
   width: 100%;
@@ -195,22 +203,116 @@
 }
 
 /* --- Feedback & Animations --- */
-.error-border { border-color: var(--error) !important; }
-.error-text { color: var(--error); font-size: 11px; font-weight: 600; margin-top: 4px; }
-
-@keyframes cardEntrance {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+.error-border {
+  border-color: var(--error) !important;
 }
 
-.spin { animation: rotate 1s linear infinite; }
-@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.error-text {
+  color: var(--error);
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.spin {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Password Toggle --- */
+.password-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  transition: color 0.2s;
+}
+
+.password-toggle:hover {
+  color: var(--primary);
+}
+
+.password-toggle svg {
+  margin-right: 0 !important;
+}
+
+.country-code-select {
+  border: none;
+  background: transparent;
+  width: auto;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  outline: none;
+  padding-right: 10px;
+  margin-right: 10px;
+  border-right: 1.5px solid var(--border-color);
+  cursor: pointer;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+/* Hide browser-default password reveal button (Edge/Chrome) */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
 
 /* --- Mobile Fixes --- */
 @media (max-width: 768px) {
-  .auth-grid { grid-template-columns: 1fr; }
-  .full-width, .auth-btn-main { grid-column: span 1; }
-  .auth-card { padding: 30px 20px; }
-  .address-row { flex-direction: column; }
-  .detect-btn { height: 52px; justify-content: center; }
+  .auth-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width,
+  .auth-btn-main {
+    grid-column: span 1;
+  }
+
+  .auth-card {
+    padding: 30px 20px;
+  }
+
+  .address-row {
+    flex-direction: column;
+  }
+
+  .detect-btn {
+    height: 52px;
+    justify-content: center;
+  }
 }

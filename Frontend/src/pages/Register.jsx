@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Auth.css";
 import {
   User, Phone, Lock, Key, MapPin, Loader,
-  Navigation, Mail, Calendar, ShieldCheck
+  Navigation, Mail, Calendar, ShieldCheck, Eye, EyeOff
 } from "lucide-react";
 import useCurrentLocation from "../hooks/useCurrentLocation";
 
@@ -11,9 +11,12 @@ const Register = () => {
   const [form, setForm] = useState({
     name: "", email: "", phone: "", dob: "", gender: "",
     role: "", password: "", confirmPassword: "", address: "",
+    countryCode: "+91"
   });
 
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const { fetchLocation, locLoading, locError } = useCurrentLocation();
 
@@ -32,7 +35,7 @@ const Register = () => {
     const e = {};
     if (!form.name.trim()) e.name = "Full name required";
     if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Valid email required";
-    if (!/^[0-9]{10}$/.test(form.phone)) e.phone = "10-digit phone required";
+    if (!/^[789][0-9]{9}$/.test(form.phone)) e.phone = "Must be 10 digits starting with 7, 8, or 9";
     if (!form.dob) e.dob = "DOB required"; else if (!checkAge(form.dob)) e.dob = "Must be 18+ years old";
     if (!form.gender) e.gender = "Select gender";
     if (!form.role) e.role = "Select role";
@@ -92,7 +95,22 @@ const Register = () => {
             <label>Phone Number</label>
             <div className={`input-wrapper ${errors.phone ? 'error-border' : ''}`}>
               <Phone size={18} />
-              <input type="text" placeholder="10-digit number" onChange={e => setForm({ ...form, phone: e.target.value })} />
+              <select
+                className="country-code-select"
+                value={form.countryCode}
+                onChange={e => setForm({ ...form, countryCode: e.target.value })}
+              >
+                <option value="+91">+91 (IN)</option>
+                <option value="+1">+1 (US)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+971">+971 (UAE)</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Phone Number"
+                maxLength={10}
+                onChange={e => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })}
+              />
             </div>
             {errors.phone && <small className="error-text">{errors.phone}</small>}
           </div>
@@ -146,7 +164,19 @@ const Register = () => {
             <label>Password</label>
             <div className={`input-wrapper ${errors.password ? 'error-border' : ''}`}>
               <Lock size={18} />
-              <input type="password" placeholder="Min 6 characters" onChange={e => setForm({ ...form, password: e.target.value })} />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Min 6 characters"
+                onChange={e => setForm({ ...form, password: e.target.value })}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
             {errors.password && <small className="error-text">{errors.password}</small>}
           </div>
@@ -155,7 +185,19 @@ const Register = () => {
             <label>Confirm Password</label>
             <div className={`input-wrapper ${errors.confirmPassword ? 'error-border' : ''}`}>
               <ShieldCheck size={18} />
-              <input type="password" placeholder="Repeat password" onChange={e => setForm({ ...form, confirmPassword: e.target.value })} />
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Repeat password"
+                onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                title={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
             {errors.confirmPassword && <small className="error-text">{errors.confirmPassword}</small>}
           </div>

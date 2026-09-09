@@ -96,65 +96,65 @@ const Navbar = () => {
         {/* PROFILE / LOGIN */}
         {user?.isLoggedIn ? (
           <>
-          <li className="profile-menu" ref={dropdownRef}>
+            <li className="profile-menu" ref={dropdownRef}>
 
-            <button
-              className="profile-btn"
-              onClick={() => setOpen(!open)}
-            >
+              <button
+                className="profile-btn"
+                onClick={() => setOpen(!open)}
+              >
 
-              <div className="profile-avatar-letter" style={user?.profileImage ? { padding: 0, overflow: 'hidden' } : {}}>
-                {user?.profileImage ? (
-                  <img src={user.profileImage} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-                ) : (
-                  user?.name?.charAt(0).toUpperCase()
-                )}
-              </div>
-
-              <span className="profile-name">
-                {user.name}
-                {user.isPremium && <Crown size={14} className="premium-nav-crown" fill="#f59e0b" />}
-              </span>
-
-              <span className={`caret ${open ? "open" : ""}`}>
-                <ChevronDown size={18} />
-              </span>
-
-            </button>
-
-            {open && (
-
-              <div className="profile-dropdown">
-
-                <div className="profile-dropdown-item" onClick={() => { navigate(`/${user.role}-dashboard/profile`); setOpen(false); }}>
-                  <User size={18} />
-                  <span>Profile</span>
+                <div className="profile-avatar-letter" style={user?.profileImage ? { padding: 0, overflow: 'hidden' } : {}}>
+                  {user?.profileImage ? (
+                    <img src={user.profileImage} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                  ) : (
+                    user?.name?.charAt(0).toUpperCase()
+                  )}
                 </div>
 
-                <div className="profile-dropdown-item" onClick={goDashboard}>
-                  <LayoutDashboard size={18} />
-                  <span>Dashboard</span>
+                <span className="profile-name">
+                  {user.name}
+                  {user.isPremium && <Crown size={14} className="premium-nav-crown" fill="#f59e0b" />}
+                </span>
+
+                <span className={`caret ${open ? "open" : ""}`}>
+                  <ChevronDown size={18} />
+                </span>
+
+              </button>
+
+              {open && (
+
+                <div className="profile-dropdown">
+
+                  <div className="profile-dropdown-item" onClick={() => { navigate(`/${user.role}-dashboard/profile`); setOpen(false); }}>
+                    <User size={18} />
+                    <span>Profile</span>
+                  </div>
+
+                  <div className="profile-dropdown-item" onClick={goDashboard}>
+                    <LayoutDashboard size={18} />
+                    <span>Dashboard</span>
+                  </div>
+
+
+                  <div className="dropdown-divider"></div>
+
+                  <div
+                    className="profile-dropdown-item logout-option"
+                    onClick={handleLogout}
+                  >
+                    <LogOut size={18} />
+                    <span>Logout</span>
+                  </div>
+
                 </div>
 
+              )}
 
-                <div className="dropdown-divider"></div>
-
-                <div
-                  className="profile-dropdown-item logout-option"
-                  onClick={handleLogout}
-                >
-                  <LogOut size={18} />
-                  <span>Logout</span>
-                </div>
-
-              </div>
-
-            )}
-
-          </li>
-          <li className="lang-item no-bg">
-            <CustomLanguageSwitcher variant="navbar" />
-          </li>
+            </li>
+            <li className="lang-item no-bg">
+              <CustomLanguageSwitcher variant="navbar" />
+            </li>
           </>
 
         ) : (

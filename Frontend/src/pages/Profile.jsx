@@ -204,7 +204,7 @@ const Profile = () => {
               )}
             </div>
             <h2 className="identity-name">{formData.name || "Unknown User"}</h2>
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', marginBottom: '15px' }}>
+            <div style={{ gap: '8px', justifyContent: 'center', alignItems: 'center', marginBottom: '15px' }}>
               <span className={`role-badge ${user.role}`}>{user.role}</span>
               {user.isPremium && (
                 <span className="premium-badge-tag">

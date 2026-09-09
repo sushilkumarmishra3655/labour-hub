@@ -2,14 +2,15 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Auth.css";
 import { AuthContext } from "../context/AuthContext";
-import { Phone, Lock, ArrowRight } from "lucide-react";
+import { Phone, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Swal from "sweetalert2";
 
 const Login = () => {
   const { login, user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [form, setForm] = useState({ phone: "", password: "" });
+  const [form, setForm] = useState({ phone: "", password: "", countryCode: "+91" });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Auto-redirect if already logged in
   useEffect(() => {
@@ -147,7 +148,22 @@ const Login = () => {
             <label>Phone Number</label>
             <div className="input-wrapper">
               <Phone size={18} />
-              <input type="text" placeholder="Enter phone" onChange={e => setForm({ ...form, phone: e.target.value })} />
+              <select
+                className="country-code-select"
+                value={form.countryCode}
+                onChange={e => setForm({ ...form, countryCode: e.target.value })}
+              >
+                <option value="+91">+91 (IN)</option>
+                <option value="+1">+1 (US)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+971">+971 (UAE)</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Enter phone"
+                maxLength={10}
+                onChange={e => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })}
+              />
             </div>
           </div>
 
@@ -160,7 +176,19 @@ const Login = () => {
             </div>
             <div className="input-wrapper">
               <Lock size={18} />
-              <input type="password" placeholder="Enter password" onChange={e => setForm({ ...form, password: e.target.value })} />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter password"
+                onChange={e => setForm({ ...form, password: e.target.value })}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 

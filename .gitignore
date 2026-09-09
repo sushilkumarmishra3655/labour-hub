@@ -3,6 +3,7 @@ node_modules/
 
 # env files
 .env
+thunder-tests/thunderEnvironment.json
 
 # database backup
 database_backup/
